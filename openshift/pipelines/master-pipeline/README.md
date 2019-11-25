@@ -22,7 +22,7 @@ stage ('STEP NAME') {
           openshift.withCluster(){
               openshift.withProject(){
                   try{
-                      def bcApi = openshift.process('-f', 'openshift/pipelines/master-pipeline/BUILD CONFIG TO BE PROCESSED')
+                      def bcApi = openshift.process('-f', 'openshift/pipelines/master-pipeline/children-pipelines/BUILD CONFIG TO BE PROCESSED')
                       openshift.apply(bcApi).narrow('bc').startBuild()
                   } catch(e) {
                       echo "STEP NAME failed to start"
@@ -36,7 +36,7 @@ stage ('STEP NAME') {
 ```
 Be sure to replace the STEP NAME and NAME OF BUILD CONFIG TO BE PROCESSED with appropriate variables.
 
-You must also create a build config for the build you are referencing in the code above (BUILD CONFIG TO BE PROCESSED). If you are spawning off a child pipeline, you can create a file called PIPELINE_NAME.bc.yaml (replacing PIPELINE_NAME with desired pipeline name) that contains the following code:
+You must also create a build config (in the children-pipelines folder) for the build you are referencing in the code above (BUILD CONFIG TO BE PROCESSED). If you are spawning off a child pipeline, you can create a file called PIPELINE_NAME.bc.yaml (replacing PIPELINE_NAME with desired pipeline name) that contains the following code:
 ``` sh
 ---
 apiVersion: v1
