@@ -1,0 +1,38 @@
+---
+apiVersion: v1
+kind: Template
+labels: 
+  template: driver-setup-pipeline-template
+metadata: 
+  name: driver-setup-pipeline-template
+objects:
+- apiVersion: v1
+  kind: BuildConfig
+  metadata: 
+    name: "driver-setup-pipeline"
+  spec:
+    strategy:
+      jenkinsPipelineStrategy:
+        jenkinsfile: | 
+            pipeline {
+                environment {
+                    PASSWORD = input message: 'enter svn credentials', parameters: [password(defaultValue: 'value', description: '', name: 'password'), ]
+                    USERNAME = input message: 'enter username', parameters: [string(defaultValue: 'jocox', description: '', name: 'username')]
+                }
+                agent {
+                    label 'maven35'
+                }
+                stages {
+                    stage('Curl Driver') {
+                        steps {
+                            sh "curl -u ${USERNAME}:${PASSWORD} https://gww.svn.educ.gov.bc.ca/svn/repos/openshiftdevs_repos/certificates/ojdbc8.jar -o /tmp/ojdbc8.jar"
+                        }
+                    }
+                    stage('Add driver to m2 repo') {
+                        steps {
+                            sh "mvn install:install-file -Dfile=/tmp/ojdbc8.jar -DgroupId=com.oracle.jdbc -DartifactId=ojdbc8 -Dversion=12.2.0.1 -Dpackaging=jar"
+                        }
+                    }
+                }
+            }
+      type: JenkinsPipeline
