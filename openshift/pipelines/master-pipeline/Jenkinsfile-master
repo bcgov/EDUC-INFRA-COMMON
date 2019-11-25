@@ -17,7 +17,7 @@ pipeline {
                     openshift.withCluster(){
                         openshift.withProject(){
                             try{
-                                def bcApi = openshift.process('-f', 'openshift/pipeline/master-pipeline/digitalid-api-jenkinsfile.bc.yaml')
+                                def bcApi = openshift.process('-f', 'openshift/pipelines/master-pipeline/digitalid-api-jenkinsfile.bc.yaml')
                                 openshift.apply(bcApi).narrow('bc').startBuild()
                             } catch(e) {
                                 echo "DigitalID API Pipeline failed to start"
@@ -35,7 +35,7 @@ pipeline {
                     openshift.withCluster(){
                         openshift.withProject(){
                             try{
-                                def bcApi = openshift.process('-f', 'openshift/pipeline/master-pipeline/student-api-jenkinsfile.bc.yaml')
+                                def bcApi = openshift.process('-f', 'openshift/pipelines/master-pipeline/student-api-jenkinsfile.bc.yaml')
                                 openshift.apply(bcApi).narrow('bc').startBuild()
                             } catch(e) {
                                 echo "Student API Pipeline failed to start"
@@ -53,7 +53,7 @@ pipeline {
                     openshift.withCluster(){
                         openshift.withProject(){
                             try{
-				def bcRequest = openshift.process('-f', 'openshift/pipeline/master-pipeline/request-jenkinsfile.bc.yaml')
+				def bcRequest = openshift.process('-f', 'openshift/pipelines/master-pipeline/request-jenkinsfile.bc.yaml')
 				openshift.apply(bcRequest).narrow('bc').startBuild()
                             } catch(e) {
                                 echo "PEN Request Pipeline failed to start"
