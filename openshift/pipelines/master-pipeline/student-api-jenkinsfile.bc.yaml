@@ -1,0 +1,20 @@
+---
+apiVersion: v1
+kind: Template
+labels: 
+  template: student-api-master-pipeline-template
+metadata: 
+  name: student-api-master-pipeline-template
+objects:
+- apiVersion: v1
+  kind: BuildConfig
+  metadata: 
+    name: "student-api-master-pipeline"
+  spec:
+    source:
+      git:
+        ref: master
+        uri: "https://github.com/bcgov/EDUC-STUDENT-API"
+    strategy:
+      jenkinsPipelineStrategy:
+        jenkinsfilePath: tools/jenkins/Jenkinsfile-api
