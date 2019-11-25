@@ -4,7 +4,7 @@ This folder contains all the files required to run the master pipeline for the P
 
 ### Importing master pipeline
 
-The template for the [master pipeline](https://github.com/bcgov/EDUC-INFRA-COMMON/blob/master/openshift/pipelines/master-pipeline/master-pipeline.template.yaml) can be imported into Openshift via command line or web console. To import the master pipeline to you environment via the oc command line, run this command: 
+The template for the [master pipeline](https://github.com/bcgov/EDUC-INFRA-COMMON/blob/master/openshift/pipelines/master-pipeline/master-pipeline.template.yaml) can be imported into Openshift via command line or web console. To import the master pipeline to your environment via the oc command line, run this command: 
 ``` sh
 oc process -f master-pipeline.template.yaml
 ```
