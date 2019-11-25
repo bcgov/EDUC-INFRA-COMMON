@@ -1,0 +1,20 @@
+---
+apiVersion: v1
+kind: Template
+labels: 
+  template: master-pipeline
+metadata: 
+  name: master-pipeline
+objects:
+- apiVersion: v1
+  kind: BuildConfig
+  metadata: 
+    name: "master-pipeline"
+  spec:
+    source:
+      git:
+        ref: master
+        uri: "https://github.com/bcgov/EDUC-INFRA-COMMON"
+    strategy:
+      jenkinsPipelineStrategy:
+        jenkinsfilePath: openshift/pipelines/master-pipeline/Jenkinsfile-master
