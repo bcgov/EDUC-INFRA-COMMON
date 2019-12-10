@@ -78,4 +78,4 @@ stage('SonarQube Analysis'){
 }
 ```
 
-## Java
+## Java Reporting
