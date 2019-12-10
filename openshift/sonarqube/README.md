@@ -77,6 +77,33 @@ stage('SonarQube Analysis'){
     }
 }
 ```
+5. Add a sonar-project.properties file to your project root. The file should look something like this:
+``` sh
+#SonarQube Host Url
+sonar.host.url={YOUR SONAR URL}
+
+# Must be unique in a given SonarQube instance
+sonar.projectKey={YOUR SONAR PROJECT KEY}
+
+# This is the name and version displayed in the SonarQube UI. Was mandatory prior to SonarQube 6.1.
+sonar.projectName={YOUR SONAR PROJECT NAME}
+sonar.projectVersion=1.0.0
+
+# Encoding of the source code. Default is default system encoding
+sonar.sourceEncoding=UTF-8
+sonar.exclusions=**/node_modules/**, **/coverage/**
+sonar.verbose=false
+
+# Path is relative to the sonar-project.properties file. Replace "\" by "/" on Windows.
+sonar.sources=backend/src, frontend/src
+
+# Test configurations
+sonar.tests=frontend/tests, backend/tests
+sonar.test.inclusions=**/tests/**/*.spec.**
+sonar.javascript.lcov.reportPaths=backend/coverage/lcov.info, frontend/coverage/lcov.info
+sonar.testExecutionReportPaths=backend/coverage/test-report.xml, frontend/coverage/test-report.xml
+```
+
 
 ## Java Reporting
 
