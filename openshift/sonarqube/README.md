@@ -79,3 +79,29 @@ stage('SonarQube Analysis'){
 ```
 
 ## Java Reporting
+
+To add SonarQube reporting to your Java application you must complete the following steps:
+
+1.Generate a project token for you Java project at {YOUR SONARQUBE URL}/account/security (keep this token for later)
+
+2. Add the SonarQube dependency to your POM
+``` java
+<plugin>
+    <groupId>org.sonarsource.scanner.maven</groupId>
+    <artifactId>sonar-maven-plugin</artifactId>
+    <version>3.7.0.1746</version>
+</plugin>
+```
+
+3. Add the SonarQube analysis step to your Jenkinsfile
+``` groovy
+    stage('Report to SonarQube') {
+        steps {
+            script{
+                dir('api'){
+                    sh "mvn sonar:sonar -Dsonar.host.url={YOUR_INTERNAL_SVC_URL} -Dsonar.login={YOUR TOKEN FROM STEP 1}"
+                }
+            }
+        }
+    }
+```
