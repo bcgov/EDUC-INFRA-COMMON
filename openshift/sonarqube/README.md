@@ -21,7 +21,7 @@ To add SonarQube reporting to your JavaScript project, you must follow these ste
 
 2. Generate a project token for you JavaScript project at {YOUR SONARQUBE URL}/account/security (keep this token for later)
 
-3. Configure your sonarqube project in Jenkins. To do this, go to your Jenkins instance and make sure you have the SonarQube Scanner plugin installed. Once the plugin is installed, go to manage Jenkins --> Configure Jenkins. From here, click "Add SonarQube" under the SonarQube Server section. Enter your internal SonarQube service url (should look like "http://sonarqube.{YOUR_ENVIRONMENT}.svc.cluster.local", give the instance a unique name, and set up the server authentication token to use the token you obtained in step 2. (Credential kind should be "Secret Text")
+3. Configure your sonarqube project in Jenkins. To do this, go to your Jenkins instance and make sure you have the SonarQube Scanner plugin installed. Once the plugin is installed, go to manage Jenkins --> Configure Jenkins. From here, click "Add SonarQube" under the SonarQube Server section. Enter your internal SonarQube service url (should look like "http://sonarqube.{YOUR_ENVIRONMENT}.svc.cluster.local:9000", give the instance a unique name, and set up the server authentication token to use the token you obtained in step 2. (Credential kind should be "Secret Text")
 
 4. Add the Sonar Scanner step to your pipeline. You will need to perform unit testing before your sonarqube scanning stage. Example:
 ``` groovy
@@ -69,3 +69,5 @@ stage('SonarQube Analysis'){
     }
 }
 ```
+
+## Java
