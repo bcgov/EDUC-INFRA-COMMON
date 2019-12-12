@@ -15,7 +15,7 @@ To automatically attach config maps to deployments, you must add them as environ
 env:
 - name: NAME OF ENVIRONMENT VARIABLE
   valueFrom:
-    configKeyRef:
+    configMapKeyRef:
         key: CONFIG MAP KEY
         name: CONFIG MAP NAME
 ```
