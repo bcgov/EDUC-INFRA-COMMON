@@ -25,7 +25,11 @@ objects:
                 stages {
                     stage('Curl Driver') {
                         steps {
-                            sh "curl -u ${USERNAME}:${PASSWORD} https://gww.svn.educ.gov.bc.ca/svn/repos/openshiftdevs_repos/certificates/ojdbc8.jar -o /tmp/ojdbc8.jar"
+                            sh """
+                              set +x
+                              echo curling...
+                              curl -u ${USERNAME}:${PASSWORD} https://gww.svn.educ.gov.bc.ca/svn/repos/openshiftdevs_repos/certificates/ojdbc8.jar -o /tmp/ojdbc8.jar
+                            """
                         }
                     }
                     stage('Add driver to m2 repo') {
