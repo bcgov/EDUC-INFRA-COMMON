@@ -290,6 +290,81 @@ COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.Last_BC_School_Student_Number IS
 COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.Current_School IS 'Name of current BC school, if applicable';
 COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.Reviewer IS 'IDIR of the staff user who is working or did work on the PEN Retrieval Request';
 
+-- PEN-224 Add tables for Document storage
+
+-- Table DOCUMENT_TYPE_CODE
+CREATE TABLE STUDENT.DOCUMENT_TYPE_CODE (
+  DOCUMENT_TYPE_CODE VARCHAR2(10) NOT NULL,
+  LABEL VARCHAR2(30),
+  DESCRIPTION VARCHAR2(255),
+  DISPLAY_ORDER NUMBER DEFAULT 1 NOT NULL,
+  EFFECTIVE_DATE DATE NOT NULL,
+  EXPIRY_DATE DATE NOT NULL,  
+  CREATE_USER VARCHAR2(32) NOT NULL,
+  CREATE_DATE DATE DEFAULT SYSDATE NOT NULL,
+  UPDATE_USER VARCHAR2(32) NOT NULL,
+  UPDATE_DATE DATE DEFAULT SYSDATE NOT NULL,
+  CONSTRAINT DOCUMENT_TYPE_CODE_PK PRIMARY KEY (DOCUMENT_TYPE_CODE)  
+);
+
+COMMENT ON TABLE Student.Document_Type_Code IS 'Document Type Code lists the semantic types of documents that are supported. Examples include Birth Certificate (image of), Passport image, Permanent Resident Card image, etc.';
+
+GRANT SELECT, INSERT, UPDATE ON STUDENT.DOCUMENT_TYPE_CODE TO STUDENT_PROXY;
+
+-- Table STUDENT_DOCUMENT
+CREATE TABLE STUDENT.STUDENT_DOCUMENT (
+  STUDENT_DOCUMENT_ID RAW(16) NOT NULL,
+  DOCUMENT_TYPE_CODE VARCHAR2(10) NOT NULL,
+  FILE_NAME VARCHAR2(255) NOT NULL,
+  FILE_EXTENSION VARCHAR2(255),
+  FILE_SIZE NUMBER,
+  DOCUMENT_DATA BLOB NOT NULL,
+  CREATE_USER VARCHAR2(32) NOT NULL,
+  CREATE_DATE DATE DEFAULT SYSDATE NOT NULL,
+  UPDATE_USER VARCHAR2(32) NOT NULL,
+  UPDATE_DATE DATE DEFAULT SYSDATE NOT NULL,
+  CONSTRAINT STUDENT_DOCUMENT_PK PRIMARY KEY (STUDENT_DOCUMENT_ID)  
+);  
+
+COMMENT ON TABLE Student.Student_Document IS 'Holds documents related to Students, either directly or indirectly.';
+
+COMMENT ON COLUMN Student.Student_Document.Student_Document_ID IS 'Unique surrogate primary key for each Student Document. GUID value must be provided during insert.';
+COMMENT ON COLUMN Student.Student_Document.Document_Type_Code IS 'Code indicating the type of the semantic type of the document. E.g. Birth Certificate, Passport, etc.';
+COMMENT ON COLUMN Student.Student_Document.File_Name IS 'Name of the document file, without any local file path.';
+COMMENT ON COLUMN Student.Student_Document.File_Extension IS 'Extension portion of the filename, if present. E.g. JPG, PNG, PDF, etc.';
+COMMENT ON COLUMN Student.Student_Document.File_Size IS 'Size of the file in bytes, if known.';
+COMMENT ON COLUMN Student.Student_Document.Document_Data IS 'Binary representation of the file contents.';
+
+alter table STUDENT.STUDENT_DOCUMENT add constraint FK_STUDENT_DOCUMENT_TYPE_CODE foreign key (DOCUMENT_TYPE_CODE) references STUDENT.DOCUMENT_TYPE_CODE (DOCUMENT_TYPE_CODE);
+
+GRANT SELECT, INSERT, UPDATE ON STUDENT.STUDENT_DOCUMENT TO STUDENT_PROXY;
+
+-- Table STUDENT_DOCUMENT_OWNER_XREF
+CREATE TABLE STUDENT.STUDENT_DOCUMENT_OWNER_XREF (
+  STUDENT_DOCUMENT_ID RAW(16) NOT NULL,
+  DOCUMENT_OWNER_TYPE_CODE VARCHAR2(10) NOT NULL,
+  DOCUMENT_OWNER_ID RAW(16) NOT NULL,
+  CREATE_USER VARCHAR2(32) NOT NULL,
+  CREATE_DATE DATE DEFAULT SYSDATE NOT NULL,
+  UPDATE_USER VARCHAR2(32) NOT NULL,
+  UPDATE_DATE DATE DEFAULT SYSDATE NOT NULL,
+  CONSTRAINT STUDENT_DOCUMENT_OWNER_XREF_PK PRIMARY KEY (STUDENT_DOCUMENT_ID,DOCUMENT_OWNER_TYPE_CODE,DOCUMENT_OWNER_ID)  
+);  
+
+COMMENT ON TABLE Student.Student_Document_Owner_XREF IS 'Links Student Document records to one or more other entities that are the owner of the document, such as a Student record or a PEN Retrieval Request record.';
+
+COMMENT ON COLUMN Student.Student_Document_Owner_XREF.Student_Document_ID IS 'Foreign key to Student Document table identifying Student Document that is cross-referenced. A GUID.';
+COMMENT ON COLUMN Student.Student_Document_Owner_XREF.Document_Owner_Type_Code IS 'Part of Foreign key to referenced document owner. Identifies which class of entity is the owner of the document, such as Student or PEN Retrieval Request.';
+COMMENT ON COLUMN Student.Student_Document_Owner_XREF.Document_Owner_ID IS 'Part of Foreign key to referenced document owner. Identifies which exact entity instance is the owner of the record. This is a GUID.';
+
+alter table STUDENT.STUDENT_DOCUMENT_OWNER_XREF add constraint FK_STUDENT_DOCUMENT_ID foreign key (STUDENT_DOCUMENT_ID) references STUDENT.STUDENT_DOCUMENT (STUDENT_DOCUMENT_ID);
+-- The second side of the XREF is to one of several tables (identified by DOCUMENT_OWNER_TYPE_CODE), so there is no FK constraint added for it.
+
+CREATE INDEX DOCUMENT_OWNER_IDX ON STUDENT_DOCUMENT_OWNER_XREF
+  (DOCUMENT_OWNER_ID ASC);
+
+GRANT SELECT, INSERT, UPDATE ON STUDENT.STUDENT_DOCUMENT_OWNER_XREF TO STUDENT_PROXY;
+
 
 --Grants for STUDENT_PROXY
 GRANT SELECT, INSERT, UPDATE ON STUDENT.STUDENT TO STUDENT_PROXY;
@@ -303,3 +378,4 @@ GRANT SELECT, INSERT, UPDATE ON STUDENT.GENDER_CODE TO STUDENT_PROXY;
 GRANT SELECT, INSERT, UPDATE ON STUDENT.IDENTITY_TYPE_CODE TO STUDENT_PROXY;
 GRANT SELECT, INSERT, UPDATE ON STUDENT.PEN_RETRIEVAL_REQUEST_STATUS_CODE TO STUDENT_PROXY;
 GRANT SELECT, INSERT, UPDATE ON STUDENT.SEX_CODE TO STUDENT_PROXY;
+
