@@ -95,6 +95,7 @@ CREATE TABLE STUDENT.PEN_RETRIEVAL_REQUEST (
   REVIEWER VARCHAR2(255),
   INITIAL_SUBMIT_DATE DATE,
   STATUS_UPDATE_DATE DATE,
+  FAILURE_REASON VARCHAR2(4000),
   CREATE_USER VARCHAR2(32) NOT NULL,
   CREATE_DATE DATE DEFAULT SYSDATE NOT NULL,
   UPDATE_USER VARCHAR2(32) NOT NULL,
@@ -293,6 +294,8 @@ COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.Current_School IS 'Name of curre
 COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.Reviewer IS 'IDIR of the staff user who is working or did work on the PEN Retrieval Request';
 COMMENT ON COLUMN PEN_Retrieval_Request.Initial_Submit_Date IS 'Date and time that the Student first fully submitted the request, which does not happen until after they submit and verify their email address.';
 COMMENT ON COLUMN PEN_Retrieval_Request.Status_Update_Date IS 'Date and time that the status of the PEN Retrieval Request was last updated.';
+COMMENT ON COLUMN PEN_Retrieval_Request.Failure_Reason IS 'Free text reason for why Min EDUC staff could not complete the request. This is used for both Rejects and Unable to complete failures.';
+
 
 -- PEN-224 Add tables for Document storage
 
