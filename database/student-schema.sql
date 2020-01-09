@@ -93,6 +93,9 @@ CREATE TABLE STUDENT.PEN_RETRIEVAL_REQUEST (
   LAST_BC_SCHOOL_STUDENT_NUMBER VARCHAR2(12),
   CURRENT_SCHOOL VARCHAR2(255),
   REVIEWER VARCHAR2(255),
+  INITIAL_SUBMIT_DATE DATE,
+  STATUS_UPDATE_DATE DATE,
+  FAILURE_REASON VARCHAR2(4000),
   CREATE_USER VARCHAR2(32) NOT NULL,
   CREATE_DATE DATE DEFAULT SYSDATE NOT NULL,
   UPDATE_USER VARCHAR2(32) NOT NULL,
@@ -289,6 +292,10 @@ COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.Last_BC_School IS 'Name of last 
 COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.Last_BC_School_Student_Number IS 'Student Number assigned to student at the last BC school attended';
 COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.Current_School IS 'Name of current BC school, if applicable';
 COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.Reviewer IS 'IDIR of the staff user who is working or did work on the PEN Retrieval Request';
+COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.Initial_Submit_Date IS 'Date and time that the Student first fully submitted the request, which does not happen until after they submit and verify their email address.';
+COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.Status_Update_Date IS 'Date and time that the status of the PEN Retrieval Request was last updated.';
+COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.Failure_Reason IS 'Free text reason for why Min EDUC staff could not complete the request. This is used for both Rejects and Unable to complete failures.';
+
 
 -- PEN-224 Add tables for Document storage
 
@@ -344,7 +351,9 @@ CREATE TABLE STUDENT.STUDENT_DOCUMENT (
   UPDATE_USER VARCHAR2(32) NOT NULL,
   UPDATE_DATE DATE DEFAULT SYSDATE NOT NULL,
   CONSTRAINT STUDENT_DOCUMENT_PK PRIMARY KEY (STUDENT_DOCUMENT_ID)  
-);  
+)
+TABLESPACE STUDENT_BLOB_DATA
+;  
 
 COMMENT ON TABLE Student.Student_Document IS 'Holds documents related to Students, either directly or indirectly.';
 
