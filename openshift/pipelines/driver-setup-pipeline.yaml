@@ -2,14 +2,14 @@
 apiVersion: v1
 kind: Template
 labels: 
-  template: driver-setup-pipeline-template
+  template: oracle-driver-setup-pipeline-template
 metadata: 
-  name: driver-setup-pipeline-template
+  name: oracle-driver-setup-pipeline-template
 objects:
 - apiVersion: v1
   kind: BuildConfig
   metadata: 
-    name: "driver-setup-pipeline"
+    name: "oracle-driver-setup-pipeline"
   spec:
     strategy:
       jenkinsPipelineStrategy:
@@ -28,7 +28,7 @@ objects:
                             sh """
                               set +x
                               echo curling...
-                              curl -u ${USERNAME}:${PASSWORD} https://gww.svn.educ.gov.bc.ca/svn/repos/openshiftdevs_repos/certificates/ojdbc8.jar -o /tmp/ojdbc8.jar
+                              curl -u ${USERNAME}:${PASSWORD} https://gww.svn.educ.gov.bc.ca/svn/repos/openshiftdevs_repos/drivers/ojdbc8.jar -o /tmp/ojdbc8.jar
                             """
                         }
                     }
