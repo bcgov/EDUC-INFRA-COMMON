@@ -6,19 +6,19 @@ def APP_DOMAIN = 'pathfinder.gov.bc.ca'
 
 node{
     stage('Deploy SOAM API to Test'){
-       deployStage('Test', TARGET_ENVIRONMENT, 'educ-soam-api', 'soam-api', JOB_NAME, TAG)
+       deployStage('Test', TARGET_ENVIRONMENT, 'educ-soam-api', 'soam-api', JOB_NAME, TAG, TOOLS)
     }
     stage('Deploy PEN Request API to Test'){
-       deployStage('Test', TARGET_ENVIRONMENT, 'educ-pen-request-api', 'pen-request-api', JOB_NAME, TAG)
+       deployStage('Test', TARGET_ENVIRONMENT, 'educ-pen-request-api', 'pen-request-api', JOB_NAME, TAG, TOOLS)
     } 
 }
 
-def deployStage(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag) {
+def deployStage(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv) {
 
   openshift.withCluster() {
     openshift.withProject(projectEnv) {
       echo "Tagging image"
-      openshift.tag("${TOOLS}/${repoName}-${jobName}:latest", "${repoName}-${jobName}:${tag}")
+      openshift.tag("${toolsEnv}/${repoName}-${jobName}:latest", "${repoName}-${jobName}:${tag}")
       def dcTemplate = openshift.process('-f',
         'api.dc.yaml',
         "REPO_NAME=${repoName}",
