@@ -20,7 +20,7 @@ def deployStage(String stageEnv, String projectEnv, String repoName, String appN
       echo "Tagging image"
       openshift.tag("${toolsEnv}/${repoName}-${jobName}:latest", "${repoName}-${jobName}:${tag}")
       def dcTemplate = openshift.process('-f',
-        'api.dc.yaml',
+        '/openshift/pipelines/test-pipeline/api.dc.yaml',
         "REPO_NAME=${repoName}",
         "JOB_NAME=${jobName}",
         "NAMESPACE=${projectEnv}",
