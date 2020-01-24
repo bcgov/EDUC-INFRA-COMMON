@@ -1,14 +1,11 @@
-pipeline{
-    environment{
-      TOOLS = 'c2mvws-tools'
-      TEST = 'c2mvws-test'
+def TOOLS = 'c2mvws-tools'
+def TEST = 'c2mvws-test'
+def JOB_NAME = 'master'
+def TAG = 'test'
+def TEST_HOST_ROUTE = "${APP_NAME}-${TEST}.${APP_DOMAIN}"
+  
 
-      JOB_NAME = 'master'
-      TAG = 'test'
-      TEST_HOST_ROUTE = "${APP_NAME}-${TEST}.${APP_DOMAIN}"
-  }
-
-  stages{
+node{
     stage('Deploy SOAM API to Test'){
       steps{
           deployStage('Test', TEST, TEST_HOST_ROUTE, 'educ-soam-api', 'soam-api', JOB_NAME, TAG)
@@ -35,7 +32,6 @@ pipeline{
         }
       }
     } 
-   }
 }
 
 def deployStage(String stageEnv, String projectEnv, String hostRouteEnv, String repoName, String appName, String jobName, String tag) {
