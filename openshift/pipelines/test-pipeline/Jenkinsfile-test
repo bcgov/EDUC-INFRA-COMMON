@@ -6,30 +6,10 @@ def APP_DOMAIN = 'pathfinder.gov.bc.ca'
 
 node{
     stage('Deploy SOAM API to Test'){
-      steps{
-          deployStage('Test', TARGET_ENVIRONMENT, 'educ-soam-api', 'soam-api', JOB_NAME, TAG)
-      } 
-      post {
-        success{
-          echo 'Deployment to Test was successful'
-        }
-        failure{
-          echo 'Deployment to Test failed'
-        }
-      }
+       deployStage('Test', TARGET_ENVIRONMENT, 'educ-soam-api', 'soam-api', JOB_NAME, TAG)
     }
     stage('Deploy PEN Request API to Test'){
-      steps{
-          deployStage('Test', TARGET_ENVIRONMENT, 'educ-pen-request-api', 'pen-request-api', JOB_NAME, TAG)
-      } 
-      post {
-        success{
-          echo 'Deployment to Test was successful'
-        }
-        failure{
-          echo 'Deployment to Test failed'
-        }
-      }
+       deployStage('Test', TARGET_ENVIRONMENT, 'educ-pen-request-api', 'pen-request-api', JOB_NAME, TAG)
     } 
 }
 
