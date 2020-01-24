@@ -87,17 +87,6 @@ def deployUIStage(String stageEnv, String projectEnv, String repoName, String ap
       echo "Applying Deployment ${repoName}-frontend-static..."
       def dcFrontendStatic = openshift.apply(dcFrontendStaticTemplate).narrow('dc')
 
-      // Wait for deployments to roll out
-      timeout(10) {
-        parallel(
-            Backend: {
-                dcBackend.rollout().status('--watch=true')
-            },
-            Frontend: {
-                dcFrontendStatic.rollout().status('--watch=true')
-            }
-        )
-      }
     }
   }
 }
