@@ -27,7 +27,9 @@ node{
     stage('Deploy PEN Request Frontend and Backend'){
        deployUIStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request', 'pen-request', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
     }
-    
+    stage('Deploy Student Admin Frontend and Backend'){
+       deployUIStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-admin', 'student-admin', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+    }
 }
 
 def deployStage(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain) {
