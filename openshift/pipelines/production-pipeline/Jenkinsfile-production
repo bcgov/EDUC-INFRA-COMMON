@@ -7,33 +7,34 @@ pipeline{
       TAG = 'prod'
       PROD_HOST_ROUTE = "${APP_NAME}-${PROD}.${APP_DOMAIN}"
   }
-
-    stage('Deploy SOAM API to PROD'){
-      steps{
-          deployStage('Prod', PROD, PROD_HOST_ROUTE, 'educ-soam-api', 'soam-api', JOB_NAME, TAG)
-      } 
-      post {
-        success{
-          echo 'Deployment to Prod was successful'
-        }
-        failure{
-          echo 'Deployment to Prod failed'
-        }
-      }
+  stages{
+	    stage('Deploy SOAM API to PROD'){
+	      steps{
+	          deployStage('Prod', PROD, PROD_HOST_ROUTE, 'educ-soam-api', 'soam-api', JOB_NAME, TAG)
+	      } 
+	      post {
+	        success{
+	          echo 'Deployment to Prod was successful'
+	        }
+	        failure{
+	          echo 'Deployment to Prod failed'
+	        }
+	      }
+	    }
+	    stage('Deploy PEN Request API to Prod'){
+	      steps{
+	          deployStage('Prod', PROD, PROD_HOST_ROUTE, 'educ-pen-request-api', 'pen-request-api', JOB_NAME, TAG)
+	      } 
+	      post {
+	        success{
+	          echo 'Deployment to Prod was successful'
+	        }
+	        failure{
+	          echo 'Deployment to Prod failed'
+	        }
+	      }
+	    } 
     }
-    stage('Deploy PEN Request API to Prod'){
-      steps{
-          deployStage('Prod', PROD, PROD_HOST_ROUTE, 'educ-pen-request-api', 'pen-request-api', JOB_NAME, TAG)
-      } 
-      post {
-        success{
-          echo 'Deployment to Prod was successful'
-        }
-        failure{
-          echo 'Deployment to Prod failed'
-        }
-      }
-    } 
 }
 
 def deployStage(String stageEnv, String projectEnv, String hostRouteEnv, String repoName, String appName, String jobName, String tag) {
