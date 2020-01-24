@@ -2,15 +2,28 @@ def TOOLS = 'c2mvws-tools'
 def TARGET_ENVIRONMENT = 'c2mvws-test'
 def JOB_NAME = 'master'
 def TAG = 'test'
+def STAGING_ENV = 'Test'
 def APP_DOMAIN = 'pathfinder.gov.bc.ca'
 
 node{
-    stage('Deploy SOAM API to Test'){
-       deployStage('Test', TARGET_ENVIRONMENT, 'educ-soam-api', 'soam-api', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+    stage('Deploy CodeTable API to Test'){
+       deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-codetable-api', 'codetable-api', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+    }
+    stage('Deploy Digital ID API to Test'){
+       deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-digitalid-api', 'digitalid-api', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
     }
     stage('Deploy PEN Request API to Test'){
-       deployStage('Test', TARGET_ENVIRONMENT, 'educ-pen-request-api', 'pen-request-api', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+       deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request-api', 'pen-request-api', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
     } 
+    stage('Deploy PEN Request Email API to Test'){
+       deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request-email-api', 'pen-request-email-api', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+    }
+    stage('Deploy SOAM API to Test'){
+       deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-soam-api', 'soam-api', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+    }
+    stage('Deploy Student API to Test'){
+       deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-api', 'student-api', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+    }
 }
 
 def deployStage(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain) {
