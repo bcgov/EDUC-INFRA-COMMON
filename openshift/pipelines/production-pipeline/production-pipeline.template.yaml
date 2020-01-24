@@ -1,0 +1,20 @@
+---
+apiVersion: v1
+kind: Template
+labels: 
+  template: production-pipeline
+metadata: 
+  name: production-pipeline
+objects:
+- apiVersion: v1
+  kind: BuildConfig
+  metadata: 
+    name: "test-pipeline"
+  spec:
+    source:
+      git:
+        ref: master
+        uri: "https://github.com/bcgov/EDUC-INFRA-COMMON"
+    strategy:
+      jenkinsPipelineStrategy:
+        jenkinsfilePath: openshift/pipelines/production-pipeline/Jenkinsfile-production
