@@ -24,6 +24,10 @@ node{
     stage('Deploy Student API to Test'){
        deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-api', 'student-api', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
     }
+    stage('Deploy PEN Request Frontend and Backend'){
+       deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request', 'pen-request', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+    }
+    
 }
 
 def deployStage(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain) {
@@ -49,6 +53,55 @@ def deployStage(String stageEnv, String projectEnv, String repoName, String appN
       // Wait for deployments to roll out
       timeout(10) {
         dc.rollout().status('--watch=true')
+      }
+    }
+  }
+}
+
+def deployUIStage(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain) {
+  openshift.withCluster() {
+    openshift.withProject(projectEnv) {
+      echo "Tagging Image ${repoName}-backend:${jobName}..."
+      openshift.tag("${toolsEnv}/${repoName}-backend:${jobName}", "${repoName}-backend:${jobName}")
+
+      echo "Tagging Image ${repoName}-frontend-static:${jobName}..."
+      openshift.tag("${toolsEnv}/${repoName}-frontend-static:${jobName}", "${repoName}-frontend-static:${jobName}")
+      
+      echo "Processing DeploymentConfig ${repoName}-backend..."
+      def dcBackendTemplate = openshift.process('-f',
+        '/var/lib/jenkins/jobs/${toolsEnv}/jobs/${toolsEnv}-test-pipeline/workspace@script/openshift/pipelines/test-pipeline/uibackend.dc.yaml',
+        "REPO_NAME=${repoName}",
+        "JOB_NAME=${jobName}",
+        "NAMESPACE=${projectEnv}",
+        "APP_NAME=${appName}",
+        "HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain}"
+      )
+        
+      def dcBackend = openshift.apply(dcBackendTemplate).narrow('dc')
+
+      echo "Processing DeploymentConfig ${repoName}-frontend-static..."
+      def dcFrontendStaticTemplate = openshift.process('-f',
+        '/var/lib/jenkins/jobs/${toolsEnv}/jobs/${toolsEnv}-test-pipeline/workspace@script/openshift/pipelines/test-pipeline/uifrontend.dc.yaml',
+        "REPO_NAME=${repoName}",
+        "JOB_NAME=${jobName}",
+        "NAMESPACE=${projectEnv}",
+        "APP_NAME=${appName}",
+        "HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain}"
+      )
+
+      echo "Applying Deployment ${repoName}-frontend-static..."
+      def dcFrontendStatic = openshift.apply(dcFrontendStaticTemplate).narrow('dc')
+
+      // Wait for deployments to roll out
+      timeout(10) {
+        parallel(
+            Backend: {
+                dcBackend.rollout().status('--watch=true')
+            },
+            Frontend: {
+                dcFrontendStatic.rollout().status('--watch=true')
+            }
+        )
       }
     }
   }
