@@ -1,33 +1,33 @@
 def TOOLS = 'c2mvws-tools'
-def TARGET_ENVIRONMENT = 'c2mvws-test'
+def TARGET_ENVIRONMENT = 'c2mvws-dev'
 def JOB_NAME = 'master'
-def TAG = 'test'
-def STAGING_ENV = 'Test'
+def TAG = 'dev'
+def STAGING_ENV = 'Dev'
 def APP_DOMAIN = 'pathfinder.gov.bc.ca'
 
 node{
-    stage('Deploy CodeTable API to Test'){
+    stage('Deploy CodeTable API to Dev'){
        deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-codetable-api', 'codetable-api', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
     }
-    stage('Deploy Digital ID API to Test'){
+    stage('Deploy Digital ID API to Dev'){
        deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-digitalid-api', 'digitalid-api', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
     }
-    stage('Deploy PEN Request API to Test'){
+    stage('Deploy PEN Request API to Dev'){
        deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request-api', 'pen-request-api', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
     } 
-    stage('Deploy PEN Request Email API to Test'){
+    stage('Deploy PEN Request Email API to Dev'){
        deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request-email-api', 'pen-request-email-api', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
     }
-    stage('Deploy SOAM API to Test'){
+    stage('Deploy SOAM API to Dev'){
        deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-soam-api', 'soam-api', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
     }
-    stage('Deploy Student API to Test'){
+    stage('Deploy Student API to Dev'){
        deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-api', 'student-api', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
     }
-    stage('Deploy PEN Request Frontend and Backend to Test'){
+    stage('Deploy PEN Request Frontend and Backend to Dev'){
        deployUIStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request', 'pen-request', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
     }
-    stage('Deploy Student Admin Frontend and Backend to Test'){
+    stage('Deploy Student Admin Frontend and Backend to Dev'){
        deployUIStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-admin', 'student-admin', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
     }
 }
@@ -39,7 +39,7 @@ def deployStage(String stageEnv, String projectEnv, String repoName, String appN
       echo "Tagging image"
       openshift.tag("${toolsEnv}/${repoName}-${jobName}:latest", "${repoName}-${jobName}:${tag}")
       def dcTemplate = openshift.process('-f',
-        "/var/lib/jenkins/jobs/${toolsEnv}/jobs/${toolsEnv}-test-pipeline/workspace@script/openshift/pipelines/deployment-config/api.dc.yaml",
+        "/var/lib/jenkins/jobs/${toolsEnv}/jobs/${toolsEnv}-dev-pipeline/workspace@script/openshift/pipelines/deployment-config/api.dc.yaml",
         "REPO_NAME=${repoName}",
         "JOB_NAME=${jobName}",
         "NAMESPACE=${projectEnv}",
@@ -66,7 +66,7 @@ def deployUIStage(String stageEnv, String projectEnv, String repoName, String ap
       
       echo "Processing DeploymentConfig ${repoName}-backend..."
       def dcBackendTemplate = openshift.process('-f',
-        "/var/lib/jenkins/jobs/${toolsEnv}/jobs/${toolsEnv}-test-pipeline/workspace@script/openshift/pipelines/deployment-config/uibackend.dc.yaml",
+        "/var/lib/jenkins/jobs/${toolsEnv}/jobs/${toolsEnv}-dev-pipeline/workspace@script/openshift/pipelines/deployment-config/uibackend.dc.yaml",
         "REPO_NAME=${repoName}",
         "JOB_NAME=${jobName}",
         "NAMESPACE=${projectEnv}",
@@ -78,7 +78,7 @@ def deployUIStage(String stageEnv, String projectEnv, String repoName, String ap
 
       echo "Processing DeploymentConfig ${repoName}-frontend-static..."
       def dcFrontendStaticTemplate = openshift.process('-f',
-        "/var/lib/jenkins/jobs/${toolsEnv}/jobs/${toolsEnv}-test-pipeline/workspace@script/openshift/pipelines/deployment-config/uifrontend.dc.yaml",
+        "/var/lib/jenkins/jobs/${toolsEnv}/jobs/${toolsEnv}-dev-pipeline/workspace@script/openshift/pipelines/deployment-config/uifrontend.dc.yaml",
         "REPO_NAME=${repoName}",
         "JOB_NAME=${jobName}",
         "NAMESPACE=${projectEnv}",
