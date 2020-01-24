@@ -49,11 +49,6 @@ def deployStage(String stageEnv, String projectEnv, String repoName, String appN
       echo "Applying Deployment ${repoName}"
       def dc = openshift.apply(dcTemplate).narrow('dc')
 
-      echo "Waiting for deployment to roll out"
-      // Wait for deployments to roll out
-      timeout(10) {
-        dc.rollout().status('--watch=true')
-      }
     }
   }
 }
