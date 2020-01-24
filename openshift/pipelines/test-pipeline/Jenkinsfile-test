@@ -37,7 +37,7 @@ def deployStage(String stageEnv, String projectEnv, String repoName, String appN
       echo "Tagging image"
       openshift.tag("${toolsEnv}/${repoName}-${jobName}:latest", "${repoName}-${jobName}:${tag}")
       def dcTemplate = openshift.process('-f',
-        '/var/lib/jenkins/jobs/${toolsEnv}/jobs/${toolsEnv}-test-pipeline/workspace@script/openshift/pipelines/test-pipeline/api.dc.yaml',
+        "/var/lib/jenkins/jobs/${toolsEnv}/jobs/${toolsEnv}-test-pipeline/workspace@script/openshift/pipelines/test-pipeline/api.dc.yaml",
         "REPO_NAME=${repoName}",
         "JOB_NAME=${jobName}",
         "NAMESPACE=${projectEnv}",
@@ -69,7 +69,7 @@ def deployUIStage(String stageEnv, String projectEnv, String repoName, String ap
       
       echo "Processing DeploymentConfig ${repoName}-backend..."
       def dcBackendTemplate = openshift.process('-f',
-        '/var/lib/jenkins/jobs/${toolsEnv}/jobs/${toolsEnv}-test-pipeline/workspace@script/openshift/pipelines/test-pipeline/uibackend.dc.yaml',
+        "/var/lib/jenkins/jobs/${toolsEnv}/jobs/${toolsEnv}-test-pipeline/workspace@script/openshift/pipelines/test-pipeline/uibackend.dc.yaml",
         "REPO_NAME=${repoName}",
         "JOB_NAME=${jobName}",
         "NAMESPACE=${projectEnv}",
@@ -81,7 +81,7 @@ def deployUIStage(String stageEnv, String projectEnv, String repoName, String ap
 
       echo "Processing DeploymentConfig ${repoName}-frontend-static..."
       def dcFrontendStaticTemplate = openshift.process('-f',
-        '/var/lib/jenkins/jobs/${toolsEnv}/jobs/${toolsEnv}-test-pipeline/workspace@script/openshift/pipelines/test-pipeline/uifrontend.dc.yaml',
+        "/var/lib/jenkins/jobs/${toolsEnv}/jobs/${toolsEnv}-test-pipeline/workspace@script/openshift/pipelines/test-pipeline/uifrontend.dc.yaml",
         "REPO_NAME=${repoName}",
         "JOB_NAME=${jobName}",
         "NAMESPACE=${projectEnv}",
