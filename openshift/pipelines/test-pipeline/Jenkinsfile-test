@@ -22,10 +22,10 @@ node{
        deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-soam-api', 'soam-api', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
     }
     stage('Deploy Student API to Test'){
-       deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-api', 'student-api', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+       deployUIStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-api', 'student-api', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
     }
     stage('Deploy PEN Request Frontend and Backend'){
-       deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request', 'pen-request', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+       deployUIStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request', 'pen-request', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
     }
     
 }
