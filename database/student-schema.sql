@@ -21,7 +21,6 @@ CREATE TABLE STUDENT.STUDENT (
   DOB DATE NOT NULL,
   SEX_CODE VARCHAR2(1),
   GENDER_CODE VARCHAR2(1),
-  DATA_SOURCE_CODE VARCHAR2(10) NOT NULL,
   USUAL_FIRST_NAME VARCHAR2(40),
   USUAL_MIDDLE_NAMES VARCHAR2(255),
   USUAL_LAST_NAME VARCHAR2(40),
@@ -33,26 +32,6 @@ CREATE TABLE STUDENT.STUDENT (
   UPDATE_DATE DATE DEFAULT SYSDATE NOT NULL,
   CONSTRAINT STUDENT_PK PRIMARY KEY (STUDENT_ID)  
 );  
-
-CREATE TABLE STUDENT.ADDRESS (
-  ADDRESS_ID RAW(16) NOT NULL,  
-  STUDENT_ID RAW(16) NOT NULL,  
-  ADDRESS_TYPE_CODE VARCHAR2(10) NOT NULL,
-  ADDRESS_LINE_1 VARCHAR2(255),
-  ADDRESS_LINE_2 VARCHAR2(255),
-  CITY VARCHAR2(50),
-  PROVINCE_CODE VARCHAR2(2),
-  COUNTRY_CODE VARCHAR2(3),
-  POSTAL_CODE VARCHAR2(7),
-  DATA_SOURCE_CODE VARCHAR2(10) NOT NULL,
-  EFFECTIVE_DATE DATE NOT NULL,
-  EXPIRY_DATE DATE,
-  CREATE_USER VARCHAR2(32) NOT NULL,
-  CREATE_DATE DATE DEFAULT SYSDATE NOT NULL,
-  UPDATE_USER VARCHAR2(32) NOT NULL,
-  UPDATE_DATE DATE DEFAULT SYSDATE NOT NULL,
-  CONSTRAINT ADDRESS_PK PRIMARY KEY (ADDRESS_ID)  
-);
 
 CREATE TABLE STUDENT.DIGITAL_IDENTITY (
   DIGITAL_IDENTITY_ID RAW(16) NOT NULL,  
@@ -77,7 +56,6 @@ CREATE TABLE STUDENT.PEN_RETRIEVAL_REQUEST (
   LEGAL_LAST_NAME VARCHAR2(40) NOT NULL,
   DOB DATE NOT NULL,
   GENDER_CODE VARCHAR2(1) NOT NULL,
-  DATA_SOURCE_CODE VARCHAR2(10) NOT NULL,
   USUAL_FIRST_NAME VARCHAR2(40),
   USUAL_MIDDLE_NAMES VARCHAR2(255),
   USUAL_LAST_NAME VARCHAR2(40),
@@ -85,6 +63,7 @@ CREATE TABLE STUDENT.PEN_RETRIEVAL_REQUEST (
   MAIDEN_NAME VARCHAR2(40),
   PAST_NAMES VARCHAR2(255),
   LAST_BC_SCHOOL VARCHAR2(255),
+  BCSC_AUTO_MATCH_OUTCOME VARCHAR2(255),
   LAST_BC_SCHOOL_STUDENT_NUMBER VARCHAR2(12),
   CURRENT_SCHOOL VARCHAR2(255),
   REVIEWER VARCHAR2(255),
@@ -114,35 +93,7 @@ CREATE TABLE STUDENT.ACCESS_CHANNEL_CODE (
   CONSTRAINT ACCESS_CHANNEL_CODE_PK PRIMARY KEY (ACCESS_CHANNEL_CODE)  
 );
 
-CREATE TABLE STUDENT.ADDRESS_TYPE_CODE (
-  ADDRESS_TYPE_CODE VARCHAR2(10) NOT NULL,
-  LABEL VARCHAR2(30),
-  DESCRIPTION VARCHAR2(255),
-  DISPLAY_ORDER NUMBER DEFAULT 1 NOT NULL,
-  EFFECTIVE_DATE DATE NOT NULL,
-  EXPIRY_DATE DATE NOT NULL,  
-  CREATE_USER VARCHAR2(32) NOT NULL,
-  CREATE_DATE DATE DEFAULT SYSDATE NOT NULL,
-  UPDATE_USER VARCHAR2(32) NOT NULL,
-  UPDATE_DATE DATE DEFAULT SYSDATE NOT NULL,
-  CONSTRAINT ADDRESS_TYPE_CODE_PK PRIMARY KEY (ADDRESS_TYPE_CODE)  
-);
-
-CREATE TABLE STUDENT.DATA_SOURCE_CODE (
-  DATA_SOURCE_CODE VARCHAR2(10) NOT NULL,
-  LABEL VARCHAR2(30),
-  DESCRIPTION VARCHAR2(255),
-  DISPLAY_ORDER NUMBER DEFAULT 1 NOT NULL,
-  EFFECTIVE_DATE DATE NOT NULL,
-  EXPIRY_DATE DATE NOT NULL,  
-  CREATE_USER VARCHAR2(32) NOT NULL,
-  CREATE_DATE DATE DEFAULT SYSDATE NOT NULL,
-  UPDATE_USER VARCHAR2(32) NOT NULL,
-  UPDATE_DATE DATE DEFAULT SYSDATE NOT NULL,
-  CONSTRAINT DATA_SOURCE_CODE_PK PRIMARY KEY (DATA_SOURCE_CODE)  
-);
-
-CREATE TABLE STUDENT.GENDER_CODE (
+CREATE TABLE STUDENT.STUDENT_GENDER_CODE (
   GENDER_CODE VARCHAR2(10) NOT NULL,
   LABEL VARCHAR2(30),
   DESCRIPTION VARCHAR2(255),
@@ -153,7 +104,7 @@ CREATE TABLE STUDENT.GENDER_CODE (
   CREATE_DATE DATE DEFAULT SYSDATE NOT NULL,
   UPDATE_USER VARCHAR2(32) NOT NULL,
   UPDATE_DATE DATE DEFAULT SYSDATE NOT NULL,
-  CONSTRAINT GENDER_CODE_PK PRIMARY KEY (GENDER_CODE)  
+  CONSTRAINT STUDENT_GENDER_CODE_PK PRIMARY KEY (GENDER_CODE)  
 );
 
 CREATE TABLE STUDENT.IDENTITY_TYPE_CODE (
@@ -184,7 +135,7 @@ CREATE TABLE STUDENT.PEN_RETRIEVAL_REQUEST_STATUS_CODE (
   CONSTRAINT PEN_RETRIEVAL_REQUEST_STATUS_CODE_PK PRIMARY KEY (PEN_RETRIEVAL_REQUEST_STATUS_CODE)  
 );
 
-CREATE TABLE STUDENT.SEX_CODE (
+CREATE TABLE STUDENT.STUDENT_SEX_CODE (
   SEX_CODE VARCHAR2(10) NOT NULL,
   LABEL VARCHAR2(30),
   DESCRIPTION VARCHAR2(255),
@@ -195,44 +146,48 @@ CREATE TABLE STUDENT.SEX_CODE (
   CREATE_DATE DATE DEFAULT SYSDATE NOT NULL,
   UPDATE_USER VARCHAR2(32) NOT NULL,
   UPDATE_DATE DATE DEFAULT SYSDATE NOT NULL,
-  CONSTRAINT SEX_CODE_PK PRIMARY KEY (SEX_CODE)  
+  CONSTRAINT STUDENT_SEX_CODE_PK PRIMARY KEY (SEX_CODE)  
+);
+
+CREATE TABLE STUDENT.PEN_RETRIEVAL_REQUEST_GENDER_CODE (
+  GENDER_CODE VARCHAR2(10) NOT NULL,
+  LABEL VARCHAR2(30),
+  DESCRIPTION VARCHAR2(255),
+  DISPLAY_ORDER NUMBER DEFAULT 1 NOT NULL,
+  EFFECTIVE_DATE DATE NOT NULL,
+  EXPIRY_DATE DATE NOT NULL,  
+  CREATE_USER VARCHAR2(32) NOT NULL,
+  CREATE_DATE DATE DEFAULT SYSDATE NOT NULL,
+  UPDATE_USER VARCHAR2(32) NOT NULL,
+  UPDATE_DATE DATE DEFAULT SYSDATE NOT NULL,
+  CONSTRAINT PEN_RETRIEVAL_REQUEST_GENDER_CODE_PK PRIMARY KEY (GENDER_CODE)  
 );
 
 --Unique constraints
 ALTER TABLE STUDENT.DIGITAL_IDENTITY ADD CONSTRAINT UQ_DIGITAL_ID_USER_VAL_TYPE UNIQUE(IDENTITY_TYPE_CODE, IDENTITY_VALUE);
 
 --Foreign key constraints
-alter table STUDENT.STUDENT add constraint FK_STUDENT_GENDER_CODE foreign key (GENDER_CODE) references STUDENT.GENDER_CODE (GENDER_CODE);
-alter table STUDENT.STUDENT add constraint FK_STUDENT_SEX_CODE foreign key (SEX_CODE) references STUDENT.SEX_CODE (SEX_CODE);
-alter table STUDENT.STUDENT add constraint FK_STUDENT_DATA_SOURCE_CODE foreign key (DATA_SOURCE_CODE) references STUDENT.DATA_SOURCE_CODE (DATA_SOURCE_CODE);
+alter table STUDENT.STUDENT add constraint FK_STUDENT_STUDENT_GENDER_CODE foreign key (GENDER_CODE) references STUDENT.STUDENT_GENDER_CODE (GENDER_CODE);
+alter table STUDENT.STUDENT add constraint FK_STUDENT_STUDENT_SEX_CODE foreign key (SEX_CODE) references STUDENT.STUDENT_SEX_CODE (SEX_CODE);
 
-alter table STUDENT.ADDRESS add constraint FK_ADDRESS_STUDENT_ID foreign key (STUDENT_ID) references STUDENT.STUDENT (STUDENT_ID);
-alter table STUDENT.ADDRESS add constraint FK_ADDRESS_DATA_SOURCE_CODE foreign key (DATA_SOURCE_CODE) references STUDENT.DATA_SOURCE_CODE (DATA_SOURCE_CODE);
-alter table STUDENT.ADDRESS add constraint FK_ADDRESS_ADDRESS_TYPE_CODE foreign key (ADDRESS_TYPE_CODE) references STUDENT.ADDRESS_TYPE_CODE (ADDRESS_TYPE_CODE);
-
-alter table STUDENT.DIGITAL_IDENTITY add constraint FK_DIGITAL_IDENTITY_STUDENT_ID foreign key (STUDENT_ID) references STUDENT.STUDENT (STUDENT_ID);
 alter table STUDENT.DIGITAL_IDENTITY add constraint FK_DIGITAL_IDENT_IDENT_TYPE_CODE foreign key (IDENTITY_TYPE_CODE) references STUDENT.IDENTITY_TYPE_CODE (IDENTITY_TYPE_CODE);
 alter table STUDENT.DIGITAL_IDENTITY add constraint FK_DIGITAL_IDENT_ACCESS_CHAN_CODE foreign key (LAST_ACCESS_CHANNEL_CODE) references STUDENT.ACCESS_CHANNEL_CODE (ACCESS_CHANNEL_CODE);
 
-alter table STUDENT.PEN_RETRIEVAL_REQUEST add constraint FK_PEN_RETRIEVAL_REQUEST_DIGITAL_IDENTITY_ID foreign key (DIGITAL_IDENTITY_ID) references STUDENT.DIGITAL_IDENTITY (DIGITAL_IDENTITY_ID);
 alter table STUDENT.PEN_RETRIEVAL_REQUEST add constraint FK_PEN_RETRIEVAL_REQUEST_PEN_RETRIEVAL_REQUEST_STATUS_CODE foreign key (PEN_RETRIEVAL_REQUEST_STATUS_CODE) references STUDENT.PEN_RETRIEVAL_REQUEST_STATUS_CODE (PEN_RETRIEVAL_REQUEST_STATUS_CODE);
-alter table STUDENT.PEN_RETRIEVAL_REQUEST add constraint FK_PEN_RETRIEVAL_REQUEST_DATA_SOURCE_CODE foreign key (DATA_SOURCE_CODE) references STUDENT.DATA_SOURCE_CODE (DATA_SOURCE_CODE);
-alter table STUDENT.PEN_RETRIEVAL_REQUEST add constraint FK_PEN_RETRIEVAL_REQUEST_GENDER_CODE foreign key (GENDER_CODE) references STUDENT.GENDER_CODE (GENDER_CODE);
+alter table STUDENT.PEN_RETRIEVAL_REQUEST add constraint FK_PEN_RETRIEVAL_REQUEST_PEN_RETRIEVAL_REQUEST_GENDER_CODE foreign key (GENDER_CODE) references STUDENT.PEN_RETRIEVAL_REQUEST_GENDER_CODE (GENDER_CODE);
 
 
 -- Table Comments
 COMMENT ON TABLE Student.Student IS 'Student contains core identifying data for students, include PEN, names, DOB, sex, etc.';
 COMMENT ON TABLE Student.Digital_Identity IS 'A Digital Identity is used by a specific student to access Education services. Types of digital identities supported include BC Services Card and Basic BCeID.';
 COMMENT ON TABLE Student.PEN_Retrieval_Request IS 'PEN Retrieval Request is a transaction record of a request by a student to retrieve their PEN.';
-COMMENT ON TABLE Student.Address IS 'Address holds address information for students.';
 
 COMMENT ON TABLE Student.Access_Channel_Code IS 'Access Channel Code lists the various channels (applications or services) that make use of the student Digital Identity records to access Education Services. Examples are the Online Student PEN Retrieval and the Student Transcript Service.';
-COMMENT ON TABLE Student.Address_Type_Code IS 'Address Type Code lists the types of addresses. Examples are Mailing, Physical, and Delivery.';
-COMMENT ON TABLE Student.Data_Source_Code IS 'Data Source Code lists the sources for student data. Examples are BC Services Card, MyEducation BC, Birth Certificate.';
-COMMENT ON TABLE Student.Gender_Code IS 'Gender Code lists the standard codes for Gender: Female, Male, Diverse.';
+COMMENT ON TABLE Student.STUDENT_Gender_Code IS 'Gender Code lists the standard codes for Gender: Female, Male, Diverse.';
+COMMENT ON TABLE Student.PEN_RETRIEVAL_REQUEST_Gender_Code IS 'Gender Code lists the standard codes for Gender: Female, Male, Diverse.';
 COMMENT ON TABLE Student.Identity_Type_Code IS 'Identity Type Code lists the types of digital identities supported. Examples are BC Services Card and Basic BCeID.';
 COMMENT ON TABLE Student.PEN_Retrieval_Request_Status_Code IS 'PEN Retrieval Request Status Code lists the transaction status values for the PEN Retrieval Requests. Examples are Submitted, Pending Student Input, Completed, Rejected.';
-COMMENT ON TABLE Student.Sex_Code IS 'Sex Code lists the standard codes for Sex: Female, Male, Intersex.';
+COMMENT ON TABLE Student.student_Sex_Code IS 'Sex Code lists the standard codes for Sex: Female, Male, Intersex.';
 
 
 -- Column Comments
@@ -244,23 +199,11 @@ COMMENT ON COLUMN STUDENT.Student.Legal_Last_Name IS 'The legal last name of the
 COMMENT ON COLUMN STUDENT.Student.DOB IS 'The date of birth of the student';
 COMMENT ON COLUMN STUDENT.Student.Sex_Code IS 'The sex of the student';
 COMMENT ON COLUMN STUDENT.Student.Gender_Code IS 'The gender of the student';
-COMMENT ON COLUMN STUDENT.Student.Data_Source_Code IS 'Code indicating the primary data source for the Student data';
 COMMENT ON COLUMN STUDENT.Student.Usual_First_Name IS 'The usual/preferred first name of the student';
 COMMENT ON COLUMN STUDENT.Student.Usual_Middle_Names IS 'The usual/preferred middle name of the student';
 COMMENT ON COLUMN STUDENT.Student.Usual_Last_Name IS 'The usual/preferred last name of the student';
 COMMENT ON COLUMN STUDENT.Student.Email IS 'The email address of the student';
 COMMENT ON COLUMN STUDENT.Student.Deceased_Date IS 'The date of death for the student. Will be known to EDUC only if student was an active student at the time.';
-
-COMMENT ON COLUMN STUDENT.Address.Address_ID IS 'Unique surrogate key for each Address. GUID value must be provided during insert.';
-COMMENT ON COLUMN STUDENT.Address.Student_ID IS 'Foreign key to Student table identifying Student that is identified by the Digital Identity';
-COMMENT ON COLUMN STUDENT.Address.Address_Type_Code IS 'Code indicating the type of the address.';
-COMMENT ON COLUMN STUDENT.Address.Address_Line_1 IS 'Line 1 of address';
-COMMENT ON COLUMN STUDENT.Address.Address_Line_2 IS 'Line 2 of address';
-COMMENT ON COLUMN STUDENT.Address.City IS 'Name of city or municipality for the address';
-COMMENT ON COLUMN STUDENT.Address.Province_Code IS 'Province or State as the Canada Post 2 char code';
-COMMENT ON COLUMN STUDENT.Address.Country_Code IS 'Country of address, as the ISO 3 char code';
-COMMENT ON COLUMN STUDENT.Address.Postal_Code IS 'Postal Code for the address. Format: ANA NAN';
-COMMENT ON COLUMN STUDENT.Address.Data_Source_Code IS 'Source of the data for the address';
 
 COMMENT ON COLUMN STUDENT.Digital_Identity.Digital_Identity_ID IS 'Unique surrogate key for each Digital Identity. GUID value must be provided during insert.';
 COMMENT ON COLUMN STUDENT.Digital_Identity.Student_ID IS 'Foreign key to Student table identifying Student that is identified by the Digital Identity';
@@ -277,7 +220,6 @@ COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.Legal_Middle_Names IS 'The legal
 COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.Legal_Last_Name IS 'The legal last name of the student';
 COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.DOB IS 'The date of birth of the student';
 COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.Gender_Code IS 'The gender of the student';
-COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.Data_Source_Code IS 'Code indicating the primary data source for the Student data';
 COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.Usual_First_Name IS 'The usual/preferred first name of the student';
 COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.Usual_Middle_Names IS 'The usual/preferred middle name of the student';
 COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.Usual_Last_Name IS 'The usual/preferred last name of the student';
