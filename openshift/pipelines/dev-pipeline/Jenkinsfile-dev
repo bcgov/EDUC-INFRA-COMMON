@@ -6,9 +6,6 @@ def STAGING_ENV = 'Dev'
 def APP_DOMAIN = 'pathfinder.gov.bc.ca'
 
 node{
-    stage('Deploy CodeTable API to Dev'){
-       deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-codetable-api', 'codetable-api', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
-    }
     stage('Deploy Digital ID API to Dev'){
        deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-digitalid-api', 'digitalid-api', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
     }
