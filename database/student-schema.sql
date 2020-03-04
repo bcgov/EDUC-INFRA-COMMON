@@ -64,6 +64,7 @@ CREATE TABLE STUDENT.PEN_RETRIEVAL_REQUEST (
   PAST_NAMES VARCHAR2(255),
   LAST_BC_SCHOOL VARCHAR2(255),
   BCSC_AUTO_MATCH_OUTCOME VARCHAR2(255),
+  BCSC_AUTO_MATCH_DETAIL VARCHAR2(255),
   LAST_BC_SCHOOL_STUDENT_NUMBER VARCHAR2(12),
   CURRENT_SCHOOL VARCHAR2(255),
   REVIEWER VARCHAR2(255),
@@ -233,7 +234,8 @@ COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.Reviewer IS 'IDIR of the staff u
 COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.Initial_Submit_Date IS 'Date and time that the Student first fully submitted the request, which does not happen until after they submit and verify their email address.';
 COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.Status_Update_Date IS 'Date and time that the status of the PEN Retrieval Request was last updated.';
 COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.Failure_Reason IS 'Free text reason for why Min EDUC staff could not complete the request. This is used for both Rejects and Unable to complete failures.';
-
+COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.BCSC_Auto_Match_Outcome IS 'Short value indicating the outcome of performing the BCSC AutoMatch search. Values NOMATCH, ONEMATCH, MANYMATCHES, RIGHTPEN, WRONGPEN, null.';
+COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.BCSC_Auto_Match_Detail IS 'Description providing more info about outcome of performing the BCSC AutoMatch search. When the search returned one result, this will hold the PEN and Legal Names of the the record matched.';
 
 -- Table PEN_RETRIEVAL_REQUEST_DOCUMENT_TYPE_CODE
 CREATE TABLE STUDENT.PEN_RETRIEVAL_REQUEST_DOCUMENT_TYPE_CODE (
