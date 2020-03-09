@@ -22,6 +22,6 @@ The tagging-pipeline file creates and runs a Jenkins pipeline which tags images 
 To roll back to a reliable version, you must run the following commands:
 ``` sh
 oc tag educ-pen-request-frontend-static:1.3 educ-pen-request-frontend-static:latest
-oc deploy dc/pen-request-frontend-master
+oc rollout latest dc/pen-request-frontend-master
 ```
 The above commands points your latest image to the version specified (1.3 in this case). The deploy command then deploys the application with the new 'latest' image.
