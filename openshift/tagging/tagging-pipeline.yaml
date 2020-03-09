@@ -1,0 +1,38 @@
+kind: "BuildConfig"
+apiVersion: "v1"
+metadata:
+  name: "tagging-pipeline"
+spec:
+  strategy:
+    jenkinsPipelineStrategy:
+      jenkinsfile: |-
+        pipeline {
+          agent any
+          stages {
+              stage ('Deploy Dev'){
+                  steps{
+                      script{
+                          openshift.withCluster(){
+                              openshift.withProject('c2mvws-dev'){
+                                  openshift.tag("c2mvws-tools/${env.APP_NAME}:latest", "${env.APP_NAME}:latest")
+                                  openshift.tag("c2mvws-tools/${env.APP_NAME}:latest", "${env.APP_NAME}:${env.VERSION}")
+                              }
+                          }
+                      }
+                  }
+              }
+              stage ('Deploy Test'){
+                  steps{
+                      script{
+                          openshift.withCluster(){
+                              openshift.withProject('c2mvws-test'){
+                                  openshift.tag("c2mvws-tools/${env.APP_NAME}:latest", "${env.APP_NAME}:latest")
+                                  openshift.tag("c2mvws-tools/${env.APP_NAME}:latest", "${env.APP_NAME}:${env.VERSION}")
+                              }
+                          }
+                      }
+                  }
+              }
+          }
+        }
+    type: jenkinsPipelineStrategy
