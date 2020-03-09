@@ -8,14 +8,14 @@ This file goes through an array which contains all of our deployable images and 
 ```
 The above command will create a copy of the last built image in the DEV and TEST environment with the '1.3' and 'latest' tags for all images specified in 'array'.
 
-### tagging-script
+### tagging-script.sh
 This file tags a single specified image with a version which is specified on the command line. Example
 ``` sh
 ./tagging-script.sh 2.3 educ-pen-request-frontend-static
 ```
 The above command will create a copy of the last built image in the DEV and TEST environment with the '1.3' and 'latest' tags for the 'educ-pen-request-frontend-static' image.
 
-### tagging-pipeline
+### tagging-pipeline.yaml
 The tagging-pipeline file creates and runs a Jenkins pipeline which tags images based on input from the taggin-script.sh and tag-all.sh files.
 
 ### Rolling Back
