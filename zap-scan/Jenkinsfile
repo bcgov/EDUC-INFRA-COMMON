@@ -175,7 +175,7 @@ podTemplate(
       echo "Preparing the report for the publishing ..."
       unstash name: "${ZAP_REPORT_STASH}"
 
-      SONARQUBE_URL = getUrlForRoute(SONAR_ROUTE_NAME).trim()
+      SONARQUBE_URL = "https://sonarqube-c2mvws-tools.pathfinder.gov.bc.ca"
       SONARQUBE_PWD = getSonarQubePwd().trim()
       echo "URL: ${SONARQUBE_URL}"
       echo "PWD: ${SONARQUBE_PWD}"
@@ -187,7 +187,7 @@ podTemplate(
       //
       // An example can be found here:
       // - https://github.com/BCDevOps/sonarqube
-      dir('sonar-runner') {
+      dir('zap-scan/sonar-runner') {
         // ======================================================================================================
         // Set your SonarQube scanner properties at this level, not at the Gradle Build level.
         // The only thing that should be defined at the Gradle Build level is a minimal set of generic defaults.

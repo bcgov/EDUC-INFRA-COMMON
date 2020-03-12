@@ -8,5 +8,5 @@ key_array=( 'penrequest-email-api' 'penrequest-api' )
 for index in ${!url_array[*]}
 do
     echo "Item: ${url_array[$item]}"
-    oc start-build scan-pipeline -w --env=PROJECT_NAME=${url_array[$index]} --env=${key_array[$index]}= --env=NAMESPACE='dev'
+    oc start-build scan-pipeline -w --env=PROJECT_NAME=${url_array[$index]} --env=PROJEC_KEY${key_array[$index]}= --env=NAMESPACE='dev'
 done
