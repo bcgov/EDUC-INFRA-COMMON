@@ -34,7 +34,7 @@ sonarqube {
         property "sonar.sources", "./"
         // ================================================================
 
-       // property "sonar.verbose", "true"
+        property "sonar.verbose", "true"
         property "sonar.sourceEncoding", "UTF-8"
         property "sonar.python.coveragePlugin","cobertura"
         property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
@@ -58,6 +58,10 @@ allprojects {
 
 test {
   ignoreFailures = true
+}
+
+dependencies {
+    testCompile 'junit:junit:4.12'
 }
 
 repositories {
