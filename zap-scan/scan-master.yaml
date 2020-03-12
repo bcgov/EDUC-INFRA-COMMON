@@ -3,6 +3,9 @@ apiVersion: "v1"
 metadata:
   name: "scan-master-pipeline"
 spec:
+  source:
+    git:
+      uri: "https://github.com/bcgov/EDUC-INFRA-COMMON"
   strategy:
     jenkinsPipelineStrategy:
       jenkinsfilePath: zapscan/JenkinsfileMaster
