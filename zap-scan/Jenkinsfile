@@ -195,7 +195,7 @@ podTemplate(
         sh ("bash gradlew sonarqube --stacktrace --info \
             -Dsonar.verbose=true \
             -Dsonar.host.url=${SONARQUBE_URL} \
-            -Dsonar.projectName=${env.PROJECT_NAME} \
+            -Dsonar.projectName=${env.PROJECT_NAME}-zap \
             -Dsonar.projectKey=${env.PROJECT_KEY} \
             -Dsonar.projectBaseDir=${SONAR_PROJECT_BASE_DIR} \
             -Dsonar.sources=${SONAR_SOURCES} \
