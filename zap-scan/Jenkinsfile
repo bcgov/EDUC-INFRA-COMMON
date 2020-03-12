@@ -28,7 +28,7 @@ def SONAR_SOURCES = './zap/wrk'
 // The name of the target route.  This will be used to dynamically get the URL.
 
 // The namespace in which the target route can be found.  This will be used to dynamically get the URL.
-def TARGET_PROJECT_NAMESPACE = 'c2mvws-${env.NAMESPACE}'
+def TARGET_PROJECT_NAMESPACE = 'dev'
 
 // The path to the API.
 def API_PATH='/api'
