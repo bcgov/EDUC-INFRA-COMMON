@@ -60,10 +60,6 @@ test {
   ignoreFailures = true
 }
 
-dependencies {
-    testCompile 'junit:junit:4.12'
-}
-
 repositories {
   repositories {
     maven {
