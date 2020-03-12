@@ -6,7 +6,7 @@
 def SONAR_ROUTE_NAME = 'sonarqube'
 
 // The name of your SonarQube project
-def SONAR_PROJECT_NAME = '${env.PROJECT_NAME}'
+def SONAR_PROJECT_NAME = ${env.PROJECT_NAME}
 
 // The project key of your SonarQube project
 def SONAR_PROJECT_KEY = '${env.PROJECT_KEY}'
@@ -202,8 +202,8 @@ podTemplate(
           script: "./gradlew sonarqube --stacktrace --info \
             -Dsonar.verbose=true \
             -Dsonar.host.url=${SONARQUBE_URL} \
-            -Dsonar.projectName=${SONAR_PROJECT_NAME} \
-            -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+            -Dsonar.projectName=${env.PROJECT_NAME} \
+            -Dsonar.projectKey=${env.PROJECT_KEY} \
             -Dsonar.projectBaseDir=${SONAR_PROJECT_BASE_DIR} \
             -Dsonar.sources=${SONAR_SOURCES} \
             -Dsonar.zaproxy.reportPath=${WORKSPACE}${ZAP_REPORT_PATH} \
