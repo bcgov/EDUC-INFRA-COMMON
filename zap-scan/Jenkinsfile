@@ -192,7 +192,7 @@ podTemplate(
         // For more information on available properties visit:
         // - https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner+for+Gradle
         // ======================================================================================================
-        sh ("./gradlew sonarqube --stacktrace --info \
+        sh ("bash gradlew sonarqube --stacktrace --info \
             -Dsonar.verbose=true \
             -Dsonar.host.url=${SONARQUBE_URL} \
             -Dsonar.projectName=${env.PROJECT_NAME} \
