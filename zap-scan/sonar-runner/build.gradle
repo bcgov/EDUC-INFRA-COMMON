@@ -30,16 +30,14 @@ sonarqube {
         // from your root project directory and you what to scan
         // your entire project.
         // ----------------------------------------------------------------
-        property "sonar.projectBaseDir", "../"
-        property "sonar.sources", "./"
+        property "sonar.projectBaseDir", "../../"
+        property "sonar.sources", "../"
         // ================================================================
 
        // property "sonar.verbose", "true"
         property "sonar.sourceEncoding", "UTF-8"
         property "sonar.python.coveragePlugin","cobertura"
         property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
-        property "sonar.tests", "frontend/tests, backend/tests"
-        property "sonar.test.inclusions", "**/tests/**/*.spec.**"
         //property "sonar.javascript.lcov.reportPaths", "backend/coverage/lcov.info, frontend/coverage/lcov.info"
         //property "sonar.testExecutionReportPaths", "backend/coverage/test-report.xml, frontend/coverage/test-report.xml"
     }
