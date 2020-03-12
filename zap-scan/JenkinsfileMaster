@@ -1,0 +1,16 @@
+pipeline{
+    agent any
+
+    stages{
+        stage('ZapScan'){
+            agent any
+            steps{
+                script{
+                   dir('zap-scan'){
+                       sh './scanAll.sh'
+                   }
+                }
+            }
+        }
+    }
+}

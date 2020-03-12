@@ -1,0 +1,8 @@
+kind: "BuildConfig"
+apiVersion: "v1"
+metadata:
+  name: "scan-master-pipeline"
+spec:
+  strategy:
+    jenkinsPipelineStrategy:
+      jenkinsfilePath: zapscan/JenkinsfileMaster
