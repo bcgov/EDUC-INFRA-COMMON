@@ -62,10 +62,7 @@ String getUrlForRoute(String routeName, String projectNameSpace = '') {
 @NonCPS
 String getSonarQubePwd() {
 
-  sonarQubePwd = sh (
-    script: 'oc env dc/sonarqube --list | awk  -F  "=" \'/SONARQUBE_ADMINPW/{print $2}\'',
-    returnStdout: true
-  ).trim()
+  sonarQubePwd = "${env.SONARQUBE_ADMINPW}"
 
   return sonarQubePwd
 }
