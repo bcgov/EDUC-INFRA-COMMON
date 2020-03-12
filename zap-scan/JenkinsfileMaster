@@ -7,7 +7,7 @@ pipeline{
             steps{
                 script{
                    dir('zap-scan'){
-                       sh './scanAll.sh'
+                       sh('scanAll.sh')
                    }
                 }
             }
