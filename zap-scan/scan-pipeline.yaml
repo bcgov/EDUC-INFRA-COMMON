@@ -8,4 +8,4 @@ spec:
       uri: "https://github.com/bcgov/EDUC-INFRA-COMMON"
   strategy:
     jenkinsPipelineStrategy:
-      jenkinsfile: zap-scan/Jenkinsfile
+      jenkinsfilePath: zap-scan/Jenkinsfile
