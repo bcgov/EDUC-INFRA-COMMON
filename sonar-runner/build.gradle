@@ -30,8 +30,8 @@ sonarqube {
         // from your root project directory and you what to scan
         // your entire project.
         // ----------------------------------------------------------------
-        property "sonar.projectBaseDir", "../../"
-        property "sonar.sources", "../"
+        property "sonar.projectBaseDir", "../"
+        property "sonar.sources", "./"
         // ================================================================
 
        // property "sonar.verbose", "true"
