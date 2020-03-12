@@ -199,7 +199,7 @@ podTemplate(
           // 'sonar.zaproxy.reportPath' must be set to the absolute path of the xml formatted ZAP report.
           // Exclude the report from being scanned as an xml file.  We only care about the results of the ZAP scan.
           returnStdout: true,
-          script: "./gradlew sonarqube --stacktrace --info \
+          script: "bash ./gradlew sonarqube --stacktrace --info \
             -Dsonar.verbose=true \
             -Dsonar.host.url=${SONARQUBE_URL} \
             -Dsonar.projectName=${env.PROJECT_NAME} \
