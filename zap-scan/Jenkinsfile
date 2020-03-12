@@ -6,10 +6,10 @@
 def SONAR_ROUTE_NAME = 'sonarqube'
 
 // The name of your SonarQube project
-def SONAR_PROJECT_NAME = ${env.PROJECT_NAME}
+def SONAR_PROJECT_NAME = "${env.PROJECT_NAME}"
 
 // The project key of your SonarQube project
-def SONAR_PROJECT_KEY = '${env.PROJECT_KEY}'
+def SONAR_PROJECT_KEY = "${env.PROJECT_KEY}"
 
 // The base directory of your project.
 // This is relative to the location of the `sonar-runner` directory within your project.
