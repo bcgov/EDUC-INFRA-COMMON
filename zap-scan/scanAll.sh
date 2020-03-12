@@ -10,5 +10,3 @@ do
     echo "Item: ${url_array[$item]}"
     oc start-build scan-pipeline -w --env=PROJECT_NAME=${url_array[$index]} --env=${key_array[$index]}= --env=NAMESPACE='dev'
 done
-
-oc delete bc/scan-pipeline
