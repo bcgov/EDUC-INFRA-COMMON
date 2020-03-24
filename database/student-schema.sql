@@ -341,3 +341,9 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON PEN_RETRIEVAL_REQUEST_DOCUMENT_TYPE_CODE
 GRANT SELECT, INSERT, UPDATE, DELETE ON PEN_RETRIEVAL_REQUEST_GENDER_CODE TO PROXY_PEN_RETRIEVAL;
 GRANT SELECT, INSERT, UPDATE, DELETE ON PEN_RETRIEVAL_REQUEST_STATUS_CODE TO PROXY_PEN_RETRIEVAL;
 
+--Indexes for commonly queried columns
+create index digital_identity_identity_value_i on digital_identity ( identity_value );
+create index pen_retrieval_request_digital_identity_id_i on pen_retrieval_request ( digital_identity_id );
+create index pen_retrieval_request_comment_pen_retrieval_request_id_i on pen_retrieval_request_comment ( pen_retrieval_request_id );
+create index pen_retrieval_request_document_pen_retrieval_request_id_i on pen_retrieval_request_document ( pen_retrieval_request_id );
+create index services_card_info_did_i on services_card_info ( did );
