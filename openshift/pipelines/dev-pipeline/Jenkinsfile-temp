@@ -1,0 +1,17 @@
+def TOOLS = 'c2mvws-tools'
+def TARGET_ENVIRONMENT = 'c2mvws-dev'
+def JOB_NAME = 'master'
+def TAG = 'dev'
+def STAGING_ENV = 'Dev'
+def APP_DOMAIN = 'pathfinder.gov.bc.ca'
+
+node{
+	stage ('Approve?')
+	{
+	    timeout(time:2, unit:'DAYS')
+	    {
+	        input message: 'Can you approve this ??', submitter: 'abc'
+	    }
+	}
+}
+
