@@ -9,11 +9,17 @@ node{
     stage('Deploy Digital ID API to Test'){
        deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-digitalid-api', 'digitalid-api', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
     }
+    stage('Deploy PEN Demographics API to Test'){
+       deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-demog-api', 'pen-demographics-api', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+    }
     stage('Deploy PEN Request API to Test'){
        deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request-api', 'pen-request-api', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
     } 
     stage('Deploy PEN Request Email API to Test'){
        deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request-email-api', 'pen-request-email-api', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+    }
+    stage('Deploy Services Card API to Test'){
+       deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-services-card-api', 'services-card-api', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
     }
     stage('Deploy SOAM API to Test'){
        deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-soam-api', 'soam-api', JOB_NAME, TAG, TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
