@@ -38,7 +38,7 @@ objects:
           livenessProbe:
             failureThreshold: 3
             httpGet:
-              path: "/api"
+              path: "/api/health"
               port: 8080
               scheme: HTTP
             periodSeconds: 10
@@ -53,7 +53,7 @@ objects:
           readinessProbe:
             failureThreshold: 3
             httpGet:
-              path: "/api"
+              path: "/api/health"
               port: 8080
               scheme: HTTP
             periodSeconds: 10
