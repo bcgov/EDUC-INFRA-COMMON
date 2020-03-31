@@ -10,7 +10,7 @@ node{
 	{
 	    timeout(time:2, unit:'DAYS')
 	    {
-	        input message: 'Can you approve this ??', submitter: 'arcshiftsolutions-admin'
+	        input message: 'Can you approve this ??', submitter: ''
 	    }
 	}
 }
