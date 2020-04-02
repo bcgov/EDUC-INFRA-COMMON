@@ -2,14 +2,14 @@
 apiVersion: v1
 kind: Template
 labels: 
-  template: temp-pipeline-template
+  template: prod-template
 metadata: 
-  name: temp-pipeline-template
+  name: prod-template
 objects:
 - apiVersion: v1
   kind: BuildConfig
   metadata: 
-    name: "temp-setup-pipeline"
+    name: "prod-pipeline"
   spec:
     strategy:
       jenkinsPipelineStrategy:
@@ -17,15 +17,79 @@ objects:
             def APPROVERS = 'NONE'
             def IDIR = 'NONE'
             def IDIR_PW = 'NONE'
+            def DIGITAL_ID_API_VERSION = '<Not Required>'
+            def PEN_DEMOG_API_VERSION = '<Not Required>'
+            def PEN_REQUEST_API_VERSION = '<Not Required>'
+            def PEN_REQUEST_EMAIL_API_VERSION = '<Not Required>'
+            def SERVICES_CARD_API_VERSION = '<Not Required>'
+            def SOAM_API_VERSION = '<Not Required>'
+            def STUDENT_API_VERSION = '<Not Required>'
+            def PEN_REQUEST_VERSION = '<Not Required>'
+            def STAFF_ADMIN_VERSION = '<Not Required>'
+            
+            def TOOLS = 'c2mvws-tools'
+            def TARGET_ENVIRONMENT = 'c2mvws-dev'
+            def JOB_NAME = 'master'
+            def STAGING_ENV = 'Dev'
+            def APP_DOMAIN = 'pathfinder.gov.bc.ca'
             
             pipeline {
                 environment {
                    APPROVERS = ''
                 }
                 agent {
-                    label 'maven35-prod-deploy'
+                    label 'maven35'
                 }
                 stages {
+                    stage('Do the tag') {
+                        steps {
+            			    script {
+                                // Get the input
+                                def tagInput = input(
+                                        id: 'tagInput', message: 'Please enter your IDIR info:',
+                                        parameters: [
+            
+                                                string(defaultValue: '<Not Required>',
+                                                        description: 'Enter Digital Identity API Version, leave the <Not Required> tag if this service is not to be deployed',
+                                                        name: 'DIGITAL_ID_API_VERSION'),
+                                                string(defaultValue: '<Not Required>',
+                                                        description: 'Enter PEN Demog API Version, leave the <Not Required> tag if this service is not to be deployed',
+                                                        name: 'PEN_DEMOG_API_VERSION'),
+                                                string(defaultValue: '<Not Required>',
+                                                        description: 'Enter PEN Request API Version, leave the <Not Required> tag if this service is not to be deployed',
+                                                        name: 'PEN_REQUEST_API_VERSION'),
+                                                string(defaultValue: '<Not Required>',
+                                                        description: 'Enter PEN Request Email API Version, leave the <Not Required> tag if this service is not to be deployed',
+                                                        name: 'PEN_REQUEST_EMAIL_API_VERSION'),
+                                                string(defaultValue: '<Not Required>',
+                                                        description: 'Enter Services Card API Version, leave the <Not Required> tag if this service is not to be deployed',
+                                                        name: 'SERVICES_CARD_API_VERSION'),
+                                                string(defaultValue: '<Not Required>',
+                                                        description: 'Enter SOAM API Version, leave the <Not Required> tag if this service is not to be deployed',
+                                                        name: 'SOAM_API_VERSION'),
+                                                string(defaultValue: '<Not Required>',
+                                                        description: 'Enter Student API Version, leave the <Not Required> tag if this service is not to be deployed',
+                                                        name: 'STUDENT_API_VERSION'),
+                                                string(defaultValue: '<Not Required>',
+                                                        description: 'Enter PEN Request Version, leave the <Not Required> tag if this service is not to be deployed',
+                                                        name: 'PEN_REQUEST_VERSION'),
+                                                string(defaultValue: '<Not Required>',
+                                                        description: 'Enter Staff Admin Version, leave the <Not Required> tag if this service is not to be deployed',
+                                                        name: 'STAFF_ADMIN_VERSION'),
+                                        ])
+            					// Save to variables. Default to empty string if not found.
+                                DIGITAL_ID_API_VERSION = tagInput.DIGITAL_ID_API_VERSION?:''
+                                PEN_DEMOG_API_VERSION = tagInput.PEN_DEMOG_API_VERSION?:''
+            					PEN_REQUEST_API_VERSION = tagInput.PEN_REQUEST_API_VERSION?:''
+            					PEN_REQUEST_EMAIL_API_VERSION = tagInput.PEN_REQUEST_EMAIL_API_VERSION?:''
+            					SERVICES_CARD_API_VERSION = tagInput.SERVICES_CARD_API_VERSION?:''
+            					SOAM_API_VERSION = tagInput.SOAM_API_VERSION?:''
+            					STUDENT_API_VERSION = tagInput.STUDENT_API_VERSION?:''
+            					PEN_REQUEST_VERSION = tagInput.PEN_REQUEST_VERSION?:''
+            					STAFF_ADMIN_VERSION = tagInput.STAFF_ADMIN_VERSION?:''
+            				}
+                        }
+                    }
                     stage('Get Approvers List') {
                         steps {
             			    script {
@@ -61,6 +125,155 @@ objects:
                             }
                         }
                     }
+            		stage('Deploy Digital ID API to Prod'){
+            		    when {
+            				expression {
+            					return "${DIGITAL_ID_API_VERSION}" != "<Not Required>";
+            				}
+            			}
+            			steps {
+            				deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-digitalid-api', 'digitalid-api', JOB_NAME, "${DIGITAL_ID_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+            			}
+            		}
+            		stage('Deploy PEN Demographics API to Prod'){
+            		    when {
+            				expression {
+            					return "${PEN_DEMOG_API_VERSION}" != "<Not Required>";
+            				}
+            			}
+            			steps {
+            			   deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-demog-api', 'pen-demographics-api', JOB_NAME, "${PEN_DEMOG_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+            			}
+            		}
+            		stage('Deploy PEN Request API to Prod'){
+            		    when {
+            				expression {
+            					return "${PEN_REQUEST_API_VERSION}" != "<Not Required>";
+            				}
+            			}
+            			steps {
+            			   deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request-api', 'pen-request-api', JOB_NAME, "${PEN_REQUEST_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+            			}
+            		} 
+            		stage('Deploy PEN Request Email API to Prod'){
+            		    when {
+            				expression {
+            					return "${PEN_REQUEST_EMAIL_API_VERSION}" != "<Not Required>";
+            				}
+            			}
+            			steps {
+            		       deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request-email-api', 'pen-request-email-api', JOB_NAME, "${PEN_REQUEST_EMAIL_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+            			}
+            		}
+            		stage('Deploy Services Card API to Prod'){
+            		    when {
+            				expression {
+            					return "${SERVICES_CARD_API_VERSION}" != "<Not Required>";
+            				}
+            			}
+            			steps {
+            		       deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-services-card-api', 'services-card-api', JOB_NAME, "${SERVICES_CARD_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+            			}
+            		}
+            		stage('Deploy SOAM API to Prod'){
+            		    when {
+            				expression {
+            					return "${SOAM_API_VERSION}" != "<Not Required>";
+            				}
+            			}
+            			steps {
+            		       deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-soam-api', 'soam-api', JOB_NAME, "${SOAM_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+            			}
+            		}
+            		stage('Deploy Student API to Prod'){
+            		    when {
+            				expression {
+            					return "${STUDENT_API_VERSION}" != "<Not Required>";
+            				}
+            			}
+            			steps {
+            		       deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-api', 'student-api', JOB_NAME, "${STUDENT_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+            			}
+            		}
+            		stage('Deploy PEN Request Frontend and Backend to Prod'){
+            		    when {
+            				expression {
+            					return "${PEN_REQUEST_VERSION}" != "<Not Required>";
+            				}
+            			}
+            			steps {
+            		       deployUIStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request', 'pen-request', JOB_NAME, "${PEN_REQUEST_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+            			}
+            		}
+            		stage('Deploy Student Admin Frontend and Backend to Prod'){
+            		    when {
+            				expression {
+            					return "${STAFF_ADMIN_VERSION}" != "<Not Required>";
+            				}
+            			}
+            			steps {
+            		       deployUIStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-admin', 'student-admin', JOB_NAME, "${STAFF_ADMIN_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+            			}
+            		}
                 }
+            }
+            
+            def deployStage(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain) {
+              openshift.withCluster() {
+            	openshift.withProject(projectEnv) {
+            	  echo "Tagging image"
+            	  openshift.tag("${toolsEnv}/${repoName}-${jobName}:latest", "${repoName}-${jobName}:${tag}")
+            	  def dcTemplate = openshift.process('-f',
+            		"https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/pipelines/deployment-config/api.dc.yaml",
+            		"REPO_NAME=${repoName}",
+            		"JOB_NAME=${jobName}",
+            		"NAMESPACE=${projectEnv}",
+            		"APP_NAME=${appName}",
+            		"HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain}",
+            		"TAG=${tag}"
+            	  )
+            
+            	  echo "Applying Deployment ${repoName}"
+            	  def dc = openshift.apply(dcTemplate).narrow('dc')
+            	}
+              }
+            }
+            
+            def deployUIStage(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain) {
+              openshift.withCluster() {
+            	openshift.withProject(projectEnv) {
+            	  echo "Tagging Image ${repoName}-backend:${jobName}..."
+            	  openshift.tag("${toolsEnv}/${repoName}-backend:${jobName}", "${repoName}-backend:${jobName}")
+            
+            	  echo "Tagging Image ${repoName}-frontend-static:${jobName}..."
+            	  openshift.tag("${toolsEnv}/${repoName}-frontend-static:${jobName}", "${repoName}-frontend-static:${jobName}")
+            	
+            	
+            	  echo "Processing DeploymentConfig ${repoName}-backend..."
+            	  def dcBackendTemplate = openshift.process('-f',
+            		"https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/pipelines/deployment-config/uibackend.dc.yaml",
+            		"REPO_NAME=${repoName}",
+            		"JOB_NAME=${jobName}",
+            		"NAMESPACE=${projectEnv}",
+            		"APP_NAME=${appName}",
+            		"HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain}"
+            	  )
+            		
+            	  def dcBackend = openshift.apply(dcBackendTemplate).narrow('dc')
+            
+            	  echo "Processing DeploymentConfig ${repoName}-frontend-static..."
+            	  def dcFrontendStaticTemplate = openshift.process('-f',
+            		"https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/pipelines/deployment-config/uifrontend.dc.yaml",
+            		"REPO_NAME=${repoName}",
+            		"JOB_NAME=${jobName}",
+            		"NAMESPACE=${projectEnv}",
+            		"APP_NAME=${appName}",
+            		"HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain}"
+            	  )
+            
+            	  echo "Applying Deployment ${repoName}-frontend-static..."
+            	  def dcFrontendStatic = openshift.apply(dcFrontendStaticTemplate).narrow('dc')
+            	}
+              }
             }
       type: JenkinsPipeline
