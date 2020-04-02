@@ -67,6 +67,18 @@ CREATE TABLE STUDENT.PEN_RETRIEVAL_REQUEST (
   CONSTRAINT PEN_RETRIEVAL_REQUEST_PK PRIMARY KEY (PEN_RETRIEVAL_REQUEST_ID)  
 );
 
+CREATE TABLE STUDENT.PEN_RETRIEVAL_REQUEST_MACRO (
+  PEN_RETRIEVAL_REQUEST_MACRO_ID RAW(16) NOT NULL,
+  MACRO_CODE VARCHAR2(10) NOT NULL,
+  MACRO_TEXT VARCHAR2(4000) NOT NULL,
+  MACRO_TYPE_CODE VARCHAR2(10) NOT NULL,
+  CREATE_USER VARCHAR2(32) NOT NULL,
+  CREATE_DATE DATE DEFAULT SYSDATE NOT NULL,
+  UPDATE_USER VARCHAR2(32) NOT NULL,
+  UPDATE_DATE DATE DEFAULT SYSDATE NOT NULL,
+  CONSTRAINT PEN_RETRIEVAL_REQUEST_MACRO_PK PRIMARY KEY (PEN_RETRIEVAL_REQUEST_MACRO_ID)
+);
+
 -- Lookup Code Tables
 CREATE TABLE STUDENT.ACCESS_CHANNEL_CODE (
   ACCESS_CHANNEL_CODE VARCHAR2(10) NOT NULL,
@@ -152,8 +164,23 @@ CREATE TABLE STUDENT.PEN_RETRIEVAL_REQUEST_GENDER_CODE (
   CONSTRAINT PEN_RETRIEVAL_REQUEST_GENDER_CODE_PK PRIMARY KEY (GENDER_CODE)  
 );
 
+CREATE TABLE STUDENT.PEN_RETRIEVAL_REQUEST_MACRO_TYPE_CODE  (
+    MACRO_TYPE_CODE VARCHAR2(10) NOT NULL,
+    LABEL VARCHAR2(30),
+    DESCRIPTION VARCHAR2(255),
+    DISPLAY_ORDER NUMBER DEFAULT 1 NOT NULL,
+    EFFECTIVE_DATE DATE NOT NULL,
+    EXPIRY_DATE DATE NOT NULL,
+    CREATE_USER VARCHAR2(32) NOT NULL,
+    CREATE_DATE DATE DEFAULT SYSDATE NOT NULL,
+    UPDATE_USER VARCHAR2(32) NOT NULL,
+    UPDATE_DATE DATE DEFAULT SYSDATE NOT NULL,
+    CONSTRAINT PEN_RETRIEVAL_REQUEST_MACRO_TYPE_CODE_PK PRIMARY KEY (MACRO_TYPE_CODE)
+);
+
 --Unique constraints
 ALTER TABLE STUDENT.DIGITAL_IDENTITY ADD CONSTRAINT UQ_DIGITAL_ID_USER_VAL_TYPE UNIQUE(IDENTITY_TYPE_CODE, IDENTITY_VALUE);
+ALTER TABLE STUDENT.PEN_RETRIEVAL_REQUEST_MACRO ADD CONSTRAINT UQ_REQUEST_MACRO_ID_CODE_TYPE UNIQUE(MACRO_CODE, MACRO_TYPE_CODE);
 
 --Foreign key constraints
 alter table STUDENT.STUDENT add constraint FK_STUDENT_STUDENT_GENDER_CODE foreign key (GENDER_CODE) references STUDENT.STUDENT_GENDER_CODE (GENDER_CODE);
@@ -177,6 +204,8 @@ COMMENT ON TABLE Student.PEN_RETRIEVAL_REQUEST_Gender_Code IS 'Gender Code lists
 COMMENT ON TABLE Student.Identity_Type_Code IS 'Identity Type Code lists the types of digital identities supported. Examples are BC Services Card and Basic BCeID.';
 COMMENT ON TABLE Student.PEN_Retrieval_Request_Status_Code IS 'PEN Retrieval Request Status Code lists the transaction status values for the PEN Retrieval Requests. Examples are Submitted, Pending Student Input, Completed, Rejected.';
 COMMENT ON TABLE Student.student_Sex_Code IS 'Sex Code lists the standard codes for Sex: Female, Male, Intersex.';
+COMMENT ON TABLE STUDENT.PEN_RETRIEVAL_REQUEST_MACRO IS 'List of text macros used as standard messages by PEN Staff when completing PEN Retrieval Requests.';
+COMMENT ON TABLE STUDENT.PEN_RETRIEVAL_REQUEST_MACRO_TYPE_CODE IS 'Macro Type Code indicates the supported types of text macros.';
 
 
 -- Column Comments
@@ -225,6 +254,10 @@ COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.Failure_Reason IS 'Free text rea
 COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.BCSC_Auto_Match_Outcome IS 'Short value indicating the outcome of performing the BCSC AutoMatch search. Values NOMATCH, ONEMATCH, MANYMATCHES, RIGHTPEN, WRONGPEN, null.';
 COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.BCSC_Auto_Match_Detail IS 'Description providing more info about outcome of performing the BCSC AutoMatch search. When the search returned one result, this will hold the PEN and Legal Names of the the record matched.';
 COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.PEN IS 'The PEN value that was matched to this PEN Request, either manually by staff or automatically by the system.';
+
+COMMENT ON COLUMN STUDENT.PEN_RETRIEVAL_REQUEST_MACRO.MACRO_CODE IS 'A short text string that identifies the macro and when identified will be replaced by the macro text.';
+COMMENT ON COLUMN STUDENT.PEN_RETRIEVAL_REQUEST_MACRO.MACRO_TEXT IS 'A standard text string that will be substituted for the macro code by the application.';
+COMMENT ON COLUMN STUDENT.PEN_RETRIEVAL_REQUEST_MACRO.MACRO_TYPE_CODE IS 'A code value indicating the type, or class, of the text macro.';
 
 -- Table PEN_RETRIEVAL_REQUEST_DOCUMENT_TYPE_CODE
 CREATE TABLE STUDENT.PEN_RETRIEVAL_REQUEST_DOCUMENT_TYPE_CODE (
