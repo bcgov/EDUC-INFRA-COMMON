@@ -221,7 +221,7 @@ objects:
             def deployStage(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain) {
               openshift.withCluster() {
             	openshift.withProject(projectEnv) {
-            	  echo "Tagging image"
+            	  echo "Tagging ${appName} image with version ${tag}"
             	  openshift.tag("${toolsEnv}/${repoName}-${jobName}:latest", "${repoName}-${jobName}:${tag}")
             	  def dcTemplate = openshift.process('-f',
             		"https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/pipelines/deployment-config/api.dc.yaml",
@@ -233,7 +233,7 @@ objects:
             		"TAG=${tag}"
             	  )
             
-            	  echo "Applying Deployment ${repoName}"
+            	  echo "Applying Deployment for ${appName}"
             	  def dc = openshift.apply(dcTemplate).narrow('dc')
             	}
               }
@@ -242,14 +242,14 @@ objects:
             def deployUIStage(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain) {
               openshift.withCluster() {
             	openshift.withProject(projectEnv) {
-            	  echo "Tagging Image ${repoName}-backend:${jobName}..."
+            	  echo "Tagging Image ${repoName}-backend:${jobName} with version ${tag}"
             	  openshift.tag("${toolsEnv}/${repoName}-backend:${jobName}", "${repoName}-backend:${jobName}")
             
-            	  echo "Tagging Image ${repoName}-frontend-static:${jobName}..."
+            	  echo "Tagging Image ${repoName}-frontend-static:${jobName} with version ${tag}"
             	  openshift.tag("${toolsEnv}/${repoName}-frontend-static:${jobName}", "${repoName}-frontend-static:${jobName}")
             	
             	
-            	  echo "Processing DeploymentConfig ${repoName}-backend..."
+            	  echo "Processing DeploymentConfig ${appName}-backend..."
             	  def dcBackendTemplate = openshift.process('-f',
             		"https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/pipelines/deployment-config/uibackend.dc.yaml",
             		"REPO_NAME=${repoName}",
@@ -261,7 +261,7 @@ objects:
             		
             	  def dcBackend = openshift.apply(dcBackendTemplate).narrow('dc')
             
-            	  echo "Processing DeploymentConfig ${repoName}-frontend-static..."
+            	  echo "Processing DeploymentConfig ${appName}-frontend-static..."
             	  def dcFrontendStaticTemplate = openshift.process('-f',
             		"https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/pipelines/deployment-config/uifrontend.dc.yaml",
             		"REPO_NAME=${repoName}",
@@ -271,7 +271,7 @@ objects:
             		"HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain}"
             	  )
             
-            	  echo "Applying Deployment ${repoName}-frontend-static..."
+            	  echo "Applying Deployment ${appName}-frontend-static..."
             	  def dcFrontendStatic = openshift.apply(dcFrontendStaticTemplate).narrow('dc')
             	}
               }
