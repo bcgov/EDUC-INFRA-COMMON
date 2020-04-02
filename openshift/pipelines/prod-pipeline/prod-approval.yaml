@@ -1,0 +1,66 @@
+---
+apiVersion: v1
+kind: Template
+labels: 
+  template: temp-pipeline-template
+metadata: 
+  name: temp-pipeline-template
+objects:
+- apiVersion: v1
+  kind: BuildConfig
+  metadata: 
+    name: "temp-setup-pipeline"
+  spec:
+    strategy:
+      jenkinsPipelineStrategy:
+        jenkinsfile: | 
+            def APPROVERS = 'NONE'
+            def IDIR = 'NONE'
+            def IDIR_PW = 'NONE'
+            
+            pipeline {
+                environment {
+                   APPROVERS = ''
+                }
+                agent {
+                    label 'maven35-prod-deploy'
+                }
+                stages {
+                    stage('Get Approvers List') {
+                        steps {
+            			    script {
+                                // Get the input
+                                def userInput = input(
+                                        id: 'userInput', message: 'Please enter your IDIR info:',
+                                        parameters: [
+            
+                                                string(defaultValue: '',
+                                                        description: 'Your IDIR username',
+                                                        name: 'IDIR'),
+                                                password(defaultValue: '',
+                                                        description: 'Your IDIR password',
+                                                        name: 'password'),
+                                        ])
+            					// Save to variables. Default to empty string if not found.
+                                IDIR = userInput.IDIR?:''
+                                IDIR_PW = userInput.password?:''
+            				}
+            				
+                            sh """
+                              set +x
+                              echo Running curl command...
+                              curl -u ${IDIR}:${IDIR_PW} https://gww.svn.educ.gov.bc.ca/svn/repos/openshiftdevs_repos/credentials/pipeline-approvers.txt -o /tmp/pipeline-approvers.txt
+                            """
+                            script {
+                                APPROVERS = sh(script: 'cat /tmp/pipeline-approvers.txt', returnStdout: true)
+                            }
+                            timeout(time:2, unit:'DAYS')
+                     	    {
+                     	       echo "List of Approvers: ${APPROVERS}"
+                               input message: 'Do you approve this deployment to Production?', submitter: "${APPROVERS}"
+                            }
+                        }
+                    }
+                }
+            }
+      type: JenkinsPipeline
