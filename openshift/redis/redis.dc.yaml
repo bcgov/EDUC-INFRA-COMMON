@@ -62,7 +62,7 @@ objects:
              namespace: openshift
            lastTriggeredImage: ''
        - type: ConfigChange
-     replicas: 3
+     replicas: 1
      selector: 
        name: "${DATABASE_SERVICE_NAME}"
      template: 
