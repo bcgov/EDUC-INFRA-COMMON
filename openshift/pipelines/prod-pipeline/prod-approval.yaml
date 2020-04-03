@@ -38,10 +38,10 @@ objects:
                    APPROVERS = ''
                 }
                 agent {
-                    label 'maven35'
+                    label 'maven35-production'
                 }
                 stages {
-                    stage('Do the tag') {
+                    stage('Select Versions for Deployment') {
                         steps {
             			    script {
                                 // Get the input
@@ -90,7 +90,7 @@ objects:
             				}
                         }
                     }
-                    stage('Get Approvers List') {
+                    stage('Deployment Credentials & Approval') {
                         steps {
             			    script {
                                 // Get the input
