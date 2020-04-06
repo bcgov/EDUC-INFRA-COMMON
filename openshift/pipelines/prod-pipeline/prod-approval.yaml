@@ -38,42 +38,132 @@ objects:
                    APPROVERS = ''
                 }
                 agent {
-                    label 'maven35-production'
+                   kubernetes {
+                     label 'mavenPod-prod'
+                     cloud 'openshift'
+                     defaultContainer 'jnlp'
+                     serviceAccount 'jenkins'
+                     yaml """
+                       kind: Pod
+                       metadata:
+                         name: jenkins-slave
+                       spec:
+                         containers:
+                         - name: jnlp
+                           image: registry.access.redhat.com/openshift3/jenkins-agent-maven-35-rhel7
+                           privileged: false
+                           alwaysPullImage: false
+                           workingDir: /tmp
+                           ttyEnabled: false
+                           resourceRequestCpu: 3
+                           resourceRequestMemory: 2Gi
+                           resourceLimitCpu: 3
+                           resourceLimitMemory: 2Gi
+                           env:
+                           - name: PEN_DEMOG_API_VERSION_CONF
+                             valueFrom:
+                               configMapKeyRef:
+                                 name: 'prod-versions-config-map'
+                                 key: PEN_DEMOG_API_VERSION
+                           - name: DIGITAL_ID_API_VERSION_VALUE
+                             valueFrom:
+                               configMapKeyRef:
+                                 name: 'prod-versions-config-map'
+                                 key: DIGITAL_ID_API_VERSION
+                           - name: PEN_REQUEST_API_VERSION_VALUE
+                             valueFrom:
+                               configMapKeyRef:
+                                 name: 'prod-versions-config-map'
+                                 key: PEN_REQUEST_API_VERSION
+                           - name: PEN_REQUEST_EMAIL_API_VERSION_VALUE
+                             valueFrom:
+                               configMapKeyRef:
+                                 name: 'prod-versions-config-map'
+                                 key: PEN_REQUEST_EMAIL_API_VERSION
+                           - name: PEN_REQUEST_VERSION_VALUE
+                             valueFrom:
+                               configMapKeyRef:
+                                 name: 'prod-versions-config-map'
+                                 key: PEN_REQUEST_VERSION
+                           - name: SERVICES_CARD_API_VERSION_VALUE
+                             valueFrom:
+                               configMapKeyRef:
+                                 name: 'prod-versions-config-map'
+                                 key: SERVICES_CARD_API_VERSION
+                           - name: SOAM_API_VERSION_VALUE
+                             valueFrom:
+                               configMapKeyRef:
+                                 name: 'prod-versions-config-map'
+                                 key: SOAM_API_VERSION
+                           - name: STAFF_ADMIN_VERSION_VALUE
+                             valueFrom:
+                               configMapKeyRef:
+                                 name: 'prod-versions-config-map'
+                                 key: STAFF_ADMIN_VERSION
+                           - name: STUDENT_API_VERSION_VALUE
+                             valueFrom:
+                               configMapKeyRef:
+                                 name: 'prod-versions-config-map'
+                                 key: STUDENT_API_VERSION                                 
+                           - name: DIGITALV_ID_API_VERSION_CONF
+                             valueFrom:
+                               secretKeyRef:
+                                 name: 'soam-api-secrets'
+                                 key: sonarqube-token
+                           volumeMounts:
+                           - mountPath: '/home/jenkins/.m2'
+                             name: pvc
+                         volumes:
+                         - name: pvc
+                           persistentVolumeClaim:
+                             claimName: 'maven-slave-pvc'
+                             
+                     """
+                   }
                 }
                 stages {
                     stage('Select Versions for Deployment') {
                         steps {
             			    script {
+            			        echo "DIGITAL ID VERSION: ${DIGITAL_ID_API_VERSION_VALUE}"
+            			        echo "PEN DEMOG VERSION: ${PEN_DEMOG_API_VERSION_CONF}"
+            			        echo "PEN REQUEST API VERSION: ${PEN_REQUEST_API_VERSION_VALUE}"
+            			        echo "PEN REQUEST EMAIL API VERSION: ${PEN_REQUEST_EMAIL_API_VERSION_VALUE}"
+            			        echo "PEN REQUEST VERSION: ${PEN_REQUEST_VERSION_VALUE}"
+            			        echo "SERVICES CARD API VERSION: ${SERVICES_CARD_API_VERSION_VALUE}"
+            			        echo "SOAM API VERSION: ${SOAM_API_VERSION_VALUE}"
+            			        echo "STAFF ADMIN VERSION: ${STAFF_ADMIN_VERSION_VALUE}"
+            			        echo "STUDENT API VERSION: ${STUDENT_API_VERSION_VALUE}"
                                 // Get the input
                                 def tagInput = input(
                                         id: 'tagInput', message: 'Please enter your IDIR info:',
                                         parameters: [
             
-                                                string(defaultValue: '<Not Required>',
+                                                string(defaultValue: "${DIGITAL_ID_API_VERSION_VALUE}",
                                                         description: 'Enter Digital Identity API Version, leave the <Not Required> tag if this service is not to be deployed',
                                                         name: 'DIGITAL_ID_API_VERSION'),
-                                                string(defaultValue: '<Not Required>',
+                                                string(defaultValue: "${PEN_DEMOG_API_VERSION_CONF}",
                                                         description: 'Enter PEN Demog API Version, leave the <Not Required> tag if this service is not to be deployed',
                                                         name: 'PEN_DEMOG_API_VERSION'),
-                                                string(defaultValue: '<Not Required>',
+                                                string(defaultValue: "${PEN_REQUEST_API_VERSION_VALUE}",
                                                         description: 'Enter PEN Request API Version, leave the <Not Required> tag if this service is not to be deployed',
                                                         name: 'PEN_REQUEST_API_VERSION'),
-                                                string(defaultValue: '<Not Required>',
+                                                string(defaultValue: "${PEN_REQUEST_EMAIL_API_VERSION_VALUE}",
                                                         description: 'Enter PEN Request Email API Version, leave the <Not Required> tag if this service is not to be deployed',
                                                         name: 'PEN_REQUEST_EMAIL_API_VERSION'),
-                                                string(defaultValue: '<Not Required>',
+                                                string(defaultValue: "${SERVICES_CARD_API_VERSION_VALUE}",
                                                         description: 'Enter Services Card API Version, leave the <Not Required> tag if this service is not to be deployed',
                                                         name: 'SERVICES_CARD_API_VERSION'),
-                                                string(defaultValue: '<Not Required>',
+                                                string(defaultValue: "${SOAM_API_VERSION_VALUE}",
                                                         description: 'Enter SOAM API Version, leave the <Not Required> tag if this service is not to be deployed',
                                                         name: 'SOAM_API_VERSION'),
-                                                string(defaultValue: '<Not Required>',
+                                                string(defaultValue: "${STUDENT_API_VERSION_VALUE}",
                                                         description: 'Enter Student API Version, leave the <Not Required> tag if this service is not to be deployed',
                                                         name: 'STUDENT_API_VERSION'),
-                                                string(defaultValue: '<Not Required>',
+                                                string(defaultValue: "${PEN_REQUEST_VERSION_VALUE}",
                                                         description: 'Enter PEN Request Version, leave the <Not Required> tag if this service is not to be deployed',
                                                         name: 'PEN_REQUEST_VERSION'),
-                                                string(defaultValue: '<Not Required>',
+                                                string(defaultValue: "${STAFF_ADMIN_VERSION_VALUE}",
                                                         description: 'Enter Staff Admin Version, leave the <Not Required> tag if this service is not to be deployed',
                                                         name: 'STAFF_ADMIN_VERSION'),
                                         ])
@@ -128,7 +218,7 @@ objects:
             		stage('Deploy Digital ID API to Prod'){
             		    when {
             				expression {
-            					return "${DIGITAL_ID_API_VERSION}" != "<Not Required>";
+            					return "${DIGITAL_ID_API_VERSION}" != "<Not Required>" || "${DIGITAL_ID_API_VERSION}" == "";
             				}
             			}
             			steps {
@@ -138,7 +228,7 @@ objects:
             		stage('Deploy PEN Demographics API to Prod'){
             		    when {
             				expression {
-            					return "${PEN_DEMOG_API_VERSION}" != "<Not Required>";
+            					return "${PEN_DEMOG_API_VERSION}" != "<Not Required>" || "${PEN_DEMOG_API_VERSION}" == "";
             				}
             			}
             			steps {
@@ -148,7 +238,7 @@ objects:
             		stage('Deploy PEN Request API to Prod'){
             		    when {
             				expression {
-            					return "${PEN_REQUEST_API_VERSION}" != "<Not Required>";
+            					return "${PEN_REQUEST_API_VERSION}" != "<Not Required>" || "${PEN_REQUEST_API_VERSION}" == "";
             				}
             			}
             			steps {
@@ -158,7 +248,7 @@ objects:
             		stage('Deploy PEN Request Email API to Prod'){
             		    when {
             				expression {
-            					return "${PEN_REQUEST_EMAIL_API_VERSION}" != "<Not Required>";
+            					return "${PEN_REQUEST_EMAIL_API_VERSION}" != "<Not Required>" || "${PEN_REQUEST_EMAIL_API_VERSION}" == "";
             				}
             			}
             			steps {
@@ -168,7 +258,7 @@ objects:
             		stage('Deploy Services Card API to Prod'){
             		    when {
             				expression {
-            					return "${SERVICES_CARD_API_VERSION}" != "<Not Required>";
+            					return "${SERVICES_CARD_API_VERSION}" != "<Not Required>" || "${SERVICES_CARD_API_VERSION}" == "";
             				}
             			}
             			steps {
@@ -178,7 +268,7 @@ objects:
             		stage('Deploy SOAM API to Prod'){
             		    when {
             				expression {
-            					return "${SOAM_API_VERSION}" != "<Not Required>";
+            					return "${SOAM_API_VERSION}" != "<Not Required>" || "${SOAM_API_VERSION}" == "";
             				}
             			}
             			steps {
@@ -188,7 +278,7 @@ objects:
             		stage('Deploy Student API to Prod'){
             		    when {
             				expression {
-            					return "${STUDENT_API_VERSION}" != "<Not Required>";
+            					return "${STUDENT_API_VERSION}" != "<Not Required>" || "${STUDENT_API_VERSION}" == "";
             				}
             			}
             			steps {
@@ -198,7 +288,7 @@ objects:
             		stage('Deploy PEN Request Frontend and Backend to Prod'){
             		    when {
             				expression {
-            					return "${PEN_REQUEST_VERSION}" != "<Not Required>";
+            					return "${PEN_REQUEST_VERSION}" != "<Not Required>" || "${PEN_REQUEST_VERSION}" == "";
             				}
             			}
             			steps {
@@ -208,7 +298,7 @@ objects:
             		stage('Deploy Student Admin Frontend and Backend to Prod'){
             		    when {
             				expression {
-            					return "${STAFF_ADMIN_VERSION}" != "<Not Required>";
+            					return "${STAFF_ADMIN_VERSION}" != "<Not Required>" || "${STAFF_ADMIN_VERSION}" == "";
             				}
             			}
             			steps {
@@ -243,10 +333,10 @@ objects:
               openshift.withCluster() {
             	openshift.withProject(projectEnv) {
             	  echo "Tagging Image ${repoName}-backend:${jobName} with version ${tag}"
-            	  openshift.tag("${toolsEnv}/${repoName}-backend:${jobName}", "${repoName}-backend:${jobName}")
+            	  openshift.tag("${toolsEnv}/${repoName}-backend:${tag}", "${repoName}-backend:${tag}")
             
             	  echo "Tagging Image ${repoName}-frontend-static:${jobName} with version ${tag}"
-            	  openshift.tag("${toolsEnv}/${repoName}-frontend-static:${jobName}", "${repoName}-frontend-static:${jobName}")
+            	  openshift.tag("${toolsEnv}/${repoName}-frontend-static:${tag}", "${repoName}-frontend-static:${tag}")
             	
             	
             	  echo "Processing DeploymentConfig ${appName}-backend..."
