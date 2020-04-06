@@ -218,7 +218,7 @@ objects:
             		stage('Deploy Digital ID API to Prod'){
             		    when {
             				expression {
-            					return "${DIGITAL_ID_API_VERSION}" != "<Not Required>" || "${DIGITAL_ID_API_VERSION}" == "";
+            					return "${DIGITAL_ID_API_VERSION}" != "<Not Required>" && "${DIGITAL_ID_API_VERSION}" != "";
             				}
             			}
             			steps {
@@ -228,7 +228,7 @@ objects:
             		stage('Deploy PEN Demographics API to Prod'){
             		    when {
             				expression {
-            					return "${PEN_DEMOG_API_VERSION}" != "<Not Required>" || "${PEN_DEMOG_API_VERSION}" == "";
+            					return "${PEN_DEMOG_API_VERSION}" != "<Not Required>" && "${PEN_DEMOG_API_VERSION}" != "";
             				}
             			}
             			steps {
@@ -238,7 +238,7 @@ objects:
             		stage('Deploy PEN Request API to Prod'){
             		    when {
             				expression {
-            					return "${PEN_REQUEST_API_VERSION}" != "<Not Required>" || "${PEN_REQUEST_API_VERSION}" == "";
+            					return "${PEN_REQUEST_API_VERSION}" != "<Not Required>" && "${PEN_REQUEST_API_VERSION}" != "";
             				}
             			}
             			steps {
@@ -248,7 +248,7 @@ objects:
             		stage('Deploy PEN Request Email API to Prod'){
             		    when {
             				expression {
-            					return "${PEN_REQUEST_EMAIL_API_VERSION}" != "<Not Required>" || "${PEN_REQUEST_EMAIL_API_VERSION}" == "";
+            					return "${PEN_REQUEST_EMAIL_API_VERSION}" != "<Not Required>" && "${PEN_REQUEST_EMAIL_API_VERSION}" != "";
             				}
             			}
             			steps {
@@ -258,7 +258,7 @@ objects:
             		stage('Deploy Services Card API to Prod'){
             		    when {
             				expression {
-            					return "${SERVICES_CARD_API_VERSION}" != "<Not Required>" || "${SERVICES_CARD_API_VERSION}" == "";
+            					return "${SERVICES_CARD_API_VERSION}" != "<Not Required>" && "${SERVICES_CARD_API_VERSION}" != "";
             				}
             			}
             			steps {
@@ -268,7 +268,7 @@ objects:
             		stage('Deploy SOAM API to Prod'){
             		    when {
             				expression {
-            					return "${SOAM_API_VERSION}" != "<Not Required>" || "${SOAM_API_VERSION}" == "";
+            					return "${SOAM_API_VERSION}" != "<Not Required>" && "${SOAM_API_VERSION}" != "";
             				}
             			}
             			steps {
@@ -278,7 +278,7 @@ objects:
             		stage('Deploy Student API to Prod'){
             		    when {
             				expression {
-            					return "${STUDENT_API_VERSION}" != "<Not Required>" || "${STUDENT_API_VERSION}" == "";
+            					return "${STUDENT_API_VERSION}" != "<Not Required>" && "${STUDENT_API_VERSION}" != "";
             				}
             			}
             			steps {
@@ -288,7 +288,7 @@ objects:
             		stage('Deploy PEN Request Frontend and Backend to Prod'){
             		    when {
             				expression {
-            					return "${PEN_REQUEST_VERSION}" != "<Not Required>" || "${PEN_REQUEST_VERSION}" == "";
+            					return "${PEN_REQUEST_VERSION}" != "<Not Required>" && "${PEN_REQUEST_VERSION}" != "";
             				}
             			}
             			steps {
@@ -298,7 +298,7 @@ objects:
             		stage('Deploy Student Admin Frontend and Backend to Prod'){
             		    when {
             				expression {
-            					return "${STAFF_ADMIN_VERSION}" != "<Not Required>" || "${STAFF_ADMIN_VERSION}" == "";
+            					return "${STAFF_ADMIN_VERSION}" != "<Not Required>" && "${STAFF_ADMIN_VERSION}" != "";
             				}
             			}
             			steps {
