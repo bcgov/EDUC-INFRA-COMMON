@@ -34,7 +34,7 @@ objects:
           deploymentconfig: "${APP_NAME}-frontend-${JOB_NAME}"
       spec:
         containers:
-        - image: docker-registry.default.svc:5000/${NAMESPACE}/${REPO_NAME}-frontend-static:${JOB_NAME}
+        - image: docker-registry.default.svc:5000/${NAMESPACE}/${REPO_NAME}-frontend-static:${TAG}
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -68,7 +68,7 @@ objects:
         - "${APP_NAME}-frontend-${JOB_NAME}"
         from:
           kind: ImageStreamTag
-          name: "${REPO_NAME}-frontend-static:${JOB_NAME}"
+          name: "${REPO_NAME}-frontend-static:${TAG}"
           namespace: "${NAMESPACE}"
       type: ImageChange
 - apiVersion: v1
@@ -125,3 +125,6 @@ parameters:
 - name: HOST_ROUTE
   description: The host the route will use to expose service outside cluster
   required: true
+- name: TAG
+  description: The identifying tag for this specific deployment
+  required: truee

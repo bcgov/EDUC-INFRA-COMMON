@@ -2,14 +2,14 @@
 apiVersion: v1
 kind: Template
 labels: 
-  template: prod-template
+  template: dev-template
 metadata: 
-  name: prod-template
+  name: dev-template
 objects:
 - apiVersion: v1
   kind: BuildConfig
   metadata: 
-    name: "prod-pipeline"
+    name: "dev-pipeline"
   spec:
     strategy:
       jenkinsPipelineStrategy:
@@ -27,10 +27,10 @@ objects:
             def PEN_REQUEST_VERSION = '<Not Required>'
             def STAFF_ADMIN_VERSION = '<Not Required>'
             
-            def TOOLS = 'c2mvws-test'
-            def TARGET_ENVIRONMENT = 'c2mvws-prod'
+            def TOOLS = 'c2mvws-tools'
+            def TARGET_ENVIRONMENT = 'c2mvws-dev'
             def JOB_NAME = 'master'
-            def STAGING_ENV = 'Prod'
+            def STAGING_ENV = 'Dev'
             def APP_DOMAIN = 'pathfinder.gov.bc.ca'
             
             pipeline {
@@ -39,7 +39,7 @@ objects:
                 }
                 agent {
                    kubernetes {
-                     label 'mavenPod-prod'
+                     label 'mavenPod-dev'
                      cloud 'openshift'
                      defaultContainer 'jnlp'
                      serviceAccount 'jenkins'
@@ -59,57 +59,6 @@ objects:
                            resourceRequestMemory: 2Gi
                            resourceLimitCpu: 3
                            resourceLimitMemory: 2Gi
-                           env:
-                           - name: PEN_DEMOG_API_VERSION_CONF
-                             valueFrom:
-                               configMapKeyRef:
-                                 name: 'prod-versions-config-map'
-                                 key: PEN_DEMOG_API_VERSION
-                           - name: DIGITAL_ID_API_VERSION_VALUE
-                             valueFrom:
-                               configMapKeyRef:
-                                 name: 'prod-versions-config-map'
-                                 key: DIGITAL_ID_API_VERSION
-                           - name: PEN_REQUEST_API_VERSION_VALUE
-                             valueFrom:
-                               configMapKeyRef:
-                                 name: 'prod-versions-config-map'
-                                 key: PEN_REQUEST_API_VERSION
-                           - name: PEN_REQUEST_EMAIL_API_VERSION_VALUE
-                             valueFrom:
-                               configMapKeyRef:
-                                 name: 'prod-versions-config-map'
-                                 key: PEN_REQUEST_EMAIL_API_VERSION
-                           - name: PEN_REQUEST_VERSION_VALUE
-                             valueFrom:
-                               configMapKeyRef:
-                                 name: 'prod-versions-config-map'
-                                 key: PEN_REQUEST_VERSION
-                           - name: SERVICES_CARD_API_VERSION_VALUE
-                             valueFrom:
-                               configMapKeyRef:
-                                 name: 'prod-versions-config-map'
-                                 key: SERVICES_CARD_API_VERSION
-                           - name: SOAM_API_VERSION_VALUE
-                             valueFrom:
-                               configMapKeyRef:
-                                 name: 'prod-versions-config-map'
-                                 key: SOAM_API_VERSION
-                           - name: STAFF_ADMIN_VERSION_VALUE
-                             valueFrom:
-                               configMapKeyRef:
-                                 name: 'prod-versions-config-map'
-                                 key: STAFF_ADMIN_VERSION
-                           - name: STUDENT_API_VERSION_VALUE
-                             valueFrom:
-                               configMapKeyRef:
-                                 name: 'prod-versions-config-map'
-                                 key: STUDENT_API_VERSION                                 
-                           - name: DIGITALV_ID_API_VERSION_CONF
-                             valueFrom:
-                               secretKeyRef:
-                                 name: 'soam-api-secrets'
-                                 key: sonarqube-token
                            volumeMounts:
                            - mountPath: '/home/jenkins/.m2'
                              name: pvc
@@ -125,45 +74,36 @@ objects:
                     stage('Select Versions for Deployment') {
                         steps {
             			    script {
-            			        echo "DIGITAL ID VERSION: ${DIGITAL_ID_API_VERSION_VALUE}"
-            			        echo "PEN DEMOG VERSION: ${PEN_DEMOG_API_VERSION_CONF}"
-            			        echo "PEN REQUEST API VERSION: ${PEN_REQUEST_API_VERSION_VALUE}"
-            			        echo "PEN REQUEST EMAIL API VERSION: ${PEN_REQUEST_EMAIL_API_VERSION_VALUE}"
-            			        echo "PEN REQUEST VERSION: ${PEN_REQUEST_VERSION_VALUE}"
-            			        echo "SERVICES CARD API VERSION: ${SERVICES_CARD_API_VERSION_VALUE}"
-            			        echo "SOAM API VERSION: ${SOAM_API_VERSION_VALUE}"
-            			        echo "STAFF ADMIN VERSION: ${STAFF_ADMIN_VERSION_VALUE}"
-            			        echo "STUDENT API VERSION: ${STUDENT_API_VERSION_VALUE}"
                                 // Get the input
                                 def tagInput = input(
                                         id: 'tagInput', message: 'Please enter the version number for each component to be tagged/deployed:',
                                         parameters: [
             
-                                                string(defaultValue: "${DIGITAL_ID_API_VERSION_VALUE}",
+                                                string(defaultValue: "",
                                                         description: 'Enter Digital Identity API Version, leave the tag blank if this service is not to be deployed',
                                                         name: 'DIGITAL_ID_API_VERSION'),
-                                                string(defaultValue: "${PEN_DEMOG_API_VERSION_CONF}",
+                                                string(defaultValue: "",
                                                         description: 'Enter PEN Demog API Version, leave the tag blank if this service is not to be deployed',
                                                         name: 'PEN_DEMOG_API_VERSION'),
-                                                string(defaultValue: "${PEN_REQUEST_API_VERSION_VALUE}",
+                                                string(defaultValue: "",
                                                         description: 'Enter PEN Request API Version, leave the tag blank if this service is not to be deployed',
                                                         name: 'PEN_REQUEST_API_VERSION'),
-                                                string(defaultValue: "${PEN_REQUEST_EMAIL_API_VERSION_VALUE}",
+                                                string(defaultValue: "",
                                                         description: 'Enter PEN Request Email API Version, leave the tag blank if this service is not to be deployed',
                                                         name: 'PEN_REQUEST_EMAIL_API_VERSION'),
-                                                string(defaultValue: "${SERVICES_CARD_API_VERSION_VALUE}",
+                                                string(defaultValue: "",
                                                         description: 'Enter Services Card API Version, leave the tag blank if this service is not to be deployed',
                                                         name: 'SERVICES_CARD_API_VERSION'),
-                                                string(defaultValue: "${SOAM_API_VERSION_VALUE}",
+                                                string(defaultValue: "",
                                                         description: 'Enter SOAM API Version, leave the tag blank if this service is not to be deployed',
                                                         name: 'SOAM_API_VERSION'),
-                                                string(defaultValue: "${STUDENT_API_VERSION_VALUE}",
+                                                string(defaultValue: "",
                                                         description: 'Enter Student API Version, leave the tag blank if this service is not to be deployed',
                                                         name: 'STUDENT_API_VERSION'),
-                                                string(defaultValue: "${PEN_REQUEST_VERSION_VALUE}",
+                                                string(defaultValue: "",
                                                         description: 'Enter PEN Request Version, leave the tag blank if this service is not to be deployed',
                                                         name: 'PEN_REQUEST_VERSION'),
-                                                string(defaultValue: "${STAFF_ADMIN_VERSION_VALUE}",
+                                                string(defaultValue: "",
                                                         description: 'Enter Staff Admin Version, leave the tag blank if this service is not to be deployed',
                                                         name: 'STAFF_ADMIN_VERSION'),
                                         ])
@@ -182,40 +122,13 @@ objects:
                     }
                     stage('Deployment Credentials & Approval') {
                         steps {
-            			    script {
-                                // Get the input
-                                def userInput = input(
-                                        id: 'userInput', message: 'Please enter your IDIR info:',
-                                        parameters: [
-            
-                                                string(defaultValue: '',
-                                                        description: 'Your IDIR username',
-                                                        name: 'IDIR'),
-                                                password(defaultValue: '',
-                                                        description: 'Your IDIR password',
-                                                        name: 'password'),
-                                        ])
-            					// Save to variables. Default to empty string if not found.
-                                IDIR = userInput.IDIR?:''
-                                IDIR_PW = userInput.password?:''
-            				}
-            				
-                            sh """
-                              set +x
-                              echo Running curl command...
-                              curl -u ${IDIR}:${IDIR_PW} https://gww.svn.educ.gov.bc.ca/svn/repos/openshiftdevs_repos/credentials/pipeline-approvers.txt -o /tmp/pipeline-approvers.txt
-                            """
-                            script {
-                                APPROVERS = sh(script: 'cat /tmp/pipeline-approvers.txt', returnStdout: true)
-                            }
                             timeout(time:2, unit:'DAYS')
                      	    {
-                     	       echo "List of Approvers: ${APPROVERS}"
-                               input message: 'Do you approve this deployment to Production?', submitter: "${APPROVERS}"
+                               input message: 'Do you approve this deployment to Dev?'
                             }
                         }
                     }
-            		stage('Deploy Digital ID API to Prod'){
+            		stage('Deploy Digital ID API to Dev'){
             		    when {
             				expression {
             					return "${DIGITAL_ID_API_VERSION}" != "<Not Required>" && "${DIGITAL_ID_API_VERSION}" != "";
@@ -225,7 +138,7 @@ objects:
             				deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-digitalid-api', 'digitalid-api', JOB_NAME, "${DIGITAL_ID_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
             			}
             		}
-            		stage('Deploy PEN Demographics API to Prod'){
+            		stage('Deploy PEN Demographics API to Dev'){
             		    when {
             				expression {
             					return "${PEN_DEMOG_API_VERSION}" != "<Not Required>" && "${PEN_DEMOG_API_VERSION}" != "";
@@ -235,7 +148,7 @@ objects:
             			   deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-demog-api', 'pen-demographics-api', JOB_NAME, "${PEN_DEMOG_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
             			}
             		}
-            		stage('Deploy PEN Request API to Prod'){
+            		stage('Deploy PEN Request API to Dev'){
             		    when {
             				expression {
             					return "${PEN_REQUEST_API_VERSION}" != "<Not Required>" && "${PEN_REQUEST_API_VERSION}" != "";
@@ -245,7 +158,7 @@ objects:
             			   deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request-api', 'pen-request-api', JOB_NAME, "${PEN_REQUEST_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
             			}
             		} 
-            		stage('Deploy PEN Request Email API to Prod'){
+            		stage('Deploy PEN Request Email API to Dev'){
             		    when {
             				expression {
             					return "${PEN_REQUEST_EMAIL_API_VERSION}" != "<Not Required>" && "${PEN_REQUEST_EMAIL_API_VERSION}" != "";
@@ -255,7 +168,7 @@ objects:
             		       deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request-email-api', 'pen-request-email-api', JOB_NAME, "${PEN_REQUEST_EMAIL_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
             			}
             		}
-            		stage('Deploy Services Card API to Prod'){
+            		stage('Deploy Services Card API to Dev'){
             		    when {
             				expression {
             					return "${SERVICES_CARD_API_VERSION}" != "<Not Required>" && "${SERVICES_CARD_API_VERSION}" != "";
@@ -265,7 +178,7 @@ objects:
             		       deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-services-card-api', 'services-card-api', JOB_NAME, "${SERVICES_CARD_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
             			}
             		}
-            		stage('Deploy SOAM API to Prod'){
+            		stage('Deploy SOAM API to Dev'){
             		    when {
             				expression {
             					return "${SOAM_API_VERSION}" != "<Not Required>" && "${SOAM_API_VERSION}" != "";
@@ -275,7 +188,7 @@ objects:
             		       deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-soam-api', 'soam-api', JOB_NAME, "${SOAM_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
             			}
             		}
-            		stage('Deploy Student API to Prod'){
+            		stage('Deploy Student API to Dev'){
             		    when {
             				expression {
             					return "${STUDENT_API_VERSION}" != "<Not Required>" && "${STUDENT_API_VERSION}" != "";
@@ -285,7 +198,7 @@ objects:
             		       deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-api', 'student-api', JOB_NAME, "${STUDENT_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
             			}
             		}
-            		stage('Deploy PEN Request Frontend and Backend to Prod'){
+            		stage('Deploy PEN Request Frontend and Backend to Dev'){
             		    when {
             				expression {
             					return "${PEN_REQUEST_VERSION}" != "<Not Required>" && "${PEN_REQUEST_VERSION}" != "";
@@ -295,7 +208,7 @@ objects:
             		       deployUIStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request', 'pen-request', JOB_NAME, "${PEN_REQUEST_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
             			}
             		}
-            		stage('Deploy Student Admin Frontend and Backend to Prod'){
+            		stage('Deploy Student Admin Frontend and Backend to Dev'){
             		    when {
             				expression {
             					return "${STAFF_ADMIN_VERSION}" != "<Not Required>" && "${STAFF_ADMIN_VERSION}" != "";
@@ -312,7 +225,7 @@ objects:
               openshift.withCluster() {
             	openshift.withProject(projectEnv) {
             	  echo "Tagging ${appName} image with version ${tag}"
-            	  openshift.tag("${toolsEnv}/${repoName}-${jobName}:${tag}", "${repoName}-${jobName}:${tag}")
+            	  openshift.tag("${toolsEnv}/${repoName}-${jobName}:latest", "${repoName}-${jobName}:${tag}")
             	  def dcTemplate = openshift.process('-f',
             		"https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/pipelines/deployment-config/api.dc.yaml",
             		"REPO_NAME=${repoName}",
@@ -333,10 +246,10 @@ objects:
               openshift.withCluster() {
             	openshift.withProject(projectEnv) {
             	  echo "Tagging Image ${repoName}-backend:${jobName} with version ${tag}"
-            	  openshift.tag("${toolsEnv}/${repoName}-backend:${tag}", "${repoName}-backend:${tag}")
+            	  openshift.tag("${toolsEnv}/${repoName}-backend:latest", "${repoName}-backend:${tag}")
             
             	  echo "Tagging Image ${repoName}-frontend-static:${jobName} with version ${tag}"
-            	  openshift.tag("${toolsEnv}/${repoName}-frontend-static:${tag}", "${repoName}-frontend-static:${tag}")
+            	  openshift.tag("${toolsEnv}/${repoName}-frontend-static:latest", "${repoName}-frontend-static:${tag}")
             	
             	
             	  echo "Processing DeploymentConfig ${appName}-backend..."

@@ -33,7 +33,7 @@ objects:
           deploymentconfig: "${APP_NAME}-backend-${JOB_NAME}"
       spec:
         containers:
-        - image: docker-registry.default.svc:5000/${NAMESPACE}/${REPO_NAME}-backend:${JOB_NAME}
+        - image: docker-registry.default.svc:5000/${NAMESPACE}/${REPO_NAME}-backend:${TAG}
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -69,7 +69,7 @@ objects:
         - "${APP_NAME}-backend-${JOB_NAME}"
         from:
           kind: ImageStreamTag
-          name: "${REPO_NAME}-backend:${JOB_NAME}"
+          name: "${REPO_NAME}-backend:${TAG}"
           namespace: "${NAMESPACE}"
       type: ImageChange
 - apiVersion: v1
@@ -131,3 +131,6 @@ parameters:
 - name: HOST_ROUTE
   description: The host the route will use to expose service outside cluster 
   required: true
+- name: TAG
+  description: The identifying tag for this specific deployment
+  required: truee
