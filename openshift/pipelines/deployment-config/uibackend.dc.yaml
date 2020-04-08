@@ -35,6 +35,10 @@ objects:
         containers:
         - image: docker-registry.default.svc:5000/${NAMESPACE}/${REPO_NAME}-backend:${TAG}
           imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: tls-certs
+              mountPath: "/etc/tls-certs"
+              readOnly: true
           livenessProbe:
             failureThreshold: 3
             httpGet:
@@ -60,6 +64,10 @@ objects:
             successThreshold: 1
             timeoutSeconds: 1
           resources: {}
+        volumes:
+        - name: tls-certs
+          secret:
+            secretName: "${APP_NAME}-backend-cert"
     test: false
     triggers:
     - type: ConfigChange
@@ -77,6 +85,7 @@ objects:
   metadata:
     annotations:
       openshift.io/generated-by: OpenShiftNewApp
+      service.alpha.openshift.io/serving-cert-secret-name: "${APP_NAME}-backend-cert"
     creationTimestamp:
     labels:
       app: "${APP_NAME}-${JOB_NAME}"
@@ -115,6 +124,23 @@ objects:
       name: "${APP_NAME}-backend-${JOB_NAME}"
       weight: 100
     wildcardPolicy: None
+- apiVersion: autoscaling/v2beta1
+  kind: HorizontalPodAutoscaler
+  metadata:
+    name: "${APP_NAME}-backend-${JOB_NAME}-cpu-autoscaler"
+  spec:
+    scaleTargetRef:
+      apiVersion: apps.openshift.io/v1
+      kind: DeploymentConfig
+      name: "${APP_NAME}-backend-${JOB_NAME}"
+      subresource: scale
+    minReplicas: 3
+    maxReplicas: 5
+    metrics:
+      - type: Resource
+        resource:
+          name: cpu
+          targetAverageUtilization: 90
 parameters:
 - name: REPO_NAME
   description: Application repository name
