@@ -18,10 +18,10 @@ objects:
   metadata:
     name: "${DATABASE_SERVICE_NAME}"
     annotations:
-      template.openshift.io/expose-password: "{.data['database-password']}"
+      template.openshift.io/expose-password: "{.data['REDIS_PASSWORD']}"
       as-copy-of: template.${NAME}-secret
   stringData:
-    database-password: "${REDIS_PASSWORD}"
+    REDIS_PASSWORD: "${REDIS_PASSWORD}"
 - kind: Service
   apiVersion: v1
   metadata:
@@ -95,7 +95,7 @@ objects:
                valueFrom:
                  secretKeyRef:
                    name: "${DATABASE_SERVICE_NAME}"
-                   key: database-password
+                   key: REDIS_PASSWORD
              resources:
                requests:
                  cpu: "${CPU_REQUEST}"
