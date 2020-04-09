@@ -40,6 +40,8 @@ objects:
           - name: tls-certs
             mountPath: "/etc/tls-certs"
             readOnly: true
+          - name: config-env
+            mountPath: "/var/www/html/js/config"
           livenessProbe:
             failureThreshold: 3
             httpGet:
@@ -67,6 +69,9 @@ objects:
         - name: tls-certs
           secret:
             secretName: "${APP_NAME}-frontend-cert"
+        - name: config-env
+          configMap:
+            name: pen-request-frontend-config-map
     test: false
     triggers:
     - type: ConfigChange
