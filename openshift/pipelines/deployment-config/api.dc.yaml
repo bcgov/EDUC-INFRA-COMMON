@@ -58,7 +58,7 @@ objects:
         volumes:
           - name: tls-certs
             secret:
-              secretName: ${APP_NAME}-cert"
+              secretName: "${APP_NAME}-cert"
     test: false
     triggers:
     - type: ConfigChange
