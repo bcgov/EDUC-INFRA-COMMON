@@ -1,1 +1,1 @@
-nodejs
+nodejs:1.3.4
