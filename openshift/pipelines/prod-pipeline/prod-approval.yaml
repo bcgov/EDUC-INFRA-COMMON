@@ -203,7 +203,7 @@ objects:
                             sh """
                               set +x
                               echo Running curl command...
-                              curl -u ${IDIR}:${IDIR_PW} https://gww.svn.educ.gov.bc.ca/svn/repos/openshiftadmins_repos/getmypen/appovers/pipeline-approvers.txt -o /tmp/pipeline-approvers.txt
+                              curl -u ${IDIR}:${IDIR_PW} https://gww.svn.educ.gov.bc.ca/svn/repos/openshiftadmins_repos/getmypen/approvers/pipeline-approvers.txt -o /tmp/pipeline-approvers.txt
                             """
                             script {
                                 APPROVERS = sh(script: 'cat /tmp/pipeline-approvers.txt', returnStdout: true)
