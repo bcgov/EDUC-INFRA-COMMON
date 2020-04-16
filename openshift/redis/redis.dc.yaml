@@ -110,11 +110,11 @@ objects:
            dnsPolicy: ClusterFirst
 parameters: 
 - name: CPU_LIMIT
-  value: 500m
+  value: 350m
 - name: MEMORY_LIMIT
   value: 2Gi
 - name: CPU_REQUEST
-  value: 200m
+  value: 150m
 - name: MEMORY_REQUEST
   value: 1.5Gi
 - name: NAME
