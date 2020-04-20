@@ -1,21 +1,38 @@
+kind: Template
 apiVersion: v1
-kind: BuildConfig
+labels:
+  app: custom-jenkins
 metadata:
-  name: custom-jenkins-build
-spec:
-  source:
-    git:
-      uri: https://github.com/bcgov/EDUC-INFRA-COMMON
-      contextDir: /openshift/jenkins
-    type: Git
-  strategy:
-    sourceStrategy:
-      from:
-        kind: ImageStreamTag
-        name: jenkins:latest
-        namespace: openshift
-    type: Source
-  output:
-    to:
-      kind: ImageStreamTag
-      name: custom-jenkins:latest
+  name: custom-jenkins-template
+objects:
+  - apiVersion: v1
+    kind: BuildConfig
+    labels:
+      app: custom-jenkins
+    metadata:
+      name: custom-jenkins-build
+    spec:
+      source:
+        git:
+          uri: https://github.com/bcgov/EDUC-INFRA-COMMON
+          ref: "master"
+        contextDir: openshift/jenkins
+        type: Git
+      strategy:
+        dockerStrategy:
+          from:
+            kind: ImageStreamTag
+            name: jenkins-basic:v2-latest
+            namespace: c2mvws-dev
+        type: Docker
+      output:
+        to:
+          kind: ImageStreamTag
+          name: custom-jenkins:latest
+  - apiVersion: v1
+    kind: ImageStream
+    labels:
+      app: custom-jenkins
+    metadata:
+      name: custom-jenkins-image
+      namespace: c2mvws-dev
