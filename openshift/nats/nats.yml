@@ -111,6 +111,8 @@ spec:
                   fieldPath: metadata.namespace
             - name: CLUSTER_ADVERTISE
               value: $(POD_NAME).nats.$(POD_NAMESPACE).svc
+            - name: CLUSTER_ROUTE
+              value: nats.$(POD_NAMESPACE).svc.cluster.local:6222
           volumeMounts:
             - mountPath: /etc/nats-config
               name: config-volume
