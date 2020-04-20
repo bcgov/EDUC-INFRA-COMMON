@@ -11,7 +11,7 @@ data:
     cluster {
       port: 6222
       routes [
-        nats://nats.$POD_NAMESPACE.svc.cluster.local:6222
+        nats://nats.${POD_NAMESPACE}.svc.cluster.local:6222
       ]
       cluster_advertise: $CLUSTER_ADVERTISE
       connect_retries: 30
