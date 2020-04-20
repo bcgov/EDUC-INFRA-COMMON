@@ -2,10 +2,10 @@
 apiVersion: template.openshift.io/v1
 kind: Template
 labels:
-  app: custom-jenkins
+  app: jenkins-custom
 metadata:
   creationTimestamp: null
-  name: custom-jenkins
+  name: jenkins-custom
 objects:
   - apiVersion: v1
     kind: Secret
