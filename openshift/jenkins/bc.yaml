@@ -22,8 +22,8 @@ objects:
         dockerStrategy:
           from:
             kind: ImageStreamTag
-            name: custom-jenkins-image
-            namespace: c2mvws-dev
+            name: jenkins-basic:v2-latest
+            namespace: bcgov
         type: Docker
       output:
         to:
