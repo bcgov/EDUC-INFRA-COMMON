@@ -28,7 +28,7 @@ objects:
       output:
         to:
           kind: ImageStreamTag
-          name: custom-jenkins:latest
+          name: custom-jenkins-image:latest
   - apiVersion: v1
     kind: ImageStream
     labels:

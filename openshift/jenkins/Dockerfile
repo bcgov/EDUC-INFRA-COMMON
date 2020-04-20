@@ -1,4 +1,4 @@
-FROM bcgov/jenkins-basic:v2-stable
+FROM bcgov/jenkins-basic:v2-latest
 USER 0
 #COPY ./contrib/jenkins/configuration $JENKINS_REF_HOME
 #COPY plugins.txt /plugins.txt
