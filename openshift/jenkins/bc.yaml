@@ -1,16 +1,16 @@
 kind: Template
 apiVersion: v1
 labels:
-  app: custom-jenkins
+  app: jenkins-custom
 metadata:
-  name: custom-jenkins-template
+  name: jenkins-custom-template
 objects:
   - apiVersion: v1
     kind: BuildConfig
     labels:
-      app: custom-jenkins
+      app: jenkins-custom
     metadata:
-      name: custom-jenkins-build
+      name: jenkins-custom-build
     spec:
       source:
         git:
@@ -32,7 +32,7 @@ objects:
   - apiVersion: v1
     kind: ImageStream
     labels:
-      app: custom-jenkins
+      app: jenkins-custom
     metadata:
       name: jenkins
       namespace: c2mvws-dev
