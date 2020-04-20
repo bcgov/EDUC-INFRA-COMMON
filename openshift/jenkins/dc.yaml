@@ -149,12 +149,12 @@ objects:
                 - mountPath: /run/secrets/github
                   name: github
                   readOnly: true
-                - mountPath: /run/configs/ns
-                  name: ns-config
-                  readOnly: true
-                - mountPath: /run/configs/jobs
-                  name: jobs-config
-                  readOnly: true
+                #- mountPath: /run/configs/ns
+                #  name: ns-config
+                #  readOnly: true
+                #- mountPath: /run/configs/jobs
+                #  name: jobs-config
+                #  readOnly: true
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           schedulerName: default-scheduler
