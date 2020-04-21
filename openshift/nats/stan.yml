@@ -56,11 +56,12 @@ spec:
   replicas: 3
   volumeClaimTemplates:
     - metadata:
-        name: stan-sts-vol
+        name: stan-educ-pen-vol
       spec:
         accessModes:
           - ReadWriteOnce
         volumeMode: "Filesystem"
+        persistentVolumeReclaimPolicy: Delete
         resources:
           requests:
             storage: 1Gi
@@ -108,8 +109,8 @@ spec:
           volumeMounts:
             - name: config-volume
               mountPath: /etc/stan-config
-            - name: stan-sts-vol
-              mountPath: /data/stan
+            - name: stan-educ-pen-vol
+              mountPath: /data/educ-pen-stan
 
           # Disable CPU limits.
           resources:
