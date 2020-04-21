@@ -149,12 +149,6 @@ objects:
                 - mountPath: /run/secrets/github
                   name: github
                   readOnly: true
-                #- mountPath: /run/configs/ns
-                #  name: ns-config
-                #  readOnly: true
-                #- mountPath: /run/configs/jobs
-                #  name: jobs-config
-                #  readOnly: true
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           schedulerName: default-scheduler
@@ -193,14 +187,6 @@ objects:
               secret:
                 defaultMode: 420
                 secretName: ${NAME}${SUFFIX}-github
-            #- name: ns-config
-            #  configMap:
-            #    defaultMode: 420
-            #    name: ns-config
-            #- name: jobs-config
-            #  configMap:
-            #    defaultMode: 420
-            #    name: jobs-config*
       test: false
       triggers:
         - imageChangeParams:
@@ -273,16 +259,6 @@ parameters:
     name: ROUTE_PATH
     required: true
     value: /
-  - description: Environment Name
-    displayName: ENV_NAME
-    name: ENV_NAME
-    required: true
-    value: prod
-  - description: Environment ID
-    displayName: ENV_ID
-    name: ENV_ID
-    required: true
-    value: prod
   - description: SLAVE_USER_PASSWORD
     displayName: SLAVE_USER_PASSWORD
     from: '[a-zA-Z0-9]{16}'
