@@ -28,7 +28,7 @@ objects:
       output:
         to:
           kind: ImageStreamTag
-          name: ${NAME}-image:latest
+          name: ${NAME}-${SUFFIX}-image:latest
   - apiVersion: v1
     kind: ImageStream
     labels:
