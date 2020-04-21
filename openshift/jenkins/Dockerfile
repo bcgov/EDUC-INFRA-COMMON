@@ -1,4 +1,4 @@
-FROM bcgov/jenkins-basic:v2-latest
+FROM openshift/jenkins
 USER 0
 #COPY ./contrib/jenkins/configuration $JENKINS_REF_HOME
 COPY plugins.txt /plugins.txt
