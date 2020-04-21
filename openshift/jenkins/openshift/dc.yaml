@@ -195,7 +195,7 @@ objects:
               - jenkins
             from:
               kind: ImageStreamTag
-              name: ${NAME}-${SUFFIX}:${VERSION}
+              name: ${NAME}-${SUFFIX}-image:${VERSION}
           type: ImageChange
         - type: ConfigChange
   - apiVersion: v1

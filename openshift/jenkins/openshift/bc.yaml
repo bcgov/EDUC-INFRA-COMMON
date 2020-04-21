@@ -34,7 +34,7 @@ objects:
     labels:
       app: ${NAME}-${SUFFIX}
     metadata:
-      name: ${NAME}-image
+      name: ${NAME}-${SUFFIX}-image
       namespace: ${NAMESPACE}
 parameters:
   - description: A name used for all objects
