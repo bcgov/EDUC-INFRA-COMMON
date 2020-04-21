@@ -1,5 +1,16 @@
 ---
 apiVersion: v1
+kind: Template
+metadata:
+  name: nats
+  annotations:
+    "openshift.io/display-name": nats
+parameters:
+  - description: The pod namespace
+    name: POD_NAMESPACE
+    value: $(POD_NAMESPACE)
+---
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: nats-config
