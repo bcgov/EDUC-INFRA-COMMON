@@ -2,10 +2,10 @@
 apiVersion: template.openshift.io/v1
 kind: Template
 labels:
-  app: jenkins-custom
+  app: ${NAME}-${SUFFIX}
 metadata:
   creationTimestamp: null
-  name: jenkins-custom
+  name: ${NAME}-${SUFFIX}
 objects:
   - apiVersion: v1
     kind: Secret
@@ -13,9 +13,9 @@ objects:
       annotations:
         as-copy-of: template.${NAME}-slave-user
         as-copy-of/preserve: password
-      name: ${NAME}${SUFFIX}-slave-user
+      name: ${NAME}-${SUFFIX}-slave-user
     stringData:
-      metadata.name: ${NAME}${SUFFIX}-slave-user
+      metadata.name: ${NAME}-${SUFFIX}-slave-user
       password: ${SLAVE_USER_PASSWORD}
       username: jenkins-slave
     type: kubernetes.io/basic-auth
@@ -24,9 +24,9 @@ objects:
     metadata:
       annotations:
         as-copy-of: template.${NAME}-github
-      name: ${NAME}${SUFFIX}-github
+      name: ${NAME}-${SUFFIX}-github
     stringData:
-      metadata.name: ${NAME}${SUFFIX}-github
+      metadata.name: ${NAME}-${SUFFIX}-github
       password: ${GH_PASSWORD}
       username: ${GH_USERNAME}
     type: kubernetes.io/basic-auth
@@ -36,7 +36,7 @@ objects:
       annotations:
         volume.beta.kubernetes.io/storage-class: netapp-file-standard
         volume.beta.kubernetes.io/storage-provisioner: kubernetes.io/netapp-file-standard
-      name: ${NAME}${SUFFIX}
+      name: ${NAME}-${SUFFIX}
     spec:
       accessModes:
         - ReadWriteOnce
@@ -47,40 +47,40 @@ objects:
     kind: ServiceAccount
     metadata:
       annotations:
-        serviceaccounts.openshift.io/oauth-redirectreference.jenkins: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"${NAME}${SUFFIX}"}}'
-      name: ${NAME}${SUFFIX}
+        serviceaccounts.openshift.io/oauth-redirectreference.jenkins: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"${NAME}-${SUFFIX}"}}'
+      name: ${NAME}-${SUFFIX}
   - apiVersion: v1
     groupNames: null
     kind: RoleBinding
     metadata:
-      name: ${NAME}${SUFFIX}_edit
+      name: ${NAME}-${SUFFIX}_edit
     roleRef:
       name: edit
     subjects:
       - kind: ServiceAccount
-        name: ${NAME}${SUFFIX}
+        name: ${NAME}-${SUFFIX}
   - apiVersion: v1
     groupNames: null
     kind: RoleBinding
     metadata:
-      name: ${NAME}${SUFFIX}_admin
+      name: ${NAME}-${SUFFIX}_admin
     roleRef:
       name: admin
     subjects:
       - kind: ServiceAccount
-        name: ${NAME}${SUFFIX}
+        name: ${NAME}-${SUFFIX}
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
       annotations:
         template.alpha.openshift.io/wait-for-ready: "true"
       creationTimestamp: null
-      name: ${NAME}${SUFFIX}
+      name: ${NAME}-${SUFFIX}
     spec:
       replicas: 1
       revisionHistoryLimit: 10
       selector:
-        deploymentconfig: ${NAME}${SUFFIX}
+        deploymentconfig: ${NAME}-${SUFFIX}
       strategy:
         activeDeadlineSeconds: 21600
         recreateParams:
@@ -91,7 +91,7 @@ objects:
         metadata:
           creationTimestamp: null
           labels:
-            deploymentconfig: ${NAME}${SUFFIX}
+            deploymentconfig: ${NAME}-${SUFFIX}
         spec:
           containers:
             - command:
@@ -153,13 +153,13 @@ objects:
           restartPolicy: Always
           schedulerName: default-scheduler
           securityContext: {}
-          serviceAccount: ${NAME}${SUFFIX}
-          serviceAccountName: ${NAME}${SUFFIX}
+          serviceAccount: ${NAME}-${SUFFIX}
+          serviceAccountName: ${NAME}-${SUFFIX}
           terminationGracePeriodSeconds: 30
           volumes:
             - name: jenkins-jobs
               persistentVolumeClaim:
-                claimName: ${NAME}${SUFFIX}
+                claimName: ${NAME}-${SUFFIX}
             - downwardAPI:
                 items:
                   - fieldRef:
@@ -182,11 +182,11 @@ objects:
             - name: jenkins-slave-user
               secret:
                 defaultMode: 420
-                secretName: ${NAME}${SUFFIX}-slave-user
+                secretName: ${NAME}-${SUFFIX}-slave-user
             - name: github
               secret:
                 defaultMode: 420
-                secretName: ${NAME}${SUFFIX}-github
+                secretName: ${NAME}-${SUFFIX}-github
       test: false
       triggers:
         - imageChangeParams:
@@ -195,14 +195,14 @@ objects:
               - jenkins
             from:
               kind: ImageStreamTag
-              name: ${NAME}:${VERSION}
+              name: ${NAME}-${SUFFIX}:${VERSION}
           type: ImageChange
         - type: ConfigChange
   - apiVersion: v1
     kind: Service
     metadata:
       creationTimestamp: null
-      name: ${NAME}${SUFFIX}
+      name: ${NAME}-${SUFFIX}
     spec:
       ports:
         - name: 8080-tcp
@@ -214,14 +214,14 @@ objects:
           protocol: TCP
           targetPort: 50000
       selector:
-        deploymentconfig: ${NAME}${SUFFIX}
+        deploymentconfig: ${NAME}-${SUFFIX}
       sessionAffinity: None
       type: ClusterIP
   - apiVersion: v1
     kind: Route
     metadata:
       creationTimestamp: null
-      name: ${NAME}${SUFFIX}
+      name: ${NAME}-${SUFFIX}
     spec:
       host: ${ROUTE_HOST}
       path: ${ROUTE_PATH}
@@ -231,7 +231,7 @@ objects:
         termination: edge
       to:
         kind: Service
-        name: ${NAME}${SUFFIX}
+        name: ${NAME}-${SUFFIX}
         weight: 100
       wildcardPolicy: None
 parameters:
