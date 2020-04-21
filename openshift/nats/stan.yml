@@ -13,10 +13,10 @@ data:
      sv: false
      id: educ_pen_nats_cluster
      store: file
-     dir: /data/educ_pen_nats_cluster/store
+     dir: /data/ecu-pen-nats-cluster/store
      cluster {
        node_id: $POD_NAME
-       log_path: /data/educ_pen_nats_cluster/log
+       log_path: /data/ecu-pen-nats-cluster/log
        # Explicit names of resulting peers
        peers: ["stan-0","stan-1","stan-2"]
      }
@@ -56,7 +56,7 @@ spec:
   replicas: 3
   volumeClaimTemplates:
     - metadata:
-        name: stan-educ-pen-vol
+        name: stan-sts-vol
       spec:
         accessModes:
           - ReadWriteOnce
@@ -109,8 +109,8 @@ spec:
           volumeMounts:
             - name: config-volume
               mountPath: /etc/stan-config
-            - name: stan-educ-pen-vol
-              mountPath: /data/educ-pen-stan
+            - name: stan-sts-vol
+              mountPath: /data/ecu-pen-nats-cluster
 
           # Disable CPU limits.
           resources:
