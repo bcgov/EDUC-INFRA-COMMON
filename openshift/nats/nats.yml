@@ -8,7 +8,7 @@ metadata:
 parameters:
   - description: The pod namespace
     name: POD_NAMESPACE
-    value: $(POD_NAMESPACE)
+    value: c2mv
 ---
 apiVersion: v1
 kind: ConfigMap
