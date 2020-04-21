@@ -1,239 +1,256 @@
-def DIGITAL_ID_API_VERSION = ''
-def PEN_DEMOG_API_VERSION = ''
-def PEN_REQUEST_API_VERSION = ''
-def PEN_REQUEST_EMAIL_API_VERSION = ''
-def SERVICES_CARD_API_VERSION = ''
-def SOAM_API_VERSION = ''
-def STUDENT_API_VERSION = ''
-def PEN_REQUEST_VERSION = ''
-def STAFF_ADMIN_VERSION = ''
-
-pipeline {
-    environment {
-       APPROVERS = ''
-    }
-    agent {
-       kubernetes {
-         label 'mavenPod-dev'
-         cloud 'openshift'
-         defaultContainer 'jnlp'
-         serviceAccount 'jenkins'
-         yaml """
-           kind: Pod
-           metadata:
-             name: jenkins-slave
-           spec:
-             containers:
-             - name: jnlp
-               image: registry.access.redhat.com/openshift3/jenkins-agent-maven-35-rhel7
-               privileged: false
-               alwaysPullImage: false
-               workingDir: /tmp
-               ttyEnabled: false
-               resourceRequestCpu: 3
-               resourceRequestMemory: 2Gi
-               resourceLimitCpu: 3
-               resourceLimitMemory: 2Gi
-               volumeMounts:
-               - mountPath: '/home/jenkins/.m2'
-                 name: pvc
-             volumes:
-             - name: pvc
-               persistentVolumeClaim:
-                 claimName: 'maven-slave-pvc'
-
-         """
-       }
-    }
-    stages {
-		stage('Deployment Credentials & Approval') {
-			steps {
-				script {
-					// Get the input
-					def userInput = input(
-							id: 'userInput', message: 'Please enter your GitHub info:',
-							parameters: [
-
-									string(defaultValue: '',
-											description: 'Your GitHub username',
-											name: 'GitHubUser'),
-									password(defaultValue: '',
-											description: 'Your GitHub token',
-											name: 'GitHubToken'),
-							])
-					// Save to variables. Default to empty string if not found.
-					GitHubUser = userInput.GitHubUser?:''
-					GitHubToken = userInput.GitHubToken?:''
-				}
-			}
-		}
-        stage('Provide Release Versions for Tagging in Git') {
-            steps {
-			    script {
-                    // Get the input
-                    def tagInput = input(
-                            id: 'tagInput', message: 'Please enter the release version number for each component to be tagged out of master in GIT.',
-                            parameters: [
-
-                                    string(defaultValue: "",
-                                            description: 'Enter Digital Identity API Version, leave the tag blank if this service is not to be tagged.',
-                                            name: 'DIGITAL_ID_API_VERSION'),
-                                    string(defaultValue: "",
-                                            description: 'Enter PEN Demog API Version, leave the tag blank if this service is not to be tagged',
-                                            name: 'PEN_DEMOG_API_VERSION'),
-                                    string(defaultValue: "",
-                                            description: 'Enter PEN Request API Version, leave the tag blank if this service is not to be tagged',
-                                            name: 'PEN_REQUEST_API_VERSION'),
-                                    string(defaultValue: "",
-                                            description: 'Enter PEN Request Email API Version, leave the tag blank if this service is not to be tagged',
-                                            name: 'PEN_REQUEST_EMAIL_API_VERSION'),
-                                    string(defaultValue: "",
-                                            description: 'Enter Services Card API Version, leave the tag blank if this service is not to be tagged',
-                                            name: 'SERVICES_CARD_API_VERSION'),
-                                    string(defaultValue: "",
-                                            description: 'Enter SOAM API Version, leave the tag blank if this service is not to be tagged',
-                                            name: 'SOAM_API_VERSION'),
-                                    string(defaultValue: "",
-                                            description: 'Enter Student API Version, leave the tag blank if this service is not to be tagged',
-                                            name: 'STUDENT_API_VERSION'),
-                                    string(defaultValue: "",
-                                            description: 'Enter PEN Request Version, leave the tag blank if this service is not to be tagged',
-                                            name: 'PEN_REQUEST_VERSION'),
-                                    string(defaultValue: "",
-                                            description: 'Enter Staff Admin Version, leave the tag blank if this service is not to be tagged',
-                                            name: 'STAFF_ADMIN_VERSION'),
-                            ])
-					// Save to variables. Default to empty string if not found.
-                    DIGITAL_ID_API_VERSION = tagInput.DIGITAL_ID_API_VERSION?:''
-                    PEN_DEMOG_API_VERSION = tagInput.PEN_DEMOG_API_VERSION?:''
-					PEN_REQUEST_API_VERSION = tagInput.PEN_REQUEST_API_VERSION?:''
-					PEN_REQUEST_EMAIL_API_VERSION = tagInput.PEN_REQUEST_EMAIL_API_VERSION?:''
-					SERVICES_CARD_API_VERSION = tagInput.SERVICES_CARD_API_VERSION?:''
-					SOAM_API_VERSION = tagInput.SOAM_API_VERSION?:''
-					STUDENT_API_VERSION = tagInput.STUDENT_API_VERSION?:''
-					PEN_REQUEST_VERSION = tagInput.PEN_REQUEST_VERSION?:''
-					STAFF_ADMIN_VERSION = tagInput.STAFF_ADMIN_VERSION?:''
-				}
-            }
-        }
-        stage('Tagging Credentials & Approval') {
-            steps {
-                timeout(time:2, unit:'DAYS')
-         	    {
-                   input message: 'Do you approve this Tagging In Git?'
+---
+apiVersion: v1
+kind: Template
+labels: 
+  template: git-tagging-template
+metadata: 
+  name: git-tagging-template
+objects:
+- apiVersion: v1
+  kind: BuildConfig
+  metadata: 
+    name: "git-tagging-pipeline"
+  spec:
+    strategy:
+      jenkinsPipelineStrategy:
+        jenkinsfile: | 
+            def DIGITAL_ID_API_VERSION = ''
+            def PEN_DEMOG_API_VERSION = ''
+            def PEN_REQUEST_API_VERSION = ''
+            def PEN_REQUEST_EMAIL_API_VERSION = ''
+            def SERVICES_CARD_API_VERSION = ''
+            def SOAM_API_VERSION = ''
+            def STUDENT_API_VERSION = ''
+            def PEN_REQUEST_VERSION = ''
+            def STAFF_ADMIN_VERSION = ''
+            
+            pipeline {
+                environment {
+                   APPROVERS = ''
+                }
+                agent {
+                   kubernetes {
+                     label 'mavenPod-dev'
+                     cloud 'openshift'
+                     defaultContainer 'jnlp'
+                     serviceAccount 'jenkins'
+                     yaml """
+                       kind: Pod
+                       metadata:
+                         name: jenkins-slave
+                       spec:
+                         containers:
+                         - name: jnlp
+                           image: registry.access.redhat.com/openshift3/jenkins-agent-maven-35-rhel7
+                           privileged: false
+                           alwaysPullImage: false
+                           workingDir: /tmp
+                           ttyEnabled: false
+                           resourceRequestCpu: 3
+                           resourceRequestMemory: 2Gi
+                           resourceLimitCpu: 3
+                           resourceLimitMemory: 2Gi
+                           volumeMounts:
+                           - mountPath: '/home/jenkins/.m2'
+                             name: pvc
+                         volumes:
+                         - name: pvc
+                           persistentVolumeClaim:
+                             claimName: 'maven-slave-pvc'
+            
+                     """
+                   }
+                }
+                stages {
+            		stage('Deployment Credentials & Approval') {
+            			steps {
+            				script {
+            					// Get the input
+            					def userInput = input(
+            							id: 'userInput', message: 'Please enter your GitHub info:',
+            							parameters: [
+            
+            									string(defaultValue: '',
+            											description: 'Your GitHub username',
+            											name: 'GitHubUser'),
+            									password(defaultValue: '',
+            											description: 'Your GitHub token',
+            											name: 'GitHubToken'),
+            							])
+            					// Save to variables. Default to empty string if not found.
+            					GitHubUser = userInput.GitHubUser?:''
+            					GitHubToken = userInput.GitHubToken?:''
+            				}
+            			}
+            		}
+                    stage('Provide Release Versions for Tagging in Git') {
+                        steps {
+            			    script {
+                                // Get the input
+                                def tagInput = input(
+                                        id: 'tagInput', message: 'Please enter the release version number for each component to be tagged out of master in GIT.',
+                                        parameters: [
+            
+                                                string(defaultValue: "",
+                                                        description: 'Enter Digital Identity API Version, leave the tag blank if this service is not to be tagged.',
+                                                        name: 'DIGITAL_ID_API_VERSION'),
+                                                string(defaultValue: "",
+                                                        description: 'Enter PEN Demog API Version, leave the tag blank if this service is not to be tagged',
+                                                        name: 'PEN_DEMOG_API_VERSION'),
+                                                string(defaultValue: "",
+                                                        description: 'Enter PEN Request API Version, leave the tag blank if this service is not to be tagged',
+                                                        name: 'PEN_REQUEST_API_VERSION'),
+                                                string(defaultValue: "",
+                                                        description: 'Enter PEN Request Email API Version, leave the tag blank if this service is not to be tagged',
+                                                        name: 'PEN_REQUEST_EMAIL_API_VERSION'),
+                                                string(defaultValue: "",
+                                                        description: 'Enter Services Card API Version, leave the tag blank if this service is not to be tagged',
+                                                        name: 'SERVICES_CARD_API_VERSION'),
+                                                string(defaultValue: "",
+                                                        description: 'Enter SOAM API Version, leave the tag blank if this service is not to be tagged',
+                                                        name: 'SOAM_API_VERSION'),
+                                                string(defaultValue: "",
+                                                        description: 'Enter Student API Version, leave the tag blank if this service is not to be tagged',
+                                                        name: 'STUDENT_API_VERSION'),
+                                                string(defaultValue: "",
+                                                        description: 'Enter PEN Request Version, leave the tag blank if this service is not to be tagged',
+                                                        name: 'PEN_REQUEST_VERSION'),
+                                                string(defaultValue: "",
+                                                        description: 'Enter Staff Admin Version, leave the tag blank if this service is not to be tagged',
+                                                        name: 'STAFF_ADMIN_VERSION'),
+                                        ])
+            					// Save to variables. Default to empty string if not found.
+                                DIGITAL_ID_API_VERSION = tagInput.DIGITAL_ID_API_VERSION?:''
+                                PEN_DEMOG_API_VERSION = tagInput.PEN_DEMOG_API_VERSION?:''
+            					PEN_REQUEST_API_VERSION = tagInput.PEN_REQUEST_API_VERSION?:''
+            					PEN_REQUEST_EMAIL_API_VERSION = tagInput.PEN_REQUEST_EMAIL_API_VERSION?:''
+            					SERVICES_CARD_API_VERSION = tagInput.SERVICES_CARD_API_VERSION?:''
+            					SOAM_API_VERSION = tagInput.SOAM_API_VERSION?:''
+            					STUDENT_API_VERSION = tagInput.STUDENT_API_VERSION?:''
+            					PEN_REQUEST_VERSION = tagInput.PEN_REQUEST_VERSION?:''
+            					STAFF_ADMIN_VERSION = tagInput.STAFF_ADMIN_VERSION?:''
+            				}
+                        }
+                    }
+                    stage('Tagging Credentials & Approval') {
+                        steps {
+                            timeout(time:2, unit:'DAYS')
+                     	    {
+                               input message: 'Do you approve this Tagging In Git?'
+                            }
+                        }
+                    }
+            		stage('Tag Digital ID In Git'){
+            		    when {
+            				expression {
+            					return "${DIGITAL_ID_API_VERSION}" != "<Not Required>" && "${DIGITAL_ID_API_VERSION}" != "";
+            				}
+            			}
+            			steps {
+            				createGitTag("${DIGITAL_ID_API_VERSION}", "${DIGITAL_ID_API_VERSION}", 'EDUC-DIGITALID-API')
+            			}
+            		}
+            		stage('Tag PEN Demographics API In Git'){
+            		    when {
+            				expression {
+            					return "${PEN_DEMOG_API_VERSION}" != "<Not Required>" && "${PEN_DEMOG_API_VERSION}" != "";
+            				}
+            			}
+            			steps {
+            			   createGitTag("${PEN_DEMOG_API_VERSION}", "${PEN_DEMOG_API_VERSION}", 'EDUC-PEN-DEMOG-API')
+            			}
+            		}
+            		stage('Tag PEN Request API In Git'){
+            		    when {
+            				expression {
+            					return "${PEN_REQUEST_API_VERSION}" != "<Not Required>" && "${PEN_REQUEST_API_VERSION}" != "";
+            				}
+            			}
+            			steps {
+            			   createGitTag("${PEN_REQUEST_API_VERSION}", "${PEN_REQUEST_API_VERSION}", 'EDUC-PEN-REQUEST-API')
+            			}
+            		}
+            		stage('Tag PEN Request Email API In Git'){
+            		    when {
+            				expression {
+            					return "${PEN_REQUEST_EMAIL_API_VERSION}" != "<Not Required>" && "${PEN_REQUEST_EMAIL_API_VERSION}" != "";
+            				}
+            			}
+            			steps {
+            		       createGitTag("${PEN_REQUEST_EMAIL_API_VERSION}", "${PEN_REQUEST_EMAIL_API_VERSION}", 'EDUC-PEN-REQUEST-EMAIL-API')
+            			}
+            		}
+            		stage('Tag Services Card API In Git'){
+            		    when {
+            				expression {
+            					return "${SERVICES_CARD_API_VERSION}" != "<Not Required>" && "${SERVICES_CARD_API_VERSION}" != "";
+            				}
+            			}
+            			steps {
+            		       createGitTag("${SERVICES_CARD_API_VERSION}", "${SERVICES_CARD_API_VERSION}", 'EDUC-SERVICES-CARD-API')
+            			}
+            		}
+            		stage('Tag SOAM API In Git'){
+            		    when {
+            				expression {
+            					return "${SOAM_API_VERSION}" != "<Not Required>" && "${SOAM_API_VERSION}" != "";
+            				}
+            			}
+            			steps {
+            		       createGitTag("${SOAM_API_VERSION}", "${SOAM_API_VERSION}", 'EDUC-SOAM-API')
+            			}
+            		}
+            		stage('Tag Student API In Git'){
+            		    when {
+            				expression {
+            					return "${STUDENT_API_VERSION}" != "<Not Required>" && "${STUDENT_API_VERSION}" != "";
+            				}
+            			}
+            			steps {
+            		       createGitTag("${STUDENT_API_VERSION}", "${STUDENT_API_VERSION}", 'EDUC-STUDENT-API')
+            			}
+            		}
+            		stage('Tag PEN Request Frontend and Backend In Git'){
+            		    when {
+            				expression {
+            					return "${PEN_REQUEST_VERSION}" != "<Not Required>" && "${PEN_REQUEST_VERSION}" != "";
+            				}
+            			}
+            			steps {
+            		       createGitTag("${PEN_REQUEST_VERSION}", "${PEN_REQUEST_VERSION}", 'EDUC-PEN-REQUEST')
+            			}
+            		}
+            		stage('Tag Student Admin Frontend and Backend In Git'){
+            		    when {
+            				expression {
+            					return "${STAFF_ADMIN_VERSION}" != "<Not Required>" && "${STAFF_ADMIN_VERSION}" != "";
+            				}
+            			}
+            			steps {
+            		       createGitTag("${STAFF_ADMIN_VERSION}", "${STAFF_ADMIN_VERSION}", 'EDUC-STUDENT-ADMIN')
+            			}
+            		}
                 }
             }
-        }
-		stage('Tag Digital ID In Git'){
-		    when {
-				expression {
-					return "${DIGITAL_ID_API_VERSION}" != "<Not Required>" && "${DIGITAL_ID_API_VERSION}" != "";
-				}
-			}
-			steps {
-				createGitTag("${DIGITAL_ID_API_VERSION}", "${DIGITAL_ID_API_VERSION}", 'EDUC-DIGITALID-API')
-			}
-		}
-		stage('Tag PEN Demographics API In Git'){
-		    when {
-				expression {
-					return "${PEN_DEMOG_API_VERSION}" != "<Not Required>" && "${PEN_DEMOG_API_VERSION}" != "";
-				}
-			}
-			steps {
-			   createGitTag("${PEN_DEMOG_API_VERSION}", "${PEN_DEMOG_API_VERSION}", 'EDUC-PEN-DEMOG-API')
-			}
-		}
-		stage('Tag PEN Request API In Git'){
-		    when {
-				expression {
-					return "${PEN_REQUEST_API_VERSION}" != "<Not Required>" && "${PEN_REQUEST_API_VERSION}" != "";
-				}
-			}
-			steps {
-			   createGitTag("${PEN_REQUEST_API_VERSION}", "${PEN_REQUEST_API_VERSION}", 'EDUC-PEN-REQUEST-API')
-			}
-		}
-		stage('Tag PEN Request Email API In Git'){
-		    when {
-				expression {
-					return "${PEN_REQUEST_EMAIL_API_VERSION}" != "<Not Required>" && "${PEN_REQUEST_EMAIL_API_VERSION}" != "";
-				}
-			}
-			steps {
-		       createGitTag("${PEN_REQUEST_EMAIL_API_VERSION}", "${PEN_REQUEST_EMAIL_API_VERSION}", 'EDUC-PEN-REQUEST-EMAIL-API')
-			}
-		}
-		stage('Tag Services Card API In Git'){
-		    when {
-				expression {
-					return "${SERVICES_CARD_API_VERSION}" != "<Not Required>" && "${SERVICES_CARD_API_VERSION}" != "";
-				}
-			}
-			steps {
-		       createGitTag("${SERVICES_CARD_API_VERSION}", "${SERVICES_CARD_API_VERSION}", 'EDUC-SERVICES-CARD-API')
-			}
-		}
-		stage('Tag SOAM API In Git'){
-		    when {
-				expression {
-					return "${SOAM_API_VERSION}" != "<Not Required>" && "${SOAM_API_VERSION}" != "";
-				}
-			}
-			steps {
-		       createGitTag("${SOAM_API_VERSION}", "${SOAM_API_VERSION}", 'EDUC-SOAM-API')
-			}
-		}
-		stage('Tag Student API In Git'){
-		    when {
-				expression {
-					return "${STUDENT_API_VERSION}" != "<Not Required>" && "${STUDENT_API_VERSION}" != "";
-				}
-			}
-			steps {
-		       createGitTag("${STUDENT_API_VERSION}", "${STUDENT_API_VERSION}", 'EDUC-STUDENT-API')
-			}
-		}
-		stage('Tag PEN Request Frontend and Backend In Git'){
-		    when {
-				expression {
-					return "${PEN_REQUEST_VERSION}" != "<Not Required>" && "${PEN_REQUEST_VERSION}" != "";
-				}
-			}
-			steps {
-		       createGitTag("${PEN_REQUEST_VERSION}", "${PEN_REQUEST_VERSION}", 'EDUC-PEN-REQUEST')
-			}
-		}
-		stage('Tag Student Admin Frontend and Backend In Git'){
-		    when {
-				expression {
-					return "${STAFF_ADMIN_VERSION}" != "<Not Required>" && "${STAFF_ADMIN_VERSION}" != "";
-				}
-			}
-			steps {
-		       createGitTag("${STAFF_ADMIN_VERSION}", "${STAFF_ADMIN_VERSION}", 'EDUC-STUDENT-ADMIN')
-			}
-		}
-    }
-}
-
-def createGitTag(String tagName, String tagMessage, String repoName) {
-script{
-    def gitUrl="https://github.com/bcgov/${repoName}.git"
-    echo "gitUrl is: ${gitUrl}"
-    def path="/tmp/${repoName}"
-    echo "Path is: ${path}"
-
-    dir ("${path}"){
-		sh """
-		  set +x
-		  echo Running git commands...
-		  git clone ${gitUrl} ${path} -c user.name=random -c user.email=random@someplace.com
-		  git remote set-url origin ${gitUrl}
-		  git tag -a ${tagName} -m ${tagMessage}
-		  git push https://${GitHubUser}:${GitHubToken}@github.com/bcgov/${repoName}.git --tags --quiet
-		"""
-    }
-
-}
-}
+            
+            def createGitTag(String tagName, String tagMessage, String repoName) {
+            script{
+                def gitUrl="https://github.com/bcgov/${repoName}.git"
+                echo "gitUrl is: ${gitUrl}"
+                def path="/tmp/${repoName}"
+                echo "Path is: ${path}"
+            
+                dir ("${path}"){
+            		sh """
+            		  set +x
+            		  echo Running git commands...
+            		  git clone ${gitUrl} ${path} -c user.name=random -c user.email=random@someplace.com
+            		  git remote set-url origin ${gitUrl}
+            		  git tag -a ${tagName} -m ${tagMessage}
+            		  git push https://${GitHubUser}:${GitHubToken}@github.com/bcgov/${repoName}.git --tags --quiet
+            		"""
+                }
+            
+            }
+            }
+      type: JenkinsPipeline
