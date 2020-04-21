@@ -1,1 +1,3 @@
 nodejs:latest
+configuration-as-code-support
+configuration-as-code
