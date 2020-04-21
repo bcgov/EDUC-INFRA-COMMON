@@ -56,7 +56,7 @@ spec:
   replicas: 3
   volumeClaimTemplates:
     - metadata:
-        name: stan-sts-vol
+        name: stan-educ-pen-vol
       spec:
         accessModes:
           - ReadWriteOnce
@@ -109,7 +109,7 @@ spec:
           volumeMounts:
             - name: config-volume
               mountPath: /etc/stan-config
-            - name: stan-sts-vol
+            - name: stan-educ-pen-vol
               mountPath: /data/ecu-pen-nats-cluster
 
           # Disable CPU limits.
