@@ -2,9 +2,9 @@
 apiVersion: v1
 kind: Template
 metadata:
-  name: nats-marco
+  name: nats
   annotations:
-    "openshift.io/display-name": nats-marco
+    "openshift.io/display-name": nats
 parameters:
   - description: The pod namespace
     name: POD_NAMESPACE
@@ -13,7 +13,7 @@ objects:
 - apiVersion: v1
   kind: ConfigMap
   metadata:
-    name: nats-marco-config
+    name: nats-config
     labels:
   data:
     nats.conf: |-
@@ -32,12 +32,12 @@ objects:
 - apiVersion: v1
   kind: Service
   metadata:
-    name: nats-marco
+    name: nats
     labels:
-      app: nats-marco
+      app: nats
   spec:
     selector:
-      app: nats-marco
+      app: nats
     clusterIP: None
     ports:
       - name: client
@@ -56,25 +56,25 @@ objects:
 - apiVersion: apps/v1
   kind: StatefulSet
   metadata:
-    name: nats-marco
+    name: nats
     labels:
-      app: nats-marco
+      app: nats
   spec:
     selector:
       matchLabels:
-        app: nats-marco
+        app: nats
     replicas: 3
-    serviceName: "nats-marco"
+    serviceName: "nats"
     template:
       metadata:
         labels:
-          app: nats-marco
+          app: nats
       spec:
         # Common volumes for the containers
         volumes:
           - name: config-volume
             configMap:
-              name: nats-marco-config
+              name: nats-config
           - name: pid
             emptyDir: {}
 
