@@ -249,7 +249,7 @@ parameters:
     displayName: version
     name: VERSION
     required: true
-    value: v1.0.0
+    value: latest
   - description: ROUTE_HOST
     displayName: ROUTE_HOST
     name: ROUTE_HOST

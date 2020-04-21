@@ -22,8 +22,8 @@ objects:
         dockerStrategy:
           from:
             kind: ImageStreamTag
-            name: BASE_IMAGE:BASE_IMAGE_VERSION
-            namespace: BASE_IMAGE_NAMESPACE
+            name: ${BASE_IMAGE}:${BASE_IMAGE_VERSION}
+            namespace: ${BASE_IMAGE_NAMESPACE}
         type: Docker
       output:
         to:
