@@ -71,17 +71,17 @@ parameters:
     displayName: NAMESPACE
     name: NAMESPACE
     required: true
-    value: c2mvws-dev
+    value: c2mvws-tools
   - description: BASE_IMAGE
     displayName: BASE_IMAGE
     name: BASE_IMAGE
     required: true
-    value: jenkins-basic
+    value: jenkins
   - description: BASE_IMAGE_NAMESPACE
     displayName: BASE_IMAGE_NAMESPACE
     name: BASE_IMAGE_NAMESPACE
     required: true
-    value: bcgov
+    value: openshift
   - description: BASE_IMAGE_VERSION
     displayName: BASE_IMAGE_VERSION
     name: BASE_IMAGE_VERSION
