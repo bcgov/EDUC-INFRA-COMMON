@@ -14,9 +14,9 @@ objects:
     spec:
       source:
         git:
-          uri: ${ROUTE_HOST}
-          ref: ${ROUTE_REF}
-        contextDir: ${ROUTE_PATH}
+          uri: ${REPO_URL}
+          ref: ${REPO_REF}
+        contextDir: ${REPO_PATH}
         type: Git
       strategy:
         dockerStrategy:
