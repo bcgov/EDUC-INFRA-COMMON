@@ -1,0 +1,89 @@
+kind: Template
+apiVersion: v1
+labels:
+  app: ${NAME}-${SUFFIX}
+metadata:
+  name: ${NAME}-${SUFFIX}-template
+objects:
+  - apiVersion: v1
+    kind: BuildConfig
+    labels:
+      app: ${NAME}-${SUFFIX}
+    metadata:
+      name: ${NAME}-${SUFFIX}-build
+    spec:
+      source:
+        git:
+          uri: ${REPO_URL}
+          ref: ${REPO_REF}
+        contextDir: ${REPO_PATH}
+        type: Git
+      strategy:
+        dockerStrategy:
+          from:
+            kind: ImageStreamTag
+            name: ${BASE_IMAGE}:${BASE_IMAGE_VERSION}
+            namespace: ${BASE_IMAGE_NAMESPACE}
+        type: Docker
+      output:
+        to:
+          kind: ImageStreamTag
+          name: ${NAME}-${SUFFIX}-image:latest
+  - apiVersion: v1
+    kind: ImageStream
+    labels:
+      app: ${NAME}-${SUFFIX}
+    metadata:
+      name: ${NAME}-${SUFFIX}-image
+      namespace: ${NAMESPACE}
+parameters:
+  - description: A name used for all objects
+    displayName: Name
+    name: NAME
+    required: true
+    value: jenkins
+  - description: A name suffix used for all objects
+    displayName: Suffix
+    name: SUFFIX
+    required: false
+    value: custom
+  - description: A version used for the image tags
+    displayName: version
+    name: VERSION
+    required: true
+    value: latest
+  - description: REPO_URL
+    displayName: REPO_URL
+    name: REPO_URL
+    required: true
+    value: https://github.com/bcgov/EDUC-INFRA-COMMON
+  - description: REPO_PATH
+    displayName: REPO_PATH
+    name: REPO_PATH
+    required: true
+    value: /openshift/jenkins
+  - description: REPO_REF
+    displayName: REPO_REF
+    name: REPO_REF
+    required: true
+    value: feature/jenkins-build
+  - description: NAMESPACE
+    displayName: NAMESPACE
+    name: NAMESPACE
+    required: true
+    value: c2mvws-tools
+  - description: BASE_IMAGE
+    displayName: BASE_IMAGE
+    name: BASE_IMAGE
+    required: true
+    value: jenkins
+  - description: BASE_IMAGE_NAMESPACE
+    displayName: BASE_IMAGE_NAMESPACE
+    name: BASE_IMAGE_NAMESPACE
+    required: true
+    value: openshift
+  - description: BASE_IMAGE_VERSION
+    displayName: BASE_IMAGE_VERSION
+    name: BASE_IMAGE_VERSION
+    required: true
+    value: latest

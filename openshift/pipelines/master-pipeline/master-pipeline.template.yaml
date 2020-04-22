@@ -1,14 +1,16 @@
 ---
 apiVersion: v1
 kind: Template
-labels: 
-  template: master-pipeline
+labels:
+  template: jenkins-persistent-template
 metadata: 
-  name: master-pipeline
+  name: jenkins-persistent-template
 objects:
 - apiVersion: v1
   kind: BuildConfig
-  metadata: 
+  labels:
+    template: jenkins-persistent-template
+  metadata:
     name: "master-pipeline"
   spec:
     source:
