@@ -71,7 +71,7 @@ parameters:
     displayName: NAMESPACE
     name: NAMESPACE
     required: true
-    value: openshift
+    value: bcgov
   - description: BASE_IMAGE
     displayName: BASE_IMAGE
     name: BASE_IMAGE
