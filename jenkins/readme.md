@@ -3,7 +3,7 @@
 ## Build Custom Jenkins Image
 Run the following command to build custom Jenkins image.  Namespace and base image can be changed using parameters specified in bc.yaml.  Additional plugins can be added to plugins.txt
 ```
-oc -n c2mvws-tools process -f "https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/jenkins/openshift/bc.yaml" -o yaml | oc -n c2mvws-tools create -f -
+oc -n c2mvws-tools process -f "https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/jenkins/openshift/bc.yaml" -p NAMESPACE=c2mvws-tools -o yaml | oc -n c2mvws-tools create -f -
 ```
 
 ## Start Jenkins Build
@@ -15,7 +15,7 @@ oc -n c2mvws-tools start-build bc/jenkins-custom-build
 ## Deploy Jenkins
 This creates everything required for Jenkins instance.  It also creates a pvc for maven slaves. 
 ```
-oc -n c2mvws-tools process -f "https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/jenkins/openshift/dc.json" -o yaml | oc -n c2mvws-tools create -f -
+oc -n c2mvws-tools process -f "https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/jenkins/openshift/dc.json" -p NAMESPACE=c2mvws-tools -o yaml | oc -n c2mvws-tools create -f -
 ```
 
 ## Grant Jenkins Access to all Namespaces
