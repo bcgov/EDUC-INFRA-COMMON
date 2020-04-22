@@ -160,7 +160,7 @@
             "resources": {
               "limits": {
                 "cpu": 4,
-                "memory": ""
+                "memory": "${MEMORY_LIMIT}"
               },
               "requests": {
                 "cpu": 1,
