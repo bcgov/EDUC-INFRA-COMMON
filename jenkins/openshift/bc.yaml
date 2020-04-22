@@ -71,7 +71,6 @@ parameters:
     displayName: NAMESPACE
     name: NAMESPACE
     required: true
-    value: c2mvws-tools
   - description: BASE_IMAGE
     displayName: BASE_IMAGE
     name: BASE_IMAGE

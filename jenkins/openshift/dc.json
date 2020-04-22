@@ -328,8 +328,7 @@
   {
     "description": "The OpenShift Namespace where the Jenkins ImageStream resides.",
     "displayName": "Jenkins ImageStream Namespace",
-    "name": "NAMESPACE",
-    "value": "c2mvws-tools"
+    "name": "NAMESPACE"
   },
   {
     "description": "Whether to perform memory intensive, possibly slow, synchronization with the Jenkins Update Center on start.  If true, the Jenkins core update monitor and site warnings monitor are disabled.",
