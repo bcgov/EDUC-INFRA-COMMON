@@ -61,12 +61,12 @@ parameters:
     displayName: REPO_PATH
     name: REPO_PATH
     required: true
-    value: /openshift/jenkins
+    value: /jenkins
   - description: REPO_REF
     displayName: REPO_REF
     name: REPO_REF
     required: true
-    value: feature/jenkins-build
+    value: master
   - description: NAMESPACE
     displayName: NAMESPACE
     name: NAMESPACE
