@@ -14,6 +14,7 @@ oc -n c2mvws-tools start-build bc/jenkins-custom-build
 
 ## Deploy Jenkins
 This creates everything required for Jenkins instance.  It also creates a pvc for maven slaves. 
+This deployment occasionally take a very long time. If it timesout, try redeploying it.
 ```
 oc -n c2mvws-tools process -f "https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/jenkins/openshift/dc.json" -p NAMESPACE=c2mvws-tools -o yaml | oc -n c2mvws-tools create -f -
 ```
