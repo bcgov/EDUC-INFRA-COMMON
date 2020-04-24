@@ -85,9 +85,6 @@ objects:
     spec:
       port:
         targetPort: redis-exporter
-      tls:
-        insecureEdgeTerminationPolicy: Redirect
-        termination: edge
       to:
         kind: Service
         name: redis-exporter
