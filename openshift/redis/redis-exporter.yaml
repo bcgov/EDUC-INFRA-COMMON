@@ -1,0 +1,114 @@
+---
+kind: Template
+apiVersion: v1
+metadata:
+  name: educ-redis-exporter-dc
+  annotations:
+    openshift.io/display-name: "Redis Exporter"
+    description: "Export Redis availability and Metrics for prometheus"
+    iconClass: icon-redis
+    tags: "database, redis, redis-exporter"
+objects:
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      name: "redis-exporter"
+      annotations:
+        template.openshift.io/expose-uri: http://{.spec.clusterIP}:{.spec.ports[?(.name=="redis-exporter")].port}
+    spec:
+      ports:
+        - name: "redis-exporter"
+          protocol: TCP
+          port: 9121
+          targetPort: 9121
+          nodePort: 0
+      selector:
+        name: "redis-exporter"
+      type: ClusterIP
+      sessionAffinity: None
+  - apiVersion: v1
+    kind: DeploymentConfig
+    metadata:
+      name: "redis-exporter"
+      annotations:
+        template.alpha.openshift.io/wait-for-ready: 'true'
+    spec:
+      replicas: 1
+      selector:
+        name: "redis-exporter"
+      template:
+        metadata:
+          labels:
+            name: "redis-exporter"
+        spec:
+          containers:
+            - name: redis-exporter
+              image: oliver006/redis_exporter:latest
+              resources:
+                requests:
+                  cpu: "${CPU_REQUEST}"
+                  memory: "${MEMORY_REQUEST}"
+                limits:
+                  cpu: "${CPU_LIMIT}"
+                  memory: "${MEMORY_LIMIT}"
+              ports:
+                - containerPort: 9121
+              readinessProbe:
+                timeoutSeconds: 1
+                initialDelaySeconds: 5
+                tcpSocket:
+                  port: 9121
+              livenessProbe:
+                timeoutSeconds: 1
+                initialDelaySeconds: 30
+                tcpSocket:
+                  port: 9121
+              env:
+                - name: REDIS_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: "${DATABASE_SERVICE_NAME}"
+                      key: REDIS_PASSWORD
+                - name: REDIS_ADDR
+                  value: "redis://redis:6379"
+              terminationMessagePath: "/dev/termination-log"
+              imagePullPolicy: IfNotPresent
+              capabilities: {}
+          restartPolicy: Always
+          dnsPolicy: ClusterFirst
+  - apiVersion: v1
+    kind: Route
+    metadata:
+      labels:
+        app: redis-exporter
+      name: redis-exporter
+    spec:
+      port:
+        targetPort: redis-exporter
+      tls:
+        insecureEdgeTerminationPolicy: Redirect
+        termination: edge
+      to:
+        kind: Service
+        name: redis-exporter
+        weight: 100
+      wildcardPolicy: None
+parameters:
+  - name: CPU_LIMIT
+    value: 100m
+  - name: MEMORY_LIMIT
+    value: 64Mi
+  - name: CPU_REQUEST
+    value: 50m
+  - name: MEMORY_REQUEST
+    value: 28Mi
+  - name: NAME
+    displayName: Object names
+    description: The name of the OpenShift objects.
+    value: redis
+    required: true
+  - name: DATABASE_SERVICE_NAME
+    displayName: Database Service Name
+    description: The name of the OpenShift Service exposed for the database.
+    value: redis
+    required: true
