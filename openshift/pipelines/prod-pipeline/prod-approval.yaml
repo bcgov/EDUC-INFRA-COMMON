@@ -26,7 +26,8 @@ objects:
             def STUDENT_API_VERSION = '<Not Required>'
             def PEN_REQUEST_VERSION = '<Not Required>'
             def STAFF_ADMIN_VERSION = '<Not Required>'
-            def SAGA_API_VERSION = '<Not Required>'
+            def PEN_REQUEST_SAGA_API_VERSION = '<Not Required>'
+            def STUDENT_PROFILE_SAGA_API_VERSION = '<Not Required>'
             
             def TOOLS = 'c2mvws-test'
             def TARGET_ENVIRONMENT = 'c2mvws-prod'
@@ -111,7 +112,12 @@ objects:
                                secretKeyRef:
                                  name: 'soam-api-secrets'
                                  key: sonarqube-token
-                          - name: SAGA_API_VERSION_VALUE
+                          - name: PEN_REQUEST_SAGA_API_VERSION_VALUE
+                             valueFrom:
+                               secretKeyRef:
+                                 name: 'prod-versions-config-map'
+                                 key: sonarqube-token
+                          - name: STUDENT_PROFILE_SAGA_API_VERSION_VALUE
                              valueFrom:
                                secretKeyRef:
                                  name: 'prod-versions-config-map'
@@ -140,7 +146,8 @@ objects:
             			        echo "SOAM API VERSION: ${SOAM_API_VERSION_VALUE}"
             			        echo "STAFF ADMIN VERSION: ${STAFF_ADMIN_VERSION_VALUE}"
             			        echo "STUDENT API VERSION: ${STUDENT_API_VERSION_VALUE}"
-                          echo "SAGA API VERSION: ${SAGA_API_VERSION_VALUE}"
+                          echo "PEN REQUEST SAGA API VERSION: ${PEN REQUEST SAGA_API_VERSION_VALUE}"
+                          echo "STUDENT PROFILE SAGA API VERSION: ${STUDENT PROFILE SAGA_API_VERSION_VALUE}"
                                 // Get the input
                                 def tagInput = input(
                                         id: 'tagInput', message: 'Please enter the version number for each component to be tagged/deployed:',
@@ -173,9 +180,12 @@ objects:
                                                 string(defaultValue: "${STAFF_ADMIN_VERSION_VALUE}",
                                                         description: 'Enter Staff Admin Version, leave the tag blank if this service is not to be deployed',
                                                         name: 'STAFF_ADMIN_VERSION'),
-                                                string(defaultValue: "${SAGA_API_VERSION_VALUE}",
-                                                        description: 'Enter SAGA API Version, leave the tag blank if this service is not to be deployed',
-                                                        name: 'SAGA_API_VERSION'),
+                                                string(defaultValue: "${PEN REQUEST SAGA_API_VERSION_VALUE}",
+                                                        description: 'Enter PEN Request SAGA API Version, leave the tag blank if this service is not to be deployed',
+                                                        name: 'PEN_REQUEST_SAGA_API_VERSION'),
+                                                string(defaultValue: "${STUDENT_PROFILE_SAGA_API_VERSION_VALUE}",
+                                                        description: 'Enter Student Profile SAGA API Version, leave the tag blank if this service is not to be deployed',
+                                                        name: 'STUDENT_PROFILE_SAGA_API_VERSION'),
                                         ])
             					// Save to variables. Default to empty string if not found.
                                 DIGITAL_ID_API_VERSION = tagInput.DIGITAL_ID_API_VERSION?:''
@@ -187,7 +197,8 @@ objects:
             					STUDENT_API_VERSION = tagInput.STUDENT_API_VERSION?:''
             					PEN_REQUEST_VERSION = tagInput.PEN_REQUEST_VERSION?:''
             					STAFF_ADMIN_VERSION = tagInput.STAFF_ADMIN_VERSION?:''
-                      SAGA_API_VERSION = tagInput.SAGA_API_VERSION?:''
+                      PEN_REQUEST_SAGA_API_VERSION = tagInput.PEN_REQUEST_SAGA_API_VERSION?:''
+                      STUDENT_PROFILE_SAGA_API_VERSION = tagInput.STUDENT_PROFILE_SAGA_API_VERSION?:''
             				}
                         }
                     }
@@ -316,14 +327,24 @@ objects:
             		       deployUIStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-admin', 'student-admin', JOB_NAME, "${STAFF_ADMIN_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
             			}
             		}
-                stage('Deploy SAGA API to Prod'){
+                stage('Deploy PEN Request SAGA API to Prod'){
             		    when {
             				expression {
-            					return "${SAGA_API_VERSION}" != "<Not Required>" && "${SAGA_API_VERSION}" != "";
+            					return "${PEN_REQUEST_SAGA_API_VERSION}" != "<Not Required>" && "${PEN_REQUEST_SAGA_API_VERSION}" != "";
             				}
             			}
             			steps {
-            		       deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request-saga-api', 'saga-api', JOB_NAME, "${SAGA_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+            		       deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request-saga-api', 'pen-request-saga-api', JOB_NAME, "${PEN_REQUEST_SAGA_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+            			}
+            		}
+                stage('Deploy Student Profile SAGA API to Prod'){
+            		    when {
+            				expression {
+            					return "${STUDENT_PROFILE_SAGA_API_VERSION}" != "<Not Required>" && "${STUDENT_PROFILE_SAGA_API_VERSION}" != "";
+            				}
+            			}
+            			steps {
+            		       deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-profile-saga-api', 'student-profile-saga-api', JOB_NAME, "${STUDENT_PROFILE_SAGA_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
             			}
             		}
                 }
