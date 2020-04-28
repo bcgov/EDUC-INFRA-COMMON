@@ -96,6 +96,8 @@ objects:
                  secretKeyRef:
                    name: "${DATABASE_SERVICE_NAME}"
                    key: REDIS_PASSWORD
+             - name: TZ
+               value: "America/Vancouver"
              resources:
                requests:
                  cpu: "${CPU_REQUEST}"
