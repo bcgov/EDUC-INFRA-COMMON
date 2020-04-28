@@ -15,4 +15,12 @@ Insert into STUDENT.PEN_RETRIEVAL_REQUEST_MACRO (PEN_RETRIEVAL_REQUEST_MACRO_ID,
 Insert into STUDENT.PEN_RETRIEVAL_REQUEST_MACRO (PEN_RETRIEVAL_REQUEST_MACRO_ID,MACRO_CODE,MACRO_TEXT,MACRO_TYPE_CODE,CREATE_USER,CREATE_DATE,UPDATE_USER,UPDATE_DATE) values (sys_guid(),'NMG','Based on the information you have provided, we have updated your Legal Name format and Gender in the PEN system now.' || CHR(10) || CHR(10) || 'If you plan on creating a Student Transcript Services (STS) account to order your transcript from the Ministry of Education, then please wait until tomorrow morning for the overnight update to finalize.','COMPLETE','IDIR/MVILLENE',to_date('2020-04-06 00:00:00','YYYY-MM-DD HH24:MI:SS'),'IDIR/MVILLENE',to_date('2020-04-06 00:00:00','YYYY-MM-DD HH24:MI:SS'));
 Insert into STUDENT.PEN_RETRIEVAL_REQUEST_MACRO (PEN_RETRIEVAL_REQUEST_MACRO_ID,MACRO_CODE,MACRO_TEXT,MACRO_TYPE_CODE,CREATE_USER,CREATE_DATE,UPDATE_USER,UPDATE_DATE) values (sys_guid(),'DOB','Based on the information you have provided, we have updated your Date of Birth in the PEN system now.' || CHR(10) || CHR(10) || 'If you plan on creating a Student Transcript Services (STS) account to order your transcript from the Ministry of Education, then please wait until tomorrow morning for the overnight update to finalize.','COMPLETE','IDIR/MVILLENE',to_date('2020-04-06 00:00:00','YYYY-MM-DD HH24:MI:SS'),'IDIR/MVILLENE',to_date('2020-04-06 00:00:00','YYYY-MM-DD HH24:MI:SS'));
 
+--Add Columns to PEN_RETRIEVAL_REQUEST
+Alter table STUDENT.PEN_RETRIEVAL_REQUEST add ( 
+    DEMOG_CHANGED VARCHAR2(1),
+    COMPLETE_COMMENT VARCHAR2(4000)
+);
 
+COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.EMAIL_VERIFIED IS 'Short value indicating whether the email of the student has been verified.';
+COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.DEMOG_CHANGED IS 'Short value indicating whether the demographic information reported to PEN has been updated when completing PEN Retrieval Requests.';
+COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.COMPLETE_COMMENT IS 'Free text message entered by PEN Staff when completing PEN Retrieval Requests.';

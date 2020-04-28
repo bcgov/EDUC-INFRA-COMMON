@@ -60,6 +60,8 @@ CREATE TABLE STUDENT.PEN_RETRIEVAL_REQUEST (
   FAILURE_REASON VARCHAR2(4000),
   EMAIL_VERIFIED VARCHAR2(1) NOT NULL,
   PEN VARCHAR2(9),
+  DEMOG_CHANGED VARCHAR2(1),
+  COMPLETE_COMMENT VARCHAR2(4000),
   CREATE_USER VARCHAR2(32) NOT NULL,
   CREATE_DATE DATE DEFAULT SYSDATE NOT NULL,
   UPDATE_USER VARCHAR2(32) NOT NULL,
@@ -254,6 +256,9 @@ COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.Failure_Reason IS 'Free text rea
 COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.BCSC_Auto_Match_Outcome IS 'Short value indicating the outcome of performing the BCSC AutoMatch search. Values NOMATCH, ONEMATCH, MANYMATCHES, RIGHTPEN, WRONGPEN, null.';
 COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.BCSC_Auto_Match_Detail IS 'Description providing more info about outcome of performing the BCSC AutoMatch search. When the search returned one result, this will hold the PEN and Legal Names of the the record matched.';
 COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.PEN IS 'The PEN value that was matched to this PEN Request, either manually by staff or automatically by the system.';
+COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.EMAIL_VERIFIED IS 'Short value indicating whether the email of the student has been verified.';
+COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.DEMOG_CHANGED IS 'Short value indicating whether the demographic information reported to PEN has been updated when completing PEN Retrieval Requests.';
+COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.COMPLETE_COMMENT IS 'Free text message entered by PEN Staff when completing PEN Retrieval Requests.';
 
 COMMENT ON COLUMN STUDENT.PEN_RETRIEVAL_REQUEST_MACRO.MACRO_CODE IS 'A short text string that identifies the macro and when identified will be replaced by the macro text.';
 COMMENT ON COLUMN STUDENT.PEN_RETRIEVAL_REQUEST_MACRO.MACRO_TEXT IS 'A standard text string that will be substituted for the macro code by the application.';
