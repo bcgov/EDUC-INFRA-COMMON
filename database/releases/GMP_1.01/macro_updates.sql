@@ -20,3 +20,7 @@ Alter table STUDENT.PEN_RETRIEVAL_REQUEST add (
     DEMOG_CHANGED VARCHAR2(1),
     COMPLETE_COMMENT VARCHAR2(4000)
 );
+
+COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.EMAIL_VERIFIED IS 'Short value indicating whether the email of the student has been verified.';
+COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.DEMOG_CHANGED IS 'Short value indicating whether the demographic information reported to PEN has been updated when completing PEN Retrieval Requests.';
+COMMENT ON COLUMN STUDENT.PEN_Retrieval_Request.COMPLETE_COMMENT IS 'Free text message entered by PEN Staff when completing PEN Retrieval Requests.';
