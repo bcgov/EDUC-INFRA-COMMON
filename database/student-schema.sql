@@ -381,8 +381,8 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON PEN_RETRIEVAL_REQUEST_MACRO TO PROXY_PEN
 GRANT SELECT, INSERT, UPDATE, DELETE ON PEN_RETRIEVAL_REQUEST_MACRO_TYPE_CODE TO PROXY_PEN_RETRIEVAL;
 
 --Indexes for commonly queried columns
-create index digital_identity_identity_value_i on STUDENT.digital_identity ( identity_value );
-create index pen_retrieval_request_digital_identity_id_i on STUDENT.pen_retrieval_request ( digital_identity_id );
-create index pen_retrieval_request_comment_pen_retrieval_request_id_i on STUDENT.pen_retrieval_request_comment ( pen_retrieval_request_id );
-create index pen_retrieval_request_document_pen_retrieval_request_id_i on STUDENT.pen_retrieval_request_document ( pen_retrieval_request_id );
-create index services_card_info_did_i on STUDENT.services_card_info ( did );
+create index STUDENT.digital_identity_identity_value_i on STUDENT.digital_identity ( identity_value );
+create index STUDENT.pen_retrieval_request_digital_identity_id_i on STUDENT.pen_retrieval_request ( digital_identity_id );
+create index STUDENT.pen_retrieval_request_comment_pen_retrieval_request_id_i on STUDENT.pen_retrieval_request_comment ( pen_retrieval_request_id );
+create index STUDENT.pen_retrieval_request_document_pen_retrieval_request_id_i on STUDENT.pen_retrieval_request_document ( pen_retrieval_request_id );
+create index STUDENT.services_card_info_did_i on STUDENT.services_card_info ( did );
