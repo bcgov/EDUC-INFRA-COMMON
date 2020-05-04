@@ -14,15 +14,23 @@ objects:
     strategy:
       jenkinsPipelineStrategy:
         jenkinsfile: | 
-            def DIGITAL_ID_API_VERSION = ''
-            def PEN_DEMOG_API_VERSION = ''
-            def PEN_REQUEST_API_VERSION = ''
-            def PEN_REQUEST_EMAIL_API_VERSION = ''
-            def SERVICES_CARD_API_VERSION = ''
-            def SOAM_API_VERSION = ''
-            def STUDENT_API_VERSION = ''
-            def PEN_REQUEST_VERSION = ''
-            def STAFF_ADMIN_VERSION = ''
+            def GIT_USER = 'NONE'
+            def GIT_TOKEN = 'NONE'
+            def DIGITAL_ID_API_VERSION = '<Not Required>'
+            def PEN_DEMOG_API_VERSION = '<Not Required>'
+            def PEN_REQUEST_API_VERSION = '<Not Required>'
+            def PEN_REQUEST_EMAIL_API_VERSION = '<Not Required>'
+            def SERVICES_CARD_API_VERSION = '<Not Required>'
+            def SOAM_API_VERSION = '<Not Required>'
+            def STUDENT_API_VERSION = '<Not Required>'
+            def PEN_REQUEST_VERSION = '<Not Required>'
+            def STAFF_ADMIN_VERSION = '<Not Required>'
+            
+            def TOOLS = 'c2mvws-tools'
+            def TARGET_ENVIRONMENT = 'c2mvws-dev'
+            def JOB_NAME = 'master'
+            def STAGING_ENV = 'Dev'
+            def APP_DOMAIN = 'pathfinder.gov.bc.ca'
             
             pipeline {
                 environment {
@@ -251,6 +259,5 @@ objects:
             		"""
                 }
             
-            }
             }
       type: JenkinsPipeline

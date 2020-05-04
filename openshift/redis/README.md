@@ -10,3 +10,9 @@
 oc process -f redis.dc.yaml | oc create -f-
 ```
 
+
+```
+oc process -f redis-exporter.dc.yaml | oc create -f-
+```
+
+
