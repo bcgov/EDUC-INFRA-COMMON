@@ -42,7 +42,7 @@ objects:
           livenessProbe:
             failureThreshold: 3
             httpGet:
-              path: "/api/health"
+              path: "/health"
               port: 8080
               scheme: HTTP
             periodSeconds: 10
@@ -57,7 +57,7 @@ objects:
           readinessProbe:
             failureThreshold: 3
             httpGet:
-              path: "/api/health"
+              path: "/health"
               port: 8080
               scheme: HTTP
             periodSeconds: 10
@@ -66,10 +66,10 @@ objects:
           resources:
             requests:
               cpu: "50m"
-              memory: "300Mi"
+              memory: "150Mi"
             limits:
               cpu: "100m"
-              memory: "500Mi"
+              memory: "250Mi"
         volumes:
         - name: tls-certs
           secret:
