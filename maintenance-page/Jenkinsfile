@@ -52,8 +52,6 @@ pipeline {
                   echo "Building maintenance page..."
                   def bcBackend = openshift.process('-f', 'maintenance-page/openshift/bc.yaml', "SOURCE_REPO_URL=${SOURCE_REPO_URL}", "SOURCE_REPO_REF=${SOURCE_REPO_REF}")
                   openshift.apply(bcBackend).narrow('bc').startBuild('-w').logs('-f')
-
-                  openshift.tag("${NAME}:latest", "${NAME}")
                 } catch (e) {
                   echo "Maintenance page build failed"
                   throw e
