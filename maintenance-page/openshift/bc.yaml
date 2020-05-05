@@ -36,12 +36,12 @@ objects:
           uri: "${SOURCE_REPO_URL}"
         type: Git
       strategy:
-        type: Source
         sourceStrategy:
           from:
             kind: ImageStreamTag
-            namespace: "${NAMESPACE}"
-            name: "nginx:${NGINX_VERSION}"
+            name: "nginx:latest"
+          forcePull: true
+        type: Source
       output:
         to:
           kind: ImageStreamTag
