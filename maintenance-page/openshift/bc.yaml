@@ -5,7 +5,6 @@ labels:
   template: "${NAME}"
 metadata:
   name: "${NAME}"
-  creationTimestamp:
 objects:
 - apiVersion: v1
   kind: ImageStream
@@ -36,13 +35,12 @@ objects:
         uri: "${SOURCE_REPO_URL}"
       type: Git
     strategy:
-      dockerStrategy:
-        env:
-          - name: BUILD_LOGLEVEL
-            value: '2'
-          - name: NPM_CONFIG_LOGLEVEL
-            value: notice
-      type: Docker
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          name: "nginx:${NGINX_VERSION}"
+        forcePull: true
+      type: Source
     output:
       to:
         kind: ImageStreamTag
