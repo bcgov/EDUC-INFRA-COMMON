@@ -110,7 +110,7 @@ objects:
             name: cpu
             targetAverageUtilization: 90
 parameters:
-  - name: Name
+  - name: NAME
     description: The name assigned to ojects defined by this template
     required: true
     value: "maintenance-page"
