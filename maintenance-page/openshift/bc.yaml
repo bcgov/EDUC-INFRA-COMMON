@@ -16,9 +16,25 @@ objects:
   kind: BuildConfig
   metadata:
     labels:
-      build: "${NAME}"
-    name: "${NAME}"
+      build: "maintenance-page"
+    name: "maintenance-page"
   spec:
+    completionDeadlineSeconds: 800
+    successfulBuildsHistoryLimit: 3
+    failedBuildsHistoryLimit: 3
+    source:
+      contextDir: "${CONTEXT_DIR}"
+      git:
+        ref: "${SOURCE_REPO_REF}"
+        uri: "${SOURCE_REPO_URL}"
+      type: Git
+    strategy:
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          name: "nginx:${NGINX_VERSION}"
+        forcePull: true
+      type: Source
     output:
       to:
         kind: ImageStreamTag
@@ -38,7 +54,7 @@ parameters:
   - name: CONTEXT_DIR
     description: The relative path to your project if not root
     required: true
-    value: "maintenance-page/html"
+    value: 'maintenance-page/html'
   - name: NGINX_VERSION
     description: Version of the NGINX image to be used
     required: true
