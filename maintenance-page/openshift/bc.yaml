@@ -19,13 +19,6 @@ objects:
       build: "${NAME}"
     name: "${NAME}"
   spec:
-    strategy:
-      sourceStrategy:
-        from:
-          kind: ImageStreamTag
-          name: "nginx:${NGINX_VERSION}"
-        forcePull: true
-      type: Source
     output:
       to:
         kind: ImageStreamTag
