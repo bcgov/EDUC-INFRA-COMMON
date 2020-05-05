@@ -40,7 +40,6 @@ objects:
           uri: "${SOURCE_REPO_URL}"
         type: Git
       strategy:
-        type: Source
         sourceStrategy:
           from:
             kind: ImageStreamTag
