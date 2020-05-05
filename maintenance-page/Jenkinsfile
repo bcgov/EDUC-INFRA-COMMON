@@ -11,6 +11,7 @@ pipeline {
 
     REPO_NAME = 'educ-infra-common'
     OWNER = 'bcgov'
+    NAME = 'maintenance-page'
 
     APP_NAME = 'maintenance-page'
     APP_DOMAIN = 'pathfinder.gov.bc.ca'
@@ -48,13 +49,13 @@ pipeline {
             openshift.withProject(TOOLS) {
               Backend: {
                 try {
-                  echo "Building backend..."
+                  echo "Building maintenance page..."
                   def bcBackend = openshift.process('-f', 'maintenance-page/openshift/bc.yaml', "SOURCE_REPO_URL=${SOURCE_REPO_URL}", "SOURCE_REPO_REF=${SOURCE_REPO_REF}")
                   openshift.apply(bcBackend).narrow('bc').startBuild('-w').logs('-f')
 
                   openshift.tag("${NAME}:latest", "${NAME}")
                 } catch (e) {
-                  echo "Backend build failed"
+                  echo "Maintenance page build failed"
                   throw e
                 }
               }
@@ -74,7 +75,7 @@ pipeline {
                   def bcBackend = openshift.selector('bc', "${NAME}")
 
                   if (bcBackend.exists()) {
-                    echo "Removing BuildConfig ${NAME}..."
+                    echo "Removing BuildConfig maintenance page..."
                     bcBackend.delete()
                   }
                 }
