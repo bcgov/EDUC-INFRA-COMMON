@@ -104,7 +104,7 @@ pipeline {
         script {
           openshift.withCluster() {
             openshift.withProject(DEV) {
-              openshift.patch("routes/student-admin-frontend-master", '{"spec":{"to":{"name":"maintenance-page"}}}')
+              openshift.patch("route/student-admin-frontend-master", '{"spec":{"to":{"name":"maintenance-page"}}}')
             }
           }
         }
