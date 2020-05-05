@@ -45,7 +45,7 @@ objects:
       output:
         to:
           kind: ImageStreamTag
-          name: "maintenance-page:latest"
+          name: "maintenance-page"
 parameters:
   - name: NAME
     description: The name assigned to ojects defined by this template
