@@ -7,45 +7,52 @@ metadata:
   name: "${NAME}"
   creationTimestamp:
 objects:
-  - apiVersion: v1
-    kind: ImageStream
-    metadata:
-      annotations:
-        openshift.io/generated-by: OpenShiftNewBuild
-      creationTimestamp:
-      labels:
-        build: "${NAME}"
-      name: "${NAME}"
-  - apiVersion: v1
-    kind: BuildConfig
-    metadata:
-      annotations:
-        openshift.io/generated-by: OpenShiftNewBuild
-      creationTimestamp:
-      labels:
-        build: "${NAME}"
-      name: "${NAME}"
-    spec:
-      completionDeadlineSeconds: 800
-      successfulBuildsHistoryLimit: 3
-      failedBuildsHistoryLimit: 3
-      source:
-        contextDir: "${CONTEXT_DIR}"
-        git:
-          ref: "${SOURCE_REPO_REF}"
-          uri: "${SOURCE_REPO_URL}"
-        type: Git
-      strategy:
-        sourceStrategy:
-          from:
-            kind: ImageStreamTag
-            name: "nginx:latest"
-          forcePull: true
-        type: Source
-      output:
-        to:
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewBuild
+    creationTimestamp:
+    labels:
+      build: "${NAME}"
+    name: "${NAME}"
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    labels:
+      build: "${NAME}"
+    name: "${NAME}"
+  spec:
+    completionDeadlineSeconds: 800
+    successfulBuildsHistoryLimit: 3
+    failedBuildsHistoryLimit: 3
+    nodeSelector:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: "${NAME}:latest"
+    postCommit: {}
+    resources:
+      requests:
+        cpu: 500m
+        memory: 500m
+      limits:
+        cpu: 2500m
+        memory: 2Gi
+    runPolicy: SerialLatestOnly
+    source:
+      contextDir: "${CONTEXT_DIR}"
+      git:
+        ref: ${SOURCE_REPO_REF}
+        uri: "${SOURCE_REPO_URL}"
+      type: Git
+    strategy:
+      sourceStrategy:
+        from:
           kind: ImageStreamTag
-          name: "${NAME}:latest"
+          name: "nginx:latest"
+        forcePull: true
+      type: Source
 parameters:
   - name: NAME
     description: The name assigned to ojects defined by this template
