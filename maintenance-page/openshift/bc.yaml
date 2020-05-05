@@ -42,7 +42,7 @@ objects:
             value: '2'
           - name: NPM_CONFIG_LOGLEVEL
             value: notice
-        type: Docker
+      type: Docker
     output:
       to:
         kind: ImageStreamTag
