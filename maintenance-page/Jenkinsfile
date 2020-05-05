@@ -104,9 +104,18 @@ pipeline {
         script {
           openshift.withCluster() {
             openshift.withProject(DEV) {
-              openshift.patch("route/student-admin-frontend-master", '\'{"spec":{"to":{"name":"maintenance-page"}}}\'')
+              echo 'Pointing GetMyPen route to maintenance page'
+              openshift.patch("route/student-admin-frontend-master", '\'{"spec":{"port":{"targetPort":"8080-tcp"}},"spec":{"to":{"name":"maintenance-page"}}}\'')
             }
           }
+        }
+      }
+      post {
+        success {
+          echo 'Route successfully changed'
+        }
+        failure {
+          echo 'Failed to change route'
         }
       }
     }
