@@ -131,7 +131,7 @@ def deployStage(String stageEnv, String projectEnv) {
         echo "DEBUG - Using project: ${openshift.project()}"
       }
       echo "Tagging Image ${NAME}..."
-      openshift.tag("${TOOLS}/${NAME}", "${NAME}")
+      openshift.tag("${TOOLS}/${NAME}:latest", "${NAME}:latest")
 
       echo "Processing DeploymentConfig ${NAME}..."
       def dcBackendTemplate = openshift.process('-f',
