@@ -50,7 +50,7 @@ objects:
       sourceStrategy:
         from:
           kind: ImageStreamTag
-          name: "nginx:latest"
+          name: "nodejs"
         forcePull: true
       type: Source
 parameters:
