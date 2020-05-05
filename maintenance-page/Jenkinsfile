@@ -11,7 +11,7 @@ pipeline {
 
     REPO_NAME = 'educ-infra-common'
     OWNER = 'bcgov'
-    JOB_NAME = 'master'
+    NAME = 'maintenance-page'
 
     APP_NAME = 'maintenance-page'
     APP_DOMAIN = 'pathfinder.gov.bc.ca'
@@ -19,6 +19,7 @@ pipeline {
     SOURCE_REPO_RAW = 'https://github.com/${OWNER}/${REPO_NAME}/master'
     SOURCE_REPO_REF = 'feature/maintenance-page'
     SOURCE_REPO_URL = 'https://github.com/${OWNER}/${REPO_NAME}.git'
+    CONTEXT_DIR = 'maintenance-page/html'
 
     TOOLS_HOST_ROUTE = "${APP_NAME}-${TOOLS}.${APP_DOMAIN}"
     DEV_HOST_ROUTE = "${APP_NAME}-${DEV}.${APP_DOMAIN}"
@@ -49,10 +50,10 @@ pipeline {
               Backend: {
                 try {
                   echo "Building backend..."
-                  def bcBackend = openshift.process('-f', 'maintenance-page/openshift/bc.yaml', "REPO_NAME=${REPO_NAME}", "JOB_NAME=${JOB_NAME}", "SOURCE_REPO_URL=${SOURCE_REPO_URL}", "SOURCE_REPO_REF=${SOURCE_REPO_REF}")
+                  def bcBackend = openshift.process('-f', 'maintenance-page/openshift/bc.yaml', "NAME=${NAME}", "SOURCE_REPO_URL=${SOURCE_REPO_URL}", "SOURCE_REPO_REF=${SOURCE_REPO_REF}", "CONTEXT_DIR=${CONTEXT_DIR}")
                   openshift.apply(bcBackend).narrow('bc').startBuild('-w').logs('-f')
 
-                  openshift.tag("${REPO_NAME}-backend:latest", "${REPO_NAME}-backend:${JOB_NAME}")
+                  openshift.tag("${NAME}:latest", "${NAME}")
                 } catch (e) {
                   echo "Backend build failed"
                   throw e
@@ -71,10 +72,10 @@ pipeline {
                 if (DEBUG_OUTPUT.equalsIgnoreCase('true')) {
                   echo "DEBUG - Using project: ${openshift.project()}"
                 } else {
-                  def bcBackend = openshift.selector('bc', "${REPO_NAME}-backend-${JOB_NAME}")
+                  def bcBackend = openshift.selector('bc', "${NAME}")
 
                   if (bcBackend.exists()) {
-                    echo "Removing BuildConfig ${REPO_NAME}-backend-${JOB_NAME}..."
+                    echo "Removing BuildConfig ${NAME}..."
                     bcBackend.delete()
                   }
                 }
@@ -134,7 +135,7 @@ def deployStage(String stageEnv, String projectEnv) {
       echo "Tagging Image ${NAME}..."
       openshift.tag("${TOOLS}/${NAME}", "${NAME}")
 
-      echo "Processing DeploymentConfig ${REPO_NAME}-backend..."
+      echo "Processing DeploymentConfig ${NAME}..."
       def dcBackendTemplate = openshift.process('-f',
               'maintenance-page/openshift/dc.yaml',
               "NAME=${NAME}"
