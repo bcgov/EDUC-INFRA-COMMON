@@ -2,59 +2,65 @@
 apiVersion: v1
 kind: Template
 labels:
-  template: "${NAME}-template"
+  template: "${NAME}"
 metadata:
-  name: "${NAME}-bc"
+  name: "${NAME}"
+  creationTimestamp:
 objects:
-- apiVersion: v1
-  kind: ImageStream
-  metadata:
-    labels:
-      build: "${NAME}"
-    name: "${NAME}"
-- apiVersion: v1
-  kind: BuildConfig
-  metadata:
-    labels:
-      build: "johnie"
-    name: "johny"
-  spec:
-    completionDeadlineSeconds: 800
-    successfulBuildsHistoryLimit: 3
-    failedBuildsHistoryLimit: 3
-    source:
-      contextDir: "${CONTEXT_DIR}"
-      git:
-        ref: "${SOURCE_REPO_REF}"
-        uri: "${SOURCE_REPO_URL}"
-      type: Git
-    strategy:
-      sourceStrategy:
-        from:
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      annotations:
+        openshift.io/generated-by: OpenShiftNewBuild
+      creationTimestamp:
+      labels:
+        build: "${NAME}"
+      name: "${NAME}"
+  - apiVersion: v1
+    kind: BuildConfig
+    metadata:
+      annotations:
+        openshift.io/generated-by: OpenShiftNewBuild
+      creationTimestamp:
+      labels:
+        build: "${NAME}"
+      name: "${NAME}"
+    spec:
+      completionDeadlineSeconds: 800
+      successfulBuildsHistoryLimit: 3
+      failedBuildsHistoryLimit: 3
+      source:
+        contextDir: "${CONTEXT_DIR}"
+        git:
+          ref: "${SOURCE_REPO_REF}"
+          uri: "${SOURCE_REPO_URL}"
+        type: Git
+      strategy:
+        sourceStrategy:
+          from:
+            kind: ImageStreamTag
+            namespace: "${NAMESPACE}"
+            name: "nginx:${NGINX_VERSION}"
+        type: Source
+      output:
+        to:
           kind: ImageStreamTag
-          name: "nginx:${NGINX_VERSION}"
-        forcePull: true
-      type: Source
-    output:
-      to:
-        kind: ImageStreamTag
-        name: "${NAME}:latest"
+          name: "${NAME}:latest"
 parameters:
   - name: NAME
     description: The name assigned to ojects defined by this template
     required: true
-    value: "maintenance-page"
+    value: "maintenance-page-build-config"
   - name: SOURCE_REPO_REF
     description: Git Pull Request Reference (i.e. 'pull/CHANGE_ID/head')
     required: true
-    value: "feature/maintenance-page"
   - name: SOURCE_REPO_URL
     description: Git Repository URL
     required: true
   - name: CONTEXT_DIR
     description: The relative path to your project if not root
     required: true
-    value: 'maintenance-page/html'
+    value: "maintenance-page/html"
   - name: NGINX_VERSION
     description: Version of the NGINX image to be used
     required: true
