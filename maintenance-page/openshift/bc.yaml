@@ -2,9 +2,9 @@
 apiVersion: v1
 kind: Template
 labels:
-  template: "${NAME}"
+  template: "${NAME}-template"
 metadata:
-  name: "${NAME}"
+  name: "${NAME}-bc"
 objects:
 - apiVersion: v1
   kind: ImageStream
@@ -16,8 +16,8 @@ objects:
   kind: BuildConfig
   metadata:
     labels:
-      build: "maintenance-page"
-    name: "maintenance-page"
+      build: "${NAME}"
+    name: "${NAME}"
   spec:
     completionDeadlineSeconds: 800
     successfulBuildsHistoryLimit: 3
