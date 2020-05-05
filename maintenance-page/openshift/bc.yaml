@@ -16,8 +16,8 @@ objects:
   kind: BuildConfig
   metadata:
     labels:
-      build: "JOHN1"
-    name: "JOHN2"
+      build: "johnie"
+    name: "johny"
   spec:
     completionDeadlineSeconds: 800
     successfulBuildsHistoryLimit: 3
