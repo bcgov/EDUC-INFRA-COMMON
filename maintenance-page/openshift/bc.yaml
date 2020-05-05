@@ -9,18 +9,12 @@ objects:
 - apiVersion: v1
   kind: ImageStream
   metadata:
-    annotations:
-      openshift.io/generated-by: OpenShiftNewBuild
-    creationTimestamp:
     labels:
       build: "${NAME}"
     name: "${NAME}"
 - apiVersion: v1
   kind: BuildConfig
   metadata:
-    annotations:
-      openshift.io/generated-by: OpenShiftNewBuild
-    creationTimestamp:
     labels:
       build: "${NAME}"
     name: "${NAME}"
