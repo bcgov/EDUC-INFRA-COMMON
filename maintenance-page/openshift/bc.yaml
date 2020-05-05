@@ -29,10 +29,6 @@ objects:
       completionDeadlineSeconds: 800
       successfulBuildsHistoryLimit: 3
       failedBuildsHistoryLimit: 3
-      output:
-        to:
-          kind: ImageStreamTag
-          name: "${NAME}:latest"
       source:
         contextDir: "${CONTEXT_DIR}"
         git:
@@ -40,11 +36,16 @@ objects:
           uri: "${SOURCE_REPO_URL}"
         type: Git
       strategy:
+        type: Source
         sourceStrategy:
           from:
             kind: ImageStreamTag
             namespace: "${NAMESPACE}"
             name: "nginx:${NGINX_VERSION}"
+      output:
+        to:
+          kind: ImageStreamTag
+          name: "${NAME}:latest"
 parameters:
   - name: NAME
     description: The name assigned to ojects defined by this template
