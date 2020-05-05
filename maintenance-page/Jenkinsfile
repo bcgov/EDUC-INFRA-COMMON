@@ -88,7 +88,7 @@ pipeline {
     }
     stage('Deploy to Dev') {
       steps {
-        deployStage('Dev', (String)DEV)
+        deployStage('Dev', DEV)
       }
       post {
         success {
