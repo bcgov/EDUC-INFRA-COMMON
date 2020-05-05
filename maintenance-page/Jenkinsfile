@@ -50,7 +50,7 @@ pipeline {
               Backend: {
                 try {
                   echo "Building backend..."
-                  def bcBackend = openshift.process('-f', 'maintenance-page/openshift/bc.yaml', "NAME=${NAME}", "SOURCE_REPO_URL=${SOURCE_REPO_URL}", "SOURCE_REPO_REF=${SOURCE_REPO_REF}", "CONTEXT_DIR=${CONTEXT_DIR}")
+                  def bcBackend = openshift.process('-f', 'maintenance-page/openshift/bc.yaml', "NAME=${NAME}", "SOURCE_REPO_URL=${SOURCE_REPO_URL}")
                   openshift.apply(bcBackend).narrow('bc').startBuild('-w').logs('-f')
 
                   openshift.tag("${NAME}:latest", "${NAME}")
