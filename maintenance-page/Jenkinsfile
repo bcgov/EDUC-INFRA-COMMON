@@ -99,6 +99,17 @@ pipeline {
         }
       }
     }
+    stage('Update route') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.withProject(DEV) {
+              openshift.patch("routes/student-admin-frontend-master", '{"spec":{"to":{"name":"maintenance-page"}}}')
+            }
+          }
+        }
+      }
+    }
     /*stage('e2e tests') {
       agent {
         node {
