@@ -13,7 +13,7 @@ pipeline {
       steps {
         script {
 
-        input("Are you sure you want to deploy to maintenance page in PROD?")
+        input("Are you sure you want to remove the maintenance page in PROD?")
 
           openshift.withCluster() {
             openshift.withProject(PROD) {
