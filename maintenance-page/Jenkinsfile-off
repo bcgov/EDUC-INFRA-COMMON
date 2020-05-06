@@ -1,0 +1,72 @@
+pipeline {
+  agent any
+
+  environment {
+
+    DEV = 'c2mvws-dev'
+    TEST = 'c2mvws-test'
+    PROD = 'c2mvws-prod'
+  }
+
+  stages {
+    stage('Update route') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.withProject(DEV) {
+              echo 'Pointing GetMyPen route back to GetMyPEN'
+              openshift.patch("route/student-admin-frontend-master", '\'{"spec":{"to":{"name":"student-admin-frontend-master"}}}\'')
+              openshift.patch("route/student-admin-frontend-master", '\'{"spec":{"port":{"targetPort":"2015-tcp"}}}\'')
+            }
+          }
+        }
+      }
+      post {
+        success {
+          echo 'Route successfully changed'
+        }
+        failure {
+          echo 'Failed to change route'
+        }
+      }
+    }
+    /*stage('e2e tests') {
+  agent {
+    node {
+      label 'nodejs10'
+    }
+  }
+  steps {
+    script {
+      timeout(10) {
+        dir('frontend') {
+          echo 'Running e2e tests'
+          sh 'npm install'
+          sh 'npm run test:e2e'
+        }
+      }
+    }
+  }
+}*/
+    stage('Delete maintenance page') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.withProject(DEV) {
+              echo "Building maintenance page..."
+              openshift.delete('all', 'maintenance-page')
+            }
+          }
+        }
+      }
+      post {
+        success {
+          echo 'Maintenance page deleted'
+        }
+        failure {
+          echo 'Failed to delete maintenance page'
+        }
+      }
+    }
+  }
+}
