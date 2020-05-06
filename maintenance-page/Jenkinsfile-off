@@ -54,7 +54,10 @@ pipeline {
           openshift.withCluster() {
             openshift.withProject(DEV) {
               echo "Deleting maintenance page..."
-              openshift.selector( 'all', [ name:'maintenance-page' ] ).delete()
+              openshift.selector( 'dc', [ name:'maintenance-page' ] ).delete()
+              openshift.selector( 'is', [ name:'maintenance-page' ] ).delete()
+              openshift.selector( 'route', [ name:'maintenance-page' ] ).delete()
+              openshift.selector( 'svc', [ name:'maintenance-page' ] ).delete()
             }
           }
         }
