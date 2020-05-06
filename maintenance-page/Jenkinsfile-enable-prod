@@ -86,16 +86,16 @@ pipeline {
         }
       }
     }
-    stage('Deploy to Dev') {
+    stage('Deploy to PROD') {
       steps {
-        deployStage('Dev', DEV)
+        deployStage(PROD)
       }
       post {
         success {
-          echo 'Deployment to Dev was successful'
+          echo 'Deployment to PROD was successful'
         }
         failure {
-          echo 'Deployment to Dev failed'
+          echo 'Deployment to PROD failed'
         }
       }
     }
@@ -103,10 +103,13 @@ pipeline {
       steps {
         script {
           openshift.withCluster() {
-            openshift.withProject(DEV) {
+            openshift.withProject(PROD) {
               echo 'Pointing GetMyPen route to maintenance page'
-              openshift.patch("route/pen-request-frontend-master", '\'{"spec":{"to":{"name":"maintenance-page"}}}\'')
-              openshift.patch("route/pen-request-frontend-master", '\'{"spec":{"port":{"targetPort":"8080-tcp"}}}\'')
+              openshift.patch("route/penvanityfrontend", '\'{"spec":{"to":{"name":"maintenance-page"}}}\'')
+              openshift.patch("route/penvanityfrontend", '\'{"spec":{"port":{"targetPort":"8080-tcp"}}}\'')
+
+              openshift.patch("route/penvanityfrontendwww", '\'{"spec":{"to":{"name":"maintenance-page"}}}\'')
+              openshift.patch("route/penvanityfrontendwww", '\'{"spec":{"port":{"targetPort":"8080-tcp"}}}\'')
             }
           }
         }
@@ -142,10 +145,6 @@ pipeline {
 }
 
 def deployStage(String stageEnv, String projectEnv) {
-  if (!stageEnv.equalsIgnoreCase('Dev')) {
-    input("Deploy to ${projectEnv}?")
-  }
-
   openshift.withCluster() {
     openshift.withProject(projectEnv) {
       if (DEBUG_OUTPUT.equalsIgnoreCase('true')) {

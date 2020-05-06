@@ -9,4 +9,4 @@ To add the pipelines to your openshift environment, run the following command in
 oc process -f https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/maintenance-page/openshift/pipeline.bc.yaml -o yaml | oc create -f -
 ```
 
-Now you will have two pipelines: `enable-maintenance-page-pipeline`, to activate the maintenance page, and `disable-maintenance-page-pipeline`, to remove the maintenance page.
+Now you will have four pipelines. Two for TEST and two for PROD: `enable-maintenance-page-prod-pipeline`,  and `disable-maintenance-page-prod-pipeline`, `enable-maintenance-page-test-pipeline`, and `disable-maintenance-page-test-pipeline`.  These pipelines can be triggered from the tools environment.

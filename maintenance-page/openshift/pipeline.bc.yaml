@@ -9,22 +9,44 @@ objects:
   - apiVersion: v1
     kind: BuildConfig
     metadata:
-      name: "enable-maintenance-page-pipeline"
+      name: "enable-maintenance-page-test-pipeline"
     spec:
       source:
         git:
           uri: "https://github.com/bcgov/EDUC-INFRA-COMMON"
       strategy:
         jenkinsPipelineStrategy:
-          jenkinsfilePath: maintenance-page/Jenkinsfile-on
+          jenkinsfilePath: maintenance-page/Jenkinsfile-enable-test
   - apiVersion: v1
     kind: BuildConfig
     metadata:
-      name: "disable-maintenance-page-pipeline"
+      name: "disable-maintenance-page-test-pipeline"
     spec:
       source:
         git:
          uri: "https://github.com/bcgov/EDUC-INFRA-COMMON"
       strategy:
         jenkinsPipelineStrategy:
-          jenkinsfilePath: maintenance-page/Jenkinsfile-off
+          jenkinsfilePath: maintenance-page/Jenkinsfile-disable-test
+  - apiVersion: v1
+    kind: BuildConfig
+    metadata:
+      name: "enable-maintenance-page-prod-pipeline"
+    spec:
+      source:
+        git:
+          uri: "https://github.com/bcgov/EDUC-INFRA-COMMON"
+      strategy:
+        jenkinsPipelineStrategy:
+          jenkinsfilePath: maintenance-page/Jenkinsfile-enable-prod
+  - apiVersion: v1
+    kind: BuildConfig
+    metadata:
+      name: "disable-maintenance-page-prod-pipeline"
+    spec:
+      source:
+        git:
+          uri: "https://github.com/bcgov/EDUC-INFRA-COMMON"
+      strategy:
+        jenkinsPipelineStrategy:
+          jenkinsfilePath: maintenance-page/Jenkinsfile-disable-prod
