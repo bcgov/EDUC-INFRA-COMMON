@@ -31,6 +31,9 @@ pipeline {
     stage('Initialize') {
       steps {
         script {
+
+          input("Are you sure you want to deploy to maintenance page in PROD?")
+
           if (DEBUG_OUTPUT.equalsIgnoreCase('true')) {
             // Force OpenShift Plugin directives to be verbose
             openshift.logLevel(1)

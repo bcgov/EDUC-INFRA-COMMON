@@ -12,6 +12,9 @@ pipeline {
     stage('Update route') {
       steps {
         script {
+
+        input("Are you sure you want to deploy to maintenance page in PROD?")
+
           openshift.withCluster() {
             openshift.withProject(PROD) {
               echo 'Pointing GetMyPen route back to GetMyPEN'
