@@ -105,8 +105,8 @@ pipeline {
           openshift.withCluster() {
             openshift.withProject(DEV) {
               echo 'Pointing GetMyPen route to maintenance page'
-              openshift.patch("route/student-admin-frontend-master", '\'{"spec":{"to":{"name":"maintenance-page"}}}\'')
-              openshift.patch("route/student-admin-frontend-master", '\'{"spec":{"port":{"targetPort":"8080-tcp"}}}\'')
+              openshift.patch("route/pen-request-frontend-master", '\'{"spec":{"to":{"name":"maintenance-page"}}}\'')
+              openshift.patch("route/pen-request-frontend-master", '\'{"spec":{"port":{"targetPort":"8080-tcp"}}}\'')
             }
           }
         }
