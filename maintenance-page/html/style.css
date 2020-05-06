@@ -1,3 +1,20 @@
+article {
+    display: block;
+    text-align: left;
+    width: 650px;
+    margin: 0 auto;
+    padding-top: 150px;
+}
+body {
+    text-align: center;
+    font: 20px Helvetica, sans-serif;
+    color: #333;
+}
+
+body h1 {
+    font-size: 50px;
+}
+
 header {
     background-color: #036;
     border-bottom: 2px solid #fcba19;
@@ -35,46 +52,6 @@ header .other {
     border-color: lightgrey; */
 }
 
-footer {
-    background-color: #036;
-    border-top: 2px solid #fcba19;
-    color: #fff;
-    font-family: ‘Noto Sans’, Verdana, Arial, sans-serif;
-}
-
-footer .container {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    text-align: center;
-    height: 46px;
-}
-
-footer ul {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    margin: 0;
-    color: #fff;
-    list-style: none;
-    align-items: center;
-    height: 100%;
-}
-
-footer ul li a {
-    font-size: 0.813em;
-    font-weight: normal;  /* 400 */
-    color: #fff;
-    border-right: 1px solid #4b5e7e;
-    padding-left: 5px;
-    padding-right: 5px;
-}
-
-a:hover {
-    color: #fff;
-    text-decoration: underline;
-}
-
 :focus {
     outline: 4px solid #3B99FC;
     outline-offset: 1px;
@@ -95,7 +72,7 @@ a:hover {
 
 @media screen and (min-width: 900px) {
     header h1 {
-        font-size: 2.0em;
+        font-size: 20px;
         visibility: visible;
     }
 }
