@@ -5,9 +5,6 @@ github-tools
 Commandline tools for Github
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
-[![Version](https://img.shields.io/npm/v/github-tools.svg)](https://npmjs.org/package/github-tools)
-[![Downloads/week](https://img.shields.io/npm/dw/github-tools.svg)](https://npmjs.org/package/github-tools)
-[![License](https://img.shields.io/npm/l/github-tools.svg)](https://github.com/bcgov/EDUC-PEN-DEMOG-API/blob/master/package.json)
 
 <!-- toc -->
 * [Usage](#usage)
@@ -45,6 +42,9 @@ Create secret for Github Actions
 ```
 USAGE
   $ github-tools createSecret GITHUBTOKEN OWNER REPO SECRETNAME PLAINSECRET
+
+Example
+  $ github-tools createSecret myGithubToken bcgov educ-pen-demog-api OPENSHIFT_API_TOKEN 123abc
 ```
 
 _See code: [src\commands\createSecret.js](https://github.com/bcgov/EDUC-PEN-DEMOG-API/blob/v1.0.0/src\commands\createSecret.js)_
@@ -57,6 +57,9 @@ Trigger deployment webhook event
 USAGE
   $ github-tools deploy GITHUBTOKEN OWNER REPO REF [TASK] [AUTOMERGE] [PAYLOAD] [ENVIRONMENT] [DESCRIPTION] 
   [TRANSIENTENVIRONMENT] [PRODUCTIONENVIRONMENT]
+
+Example
+  $ github-tools deploy myGithubToken bcgov educ-pen-demog-api feature/actions
 ```
 
 _See code: [src\commands\deploy.js](https://github.com/bcgov/EDUC-PEN-DEMOG-API/blob/v1.0.0/src\commands\deploy.js)_
@@ -68,6 +71,9 @@ Trigger repository_dispatch webhook event
 ```
 USAGE
   $ github-tools dispatchEvent GITHUBTOKEN OWNER REPO EVENTTYPE [CLIENTPAYLOAD]
+
+Example
+  $ github-tools dispatchEvent myGithubToken bcgov educ-pen-demog-api test
 ```
 
 _See code: [src\commands\dispatchEvent.js](https://github.com/bcgov/EDUC-PEN-DEMOG-API/blob/v1.0.0/src\commands\dispatchEvent.js)_
