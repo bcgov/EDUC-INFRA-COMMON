@@ -147,7 +147,7 @@ pipeline {
   }
 }
 
-def deployStage(String stageEnv, String projectEnv) {
+def deployStage(String projectEnv) {
   openshift.withCluster() {
     openshift.withProject(projectEnv) {
       if (DEBUG_OUTPUT.equalsIgnoreCase('true')) {
