@@ -6,7 +6,7 @@
   "bin": {
     "github-tools": "./bin/run"
   },
-  "bugs": "https://github.com/bcgov/EDUC-PEN-DEMOG-API/issues",
+  "bugs": "https://github.com/bcgov/EDUC-INFRA-COMMON/issues",
   "dependencies": {
     "@oclif/command": "^1.6.1",
     "@oclif/config": "^1.15.1",
@@ -30,7 +30,7 @@
     "/oclif.manifest.json",
     "/src"
   ],
-  "homepage": "https://github.com/bcgov/EDUC-PEN-DEMOG-API",
+  "homepage": "https://github.com/bcgov/EDUC-INFRA-COMMON",
   "keywords": [
     "oclif"
   ],
@@ -43,7 +43,7 @@
       "@oclif/plugin-help"
     ]
   },
-  "repository": "bcgov/EDUC-PEN-DEMOG-API",
+  "repository": "bcgov/EDUC-INFRA-COMMON",
   "scripts": {
     "postpack": "rimraf oclif.manifest.json",
     "posttest": "eslint .",

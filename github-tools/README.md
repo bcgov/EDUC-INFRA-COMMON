@@ -47,7 +47,7 @@ Example
   $ github-tools createSecret myGithubToken bcgov educ-pen-demog-api OPENSHIFT_API_TOKEN 123abc
 ```
 
-_See code: [src\commands\createSecret.js](https://github.com/bcgov/EDUC-PEN-DEMOG-API/blob/v1.0.0/src\commands\createSecret.js)_
+_See code: src\commands\createSecret.js_
 
 ## `github-tools deploy GITHUBTOKEN OWNER REPO REF [TASK] [AUTOMERGE] [PAYLOAD] [ENVIRONMENT] [DESCRIPTION] [TRANSIENTENVIRONMENT] [PRODUCTIONENVIRONMENT]`
 
@@ -62,7 +62,7 @@ Example
   $ github-tools deploy myGithubToken bcgov educ-pen-demog-api feature/actions
 ```
 
-_See code: [src\commands\deploy.js](https://github.com/bcgov/EDUC-PEN-DEMOG-API/blob/v1.0.0/src\commands\deploy.js)_
+_See code: src\commands\deploy.js_
 
 ## `github-tools dispatchEvent GITHUBTOKEN OWNER REPO EVENTTYPE [CLIENTPAYLOAD]`
 
@@ -76,7 +76,7 @@ Example
   $ github-tools dispatchEvent myGithubToken bcgov educ-pen-demog-api test
 ```
 
-_See code: [src\commands\dispatchEvent.js](https://github.com/bcgov/EDUC-PEN-DEMOG-API/blob/v1.0.0/src\commands\dispatchEvent.js)_
+_See code: src\commands\dispatchEvent.js_
 
 ## `github-tools help [COMMAND]`
 
