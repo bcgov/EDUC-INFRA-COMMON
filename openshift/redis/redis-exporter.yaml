@@ -94,13 +94,13 @@ objects:
       wildcardPolicy: None
 parameters:
   - name: CPU_LIMIT
-    value: 100m
+    value: 40m
   - name: MEMORY_LIMIT
-    value: 64Mi
+    value: 32Mi
   - name: CPU_REQUEST
-    value: 50m
+    value: 20m
   - name: MEMORY_REQUEST
-    value: 28Mi
+    value: 16Mi
   - name: NAME
     displayName: Object names
     description: The name of the OpenShift objects.
