@@ -110,19 +110,6 @@ pipeline {
 				}
 			}
 		}
-		stage('Create Missing Config Maps'){
-			when {
-				expression {
-					return "${DIGITAL_ID_API_VERSION}" != "<Not Required>" && "${DIGITAL_ID_API_VERSION}" != "";
-				}
-			}
-			environment {
-			   APP_NAME = "digitalid-api"
-            }
-		    steps {
-				configMapSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
-		    }
-		}
 		stage('Download setup files'){
 		  steps{
 			  script{
@@ -143,9 +130,10 @@ pipeline {
             }
 			steps {
 				deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-digitalid-api', 'digitalid-api', JOB_NAME, "${DIGITAL_ID_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+				configMapSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
                 script{
                    dir('tools/jenkins'){
-                      sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-DIGITALID-API/feature/configMapGeneration/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE"
+                      sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-DIGITALID-API/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE"
                    }
                 }
             }
@@ -156,9 +144,18 @@ pipeline {
 					return "${PEN_DEMOG_API_VERSION}" != "<Not Required>" && "${PEN_DEMOG_API_VERSION}" != "";
 				}
 			}
+			environment {
+			   APP_NAME = "pen-demographics-api"
+            }
 			steps {
-			   deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-demog-api', 'pen-demographics-api', JOB_NAME, "${PEN_DEMOG_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
-			}
+			    deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-demog-api', 'pen-demographics-api', JOB_NAME, "${PEN_DEMOG_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+				configMapSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
+                script{
+                   dir('tools/jenkins'){
+                      sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-PEN-DEMOG-API/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE"
+                   }
+                }
+            }
 		}
 		stage('Deploying & configuring PEN Request API in Dev'){
 			when {
@@ -166,19 +163,37 @@ pipeline {
 					return "${PEN_REQUEST_API_VERSION}" != "<Not Required>" && "${PEN_REQUEST_API_VERSION}" != "";
 				}
 			}
+			environment {
+			   APP_NAME = "pen-request-api"
+            }
 			steps {
-			   deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request-api', 'pen-request-api', JOB_NAME, "${PEN_REQUEST_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
-			}
-		} 
+			    deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request-api', 'pen-request-api', JOB_NAME, "${PEN_REQUEST_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+				configMapSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
+                script{
+                   dir('tools/jenkins'){
+                      sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST-API/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE"
+                   }
+                }
+            }
+		}
 		stage('Deploying & configuring PEN Request Email API in Dev'){
 			when {
 				expression {
 					return "${PEN_REQUEST_EMAIL_API_VERSION}" != "<Not Required>" && "${PEN_REQUEST_EMAIL_API_VERSION}" != "";
 				}
 			}
+			environment {
+			   APP_NAME = "pen-request-email-api"
+            }
 			steps {
-			   deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request-email-api', 'pen-request-email-api', JOB_NAME, "${PEN_REQUEST_EMAIL_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
-			}
+			    deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request-email-api', 'pen-request-email-api', JOB_NAME, "${PEN_REQUEST_EMAIL_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+			    configMapChesSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
+                script{
+                   dir('tools/jenkins'){
+                      sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST-EMAIL-API/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE"
+                   }
+                }
+            }
 		}
 		stage('Deploying & configuring Services Card API in Dev'){
 			when {
@@ -186,9 +201,18 @@ pipeline {
 					return "${SERVICES_CARD_API_VERSION}" != "<Not Required>" && "${SERVICES_CARD_API_VERSION}" != "";
 				}
 			}
+			environment {
+			   APP_NAME = "services-card-api"
+            }
 			steps {
-			   deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-services-card-api', 'services-card-api', JOB_NAME, "${SERVICES_CARD_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
-			}
+			    deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-services-card-api', 'services-card-api', JOB_NAME, "${SERVICES_CARD_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+			    configMapSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
+                script{
+                   dir('tools/jenkins'){
+                      sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-SERVICES-CARD-API/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE"
+                   }
+                }
+            }
 		}
 		stage('Deploying & configuring SOAM API in Dev'){
 			when {
@@ -196,9 +220,17 @@ pipeline {
 					return "${SOAM_API_VERSION}" != "<Not Required>" && "${SOAM_API_VERSION}" != "";
 				}
 			}
+			environment {
+			   APP_NAME = "soam-api"
+            }
 			steps {
-			   deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-soam-api', 'soam-api', JOB_NAME, "${SOAM_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
-			}
+			    deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-soam-api', 'soam-api', JOB_NAME, "${SOAM_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+                script{
+                   dir('tools/jenkins'){
+                      sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-SOAM-API/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE"
+                   }
+                }
+            }
 		}
 		stage('Deploying & configuring Student API in Dev'){
 			when {
@@ -206,9 +238,18 @@ pipeline {
 					return "${STUDENT_API_VERSION}" != "<Not Required>" && "${STUDENT_API_VERSION}" != "";
 				}
 			}
+			environment {
+			   APP_NAME = "student-api"
+            }
 			steps {
-			   deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-api', 'student-api', JOB_NAME, "${STUDENT_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
-			}
+			    deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-api', 'student-api', JOB_NAME, "${STUDENT_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+			    configMapSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
+                script{
+                   dir('tools/jenkins'){
+                      sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-API/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE"
+                   }
+                }
+            }
 		}
 		stage('Deploying & configuring PEN Request Frontend and Backend in Dev'){
 			when {
@@ -216,9 +257,17 @@ pipeline {
 					return "${PEN_REQUEST_VERSION}" != "<Not Required>" && "${PEN_REQUEST_VERSION}" != "";
 				}
 			}
+			environment {
+			   APP_NAME = "pen-request"
+            }
 			steps {
-			   deployUIStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request', 'pen-request', JOB_NAME, "${PEN_REQUEST_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
-			}
+			    deployUIStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request', 'pen-request', JOB_NAME, "${PEN_REQUEST_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+                script{
+                   dir('tools/jenkins'){
+                      sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE"
+                   }
+                }
+            }
 		}
 		stage('Deploying & configuring Student Admin Frontend and Backend in Dev'){
 			when {
@@ -226,9 +275,17 @@ pipeline {
 					return "${STAFF_ADMIN_VERSION}" != "<Not Required>" && "${STAFF_ADMIN_VERSION}" != "";
 				}
 			}
+			environment {
+			   APP_NAME = "student-admin"
+            }
 			steps {
-			   deployUIStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-admin', 'student-admin', JOB_NAME, "${STAFF_ADMIN_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
-			}
+			    deployUIStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-admin', 'student-admin', JOB_NAME, "${STAFF_ADMIN_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN)
+                script{
+                   dir('tools/jenkins'){
+                      sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE"
+                   }
+                }
+            }
 		}
 	}
 }
@@ -238,7 +295,7 @@ def configMapSetup(String appName,String appNameUpper, String namespace){
 	  
       try{
         sh( script: "oc project ${namespace}-dev", returnStdout: true)
-        sh( script: "oc describe configmaps ${appName}-dev-config", returnStdout: true)
+        sh( script: "oc describe configmaps ${appName}-dev-setup-config", returnStdout: true)
         sh( script: "oc project ${namespace}-tools", returnStdout: true)
         echo 'Config map already exists. Moving to next stage...'
       } catch(e){
@@ -258,7 +315,42 @@ def configMapSetup(String appName,String appNameUpper, String namespace){
 		sh """
 		  set +x
 		  echo Running curl command...
-		  oc create -n ${namespace}-dev configmap ${appName}-dev-config --from-literal=DB_JDBC_CONNECT_STRING=${configProperties.DB_JDBC_CONNECT_STRING} --from-literal=DB_USER_${appNameUpper}=${configProperties.DB_USER} --from-literal=DB_PWD_${appNameUpper}=${configProperties.DB_PWD} --dry-run -o yaml | oc apply -f -
+		  oc create -n ${namespace}-dev configmap ${appName}-dev-setup-config --from-literal=DB_JDBC_CONNECT_STRING=${configProperties.DB_JDBC_CONNECT_STRING} --from-literal=DB_USER_${appNameUpper}=${configProperties.DB_USER} --from-literal=DB_PWD_${appNameUpper}=${configProperties.DB_PWD} --dry-run -o yaml | oc apply -f -
+		  oc project ${namespace}-tools
+		"""
+      }
+    }
+}
+
+def configMapChesSetup(String appName,String appNameUpper, String namespace){
+    script {
+	  
+      try{
+        sh( script: "oc project ${namespace}-dev", returnStdout: true)
+        sh( script: "oc describe configmaps ${appName}-dev-setup-config", returnStdout: true)
+        sh( script: "oc project ${namespace}-tools", returnStdout: true)
+        echo 'Config map already exists. Moving to next stage...'
+      } catch(e){
+          configProperties = input(
+          id: 'configProperties', message: "Please enter the required credentials to allow ${appName} to run:",
+          parameters: [
+              string(defaultValue: "",
+                      description: 'JDBC connect string for database',
+                      name: 'CHES_CLIENT_ID'),
+              string(defaultValue: "",
+                      description: "Username for ${appName} to connect to the database",
+                      name: "CHES_CLIENT_SECRET"),
+              string(defaultValue: "",
+                      description: "Password for ${appName} to connect to the database",
+                      name: "CHES_ENDPOINT_URL"),
+              string(defaultValue: "",
+                      description: "Password for ${appName} to connect to the database",
+                      name: "CHES_TOKEN_URL"),
+          ])
+		sh """
+		  set +x
+		  echo Running curl command...
+		  oc create -n ${namespace}-dev configmap ${appName}-dev-setup-config --from-literal=CHES_CLIENT_ID=${configProperties.CHES_CLIENT_ID} --from-literal=CHES_TOKEN_URL=${configProperties.CHES_TOKEN_URL} --from-literal=CHES_ENDPOINT_URL=${configProperties.CHES_ENDPOINT_URL} --from-literal=CHES_CLIENT_SECRET=${configProperties.CHES_CLIENT_SECRET} --dry-run -o yaml | oc apply -f -
 		  oc project ${namespace}-tools
 		"""
       }
