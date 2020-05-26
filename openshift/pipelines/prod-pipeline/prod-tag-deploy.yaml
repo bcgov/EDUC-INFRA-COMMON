@@ -2,14 +2,14 @@
 apiVersion: v1
 kind: Template
 labels: 
-  template: dev-template
+  template: prod-template
 metadata: 
-  name: dev-template
+  name: prod-template
 objects:
 - apiVersion: v1
   kind: BuildConfig
   metadata: 
-    name: "dev-pipeline"
+    name: "prod-pipeline"
   spec:
     strategy:
       jenkinsPipelineStrategy:
@@ -29,10 +29,10 @@ objects:
          def STUDENT_PROFILE_API_VERSION = '<Not Required>'
          def STUDENT_PROFILE_EMAIL_API_VERSION = '<Not Required>'
          
-         def TOOLS = 'c2mvws-tools'
-         def TARGET_ENVIRONMENT = 'c2mvws-dev'
+         def TOOLS = 'c2mvws-test'
+         def TARGET_ENVIRONMENT = 'c2mvws-prod'
          def JOB_NAME = 'master'
-         def STAGING_ENV = 'Dev'
+         def STAGING_ENV = 'Prod'
          def APP_DOMAIN = 'pathfinder.gov.bc.ca'
          
          pipeline {
@@ -102,14 +102,41 @@ objects:
          				}
          			}
          		}
-         		stage('Deployment Credentials & Approval') {
-         			steps {
-         				timeout(time:2, unit:'DAYS')
-         				{
-         				   input message: 'Do you approve this deployment to Dev?'
+                stage('Deployment Credentials & Approval') {
+                     steps {
+         			    script {
+                             // Get the input
+                             def userInput = input(
+                                     id: 'userInput', message: 'Please enter your IDIR info:',
+                                     parameters: [
+         
+                                             string(defaultValue: '',
+                                                     description: 'Your IDIR username',
+                                                     name: 'IDIR'),
+                                             password(defaultValue: '',
+                                                     description: 'Your IDIR password',
+                                                     name: 'password'),
+                                     ])
+         					// Save to variables. Default to empty string if not found.
+                             IDIR = userInput.IDIR?:''
+                             IDIR_PW = userInput.password?:''
          				}
-         			}
-         		}
+         				
+                         sh """
+                           set +x
+                           echo Running curl command...
+                           curl -u ${IDIR}:${IDIR_PW} https://gww.svn.educ.gov.bc.ca/svn/repos/openshiftadmins_repos/getmypen/approvers/pipeline-approvers.txt -o /tmp/pipeline-approvers.txt
+                         """
+                         script {
+                             APPROVERS = sh(script: 'cat /tmp/pipeline-approvers.txt', returnStdout: true)
+                         }
+                         timeout(time:2, unit:'DAYS')
+                  	    {
+                  	       echo "List of Approvers: ${APPROVERS}"
+                            input message: 'Do you approve this deployment to Production?', submitter: "${APPROVERS}"
+                         }
+                     }
+                }
          		stage('Download setup files'){
          		  steps{
          			  script{
@@ -119,7 +146,7 @@ objects:
          			  }
          		  }
          		}
-         		stage('Deploying & configuring Digital ID API in Dev'){
+         		stage('Deploying & configuring Digital ID API in Test'){
          			when {
          				expression {
          					return "${DIGITAL_ID_API_VERSION}" != "<Not Required>" && "${DIGITAL_ID_API_VERSION}" != "";
@@ -134,12 +161,12 @@ objects:
          				configMapSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
                          script{
                             dir('tools/jenkins'){
-                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-DIGITALID-API/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE"
+                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-DIGITALID-API/master/tools/jenkins/update-configmap.sh | bash -s prod $APP_NAME $NAMESPACE"
                             }
                          }
                      }
          		}
-         		stage('Deploying & configuring PEN Demographics API in Dev'){
+         		stage('Deploying & configuring PEN Demographics API in Test'){
          			when {
          				expression {
          					return "${PEN_DEMOG_API_VERSION}" != "<Not Required>" && "${PEN_DEMOG_API_VERSION}" != "";
@@ -154,12 +181,12 @@ objects:
          				configMapSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
                          script{
                             dir('tools/jenkins'){
-                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-PEN-DEMOG-API/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE"
+                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-PEN-DEMOG-API/master/tools/jenkins/update-configmap.sh | bash -s prod $APP_NAME $NAMESPACE"
                             }
                          }
                      }
          		}
-         		stage('Deploying & configuring PEN Request API in Dev'){
+         		stage('Deploying & configuring PEN Request API in Test'){
          			when {
          				expression {
          					return "${PEN_REQUEST_API_VERSION}" != "<Not Required>" && "${PEN_REQUEST_API_VERSION}" != "";
@@ -174,12 +201,12 @@ objects:
          				configMapSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
                          script{
                             dir('tools/jenkins'){
-                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST-API/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE"
+                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST-API/master/tools/jenkins/update-configmap.sh | bash -s prod $APP_NAME $NAMESPACE"
                             }
                          }
                      }
          		}
-         		stage('Deploying & configuring PEN Request Email API in Dev'){
+         		stage('Deploying & configuring PEN Request Email API in Test'){
          			when {
          				expression {
          					return "${PEN_REQUEST_EMAIL_API_VERSION}" != "<Not Required>" && "${PEN_REQUEST_EMAIL_API_VERSION}" != "";
@@ -194,12 +221,12 @@ objects:
          			    configMapChesSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
                          script{
                             dir('tools/jenkins'){
-                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST-EMAIL-API/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE"
+                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST-EMAIL-API/master/tools/jenkins/update-configmap.sh | bash -s prod $APP_NAME $NAMESPACE"
                             }
                          }
                      }
          		}
-         		stage('Deploying & configuring Services Card API in Dev'){
+         		stage('Deploying & configuring Services Card API in Test'){
          			when {
          				expression {
          					return "${SERVICES_CARD_API_VERSION}" != "<Not Required>" && "${SERVICES_CARD_API_VERSION}" != "";
@@ -214,12 +241,12 @@ objects:
          			    configMapSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
                          script{
                             dir('tools/jenkins'){
-                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-SERVICES-CARD-API/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE"
+                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-SERVICES-CARD-API/master/tools/jenkins/update-configmap.sh | bash -s prod $APP_NAME $NAMESPACE"
                             }
                          }
                      }
          		}
-         		stage('Deploying & configuring SOAM API in Dev'){
+         		stage('Deploying & configuring SOAM API in Test'){
          			when {
          				expression {
          					return "${SOAM_API_VERSION}" != "<Not Required>" && "${SOAM_API_VERSION}" != "";
@@ -233,12 +260,12 @@ objects:
          			    deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-soam-api', 'soam-api', JOB_NAME, "${SOAM_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}")
                          script{
                             dir('tools/jenkins'){
-                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-SOAM-API/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE"
+                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-SOAM-API/master/tools/jenkins/update-configmap.sh | bash -s prod $APP_NAME $NAMESPACE"
                             }
                          }
                      }
          		}
-         		stage('Deploying & configuring Student API in Dev'){
+         		stage('Deploying & configuring Student API in Test'){
          			when {
          				expression {
          					return "${STUDENT_API_VERSION}" != "<Not Required>" && "${STUDENT_API_VERSION}" != "";
@@ -253,12 +280,12 @@ objects:
          			    configMapSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
                          script{
                             dir('tools/jenkins'){
-                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-API/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE"
+                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-API/master/tools/jenkins/update-configmap.sh | bash -s prod $APP_NAME $NAMESPACE"
                             }
                          }
                      }
          		}
-         		stage('Deploying & configuring PEN Request Frontend and Backend in Dev'){
+         		stage('Deploying & configuring PEN Request Frontend and Backend in Test'){
          			when {
          				expression {
          					return "${PEN_REQUEST_VERSION}" != "<Not Required>" && "${PEN_REQUEST_VERSION}" != "";
@@ -273,12 +300,12 @@ objects:
          			    deployUIStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request', 'pen-request', JOB_NAME, "${PEN_REQUEST_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}")
                          script{
                             dir('tools/jenkins'){
-                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE"
+                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST/master/tools/jenkins/update-configmap.sh | bash -s prod $APP_NAME $NAMESPACE"
                             }
                          }
                      }
          		}
-         		stage('Deploying & configuring Student Admin Frontend and Backend in Dev'){
+         		stage('Deploying & configuring Student Admin Frontend and Backend in Test'){
          			when {
          				expression {
          					return "${STAFF_ADMIN_VERSION}" != "<Not Required>" && "${STAFF_ADMIN_VERSION}" != "";
@@ -293,12 +320,12 @@ objects:
          			    deployUIStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-admin', 'student-admin', JOB_NAME, "${STAFF_ADMIN_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}")
                          script{
                             dir('tools/jenkins'){
-                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE"
+                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/jenkins/update-configmap.sh | bash -s prod $APP_NAME $NAMESPACE"
                             }
                          }
                      }
          		}
-         		stage('Deploying & configuring Student Profile API in Dev'){
+         		stage('Deploying & configuring Student Profile API in Test'){
          			when {
          				expression {
          					return "${STUDENT_PROFILE_API_VERSION}" != "<Not Required>" && "${STUDENT_PROFILE_API_VERSION}" != "";
@@ -313,12 +340,12 @@ objects:
          			    configMapSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
                          script{
                             dir('tools/jenkins'){
-                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-API/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE"
+                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-API/master/tools/jenkins/update-configmap.sh | bash -s prod $APP_NAME $NAMESPACE"
                             }
                          }
                      }
          		}
-         		stage('Deploying & configuring Student Profile Email API in Dev'){
+         		stage('Deploying & configuring Student Profile Email API in Test'){
          			when {
          				expression {
          					return "${STUDENT_PROFILE_EMAIL_API_VERSION}" != "<Not Required>" && "${STUDENT_PROFILE_EMAIL_API_VERSION}" != "";
@@ -333,12 +360,12 @@ objects:
          			    configMapChesSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
                          script{
                             dir('tools/jenkins'){
-                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-EMAIL-API/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE"
+                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-EMAIL-API/master/tools/jenkins/update-configmap.sh | bash -s prod $APP_NAME $NAMESPACE"
                             }
                          }
                      }
          		}
-         		stage('Deploying & configuring Student Profile Frontend and Backend in Dev'){
+         		stage('Deploying & configuring Student Profile Frontend and Backend in Test'){
          			when {
          				expression {
          					return "${STUDENT_PROFILE_VERSION}" != "<Not Required>" && "${STUDENT_PROFILE_VERSION}" != "";
@@ -353,7 +380,7 @@ objects:
          			    deployUIStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-profile', 'student-profile', JOB_NAME, "${STUDENT_PROFILE_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}")
                          script{
                             dir('tools/jenkins'){
-                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE"
+                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE/master/tools/jenkins/update-configmap.sh | bash -s prod $APP_NAME $NAMESPACE"
                             }
                          }
                      }
@@ -365,8 +392,8 @@ objects:
              script {
          	  
                try{
-                 sh( script: "oc project ${namespace}-dev", returnStdout: true)
-                 sh( script: "oc describe configmaps ${appName}-dev-setup-config", returnStdout: true)
+                 sh( script: "oc project ${namespace}-prod", returnStdout: true)
+                 sh( script: "oc describe configmaps ${appName}-prod-setup-config", returnStdout: true)
                  sh( script: "oc project ${namespace}-tools", returnStdout: true)
                  echo 'Config map already exists. Moving to next stage...'
                } catch(e){
@@ -386,7 +413,7 @@ objects:
          		sh """
          		  set +x
          		  echo Running curl command...
-         		  oc create -n ${namespace}-dev configmap ${appName}-dev-setup-config --from-literal=DB_JDBC_CONNECT_STRING=${configProperties.DB_JDBC_CONNECT_STRING} --from-literal=DB_USER_${appNameUpper}=${configProperties.DB_USER} --from-literal=DB_PWD_${appNameUpper}=${configProperties.DB_PWD} --dry-run -o yaml | oc apply -f -
+         		  oc create -n ${namespace}-prod configmap ${appName}-prod-setup-config --from-literal=DB_JDBC_CONNECT_STRING=${configProperties.DB_JDBC_CONNECT_STRING} --from-literal=DB_USER_${appNameUpper}=${configProperties.DB_USER} --from-literal=DB_PWD_${appNameUpper}=${configProperties.DB_PWD} --dry-run -o yaml | oc apply -f -
          		  oc project ${namespace}-tools
          		"""
                }
@@ -397,8 +424,8 @@ objects:
              script {
          	  
                try{
-                 sh( script: "oc project ${namespace}-dev", returnStdout: true)
-                 sh( script: "oc describe configmaps ${appName}-dev-setup-config", returnStdout: true)
+                 sh( script: "oc project ${namespace}-prod", returnStdout: true)
+                 sh( script: "oc describe configmaps ${appName}-prod-setup-config", returnStdout: true)
                  sh( script: "oc project ${namespace}-tools", returnStdout: true)
                  echo 'Config map already exists. Moving to next stage...'
                } catch(e){
@@ -421,7 +448,7 @@ objects:
          		sh """
          		  set +x
          		  echo Running curl command...
-         		  oc create -n ${namespace}-dev configmap ${appName}-dev-setup-config --from-literal=CHES_CLIENT_ID=${configProperties.CHES_CLIENT_ID} --from-literal=CHES_TOKEN_URL=${configProperties.CHES_TOKEN_URL} --from-literal=CHES_ENDPOINT_URL=${configProperties.CHES_ENDPOINT_URL} --from-literal=CHES_CLIENT_SECRET=${configProperties.CHES_CLIENT_SECRET} --dry-run -o yaml | oc apply -f -
+         		  oc create -n ${namespace}-prod configmap ${appName}-prod-setup-config --from-literal=CHES_CLIENT_ID=${configProperties.CHES_CLIENT_ID} --from-literal=CHES_TOKEN_URL=${configProperties.CHES_TOKEN_URL} --from-literal=CHES_ENDPOINT_URL=${configProperties.CHES_ENDPOINT_URL} --from-literal=CHES_CLIENT_SECRET=${configProperties.CHES_CLIENT_SECRET} --dry-run -o yaml | oc apply -f -
          		  oc project ${namespace}-tools
          		"""
                }
@@ -432,7 +459,7 @@ objects:
            openshift.withCluster() {
          	openshift.withProject(projectEnv) {
          	  echo "Tagging ${appName} image with version ${tag}"
-         	  openshift.tag("${toolsEnv}/${repoName}-${jobName}:latest", "${repoName}-${jobName}:${tag}")
+         	  openshift.tag("${toolsEnv}/${repoName}-${jobName}:${tag}", "${repoName}-${jobName}:${tag}")
          	  def dcTemplate = openshift.process('-f',
          		"${rawApiDcURL}",
          		"REPO_NAME=${repoName}",
@@ -453,10 +480,10 @@ objects:
            openshift.withCluster() {
          	openshift.withProject(projectEnv) {
          	  echo "Tagging Image ${repoName}-backend:${jobName} with version ${tag}"
-         	  openshift.tag("${toolsEnv}/${repoName}-backend:latest", "${repoName}-backend:${tag}")
+         	  openshift.tag("${toolsEnv}/${repoName}-backend:${tag}", "${repoName}-backend:${tag}")
          
          	  echo "Tagging Image ${repoName}-frontend-static:${jobName} with version ${tag}"
-         	  openshift.tag("${toolsEnv}/${repoName}-frontend-static:latest", "${repoName}-frontend-static:${tag}")
+         	  openshift.tag("${toolsEnv}/${repoName}-frontend-static:${tag}", "${repoName}-frontend-static:${tag}")
          	
          	
          	  echo "Processing DeploymentConfig ${appName}-backend..."
@@ -487,4 +514,4 @@ objects:
          	  def dcFrontendStatic = openshift.apply(dcFrontendStaticTemplate).narrow('dc')
          	}
            }
-         }
+         }}}}
