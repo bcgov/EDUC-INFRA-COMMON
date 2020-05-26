@@ -87,6 +87,13 @@ spec:
       containers:
         - name: stan
           image: nats-streaming:0.17.0
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "64Mi"
+            limits:
+              cpu: "50m"
+              memory: "256Mi"
           ports:
             - containerPort: 8222
               name: monitor
@@ -113,12 +120,6 @@ spec:
               mountPath: /etc/stan-config
             - name: stan-educ-pen-vol
               mountPath: /data/ecu-pen-nats-cluster
-
-          # Disable CPU limits.
-          resources:
-            requests:
-              cpu: 0
-
           livenessProbe:
             httpGet:
               path: /
