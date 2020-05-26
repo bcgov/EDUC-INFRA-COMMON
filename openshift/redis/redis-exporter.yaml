@@ -94,11 +94,11 @@ objects:
       wildcardPolicy: None
 parameters:
   - name: CPU_LIMIT
-    value: 40m
+    value: 10m
   - name: MEMORY_LIMIT
     value: 32Mi
   - name: CPU_REQUEST
-    value: 20m
+    value: 5m
   - name: MEMORY_REQUEST
     value: 16Mi
   - name: NAME
