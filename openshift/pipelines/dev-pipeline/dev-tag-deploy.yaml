@@ -9,6 +9,9 @@ def SOAM_API_VERSION = '<Not Required>'
 def STUDENT_API_VERSION = '<Not Required>'
 def PEN_REQUEST_VERSION = '<Not Required>'
 def STAFF_ADMIN_VERSION = '<Not Required>'
+def STUDENT_PROFILE_VERSION = '<Not Required>'
+def STUDENT_PROFILE_API_VERSION = '<Not Required>'
+def STUDENT_PROFILE_EMAIL_API_VERSION = '<Not Required>'
 
 def TOOLS = 'c2mvws-tools'
 def TARGET_ENVIRONMENT = 'c2mvws-dev'
@@ -57,6 +60,15 @@ pipeline {
 									string(defaultValue: "",
 											description: 'Enter Staff Admin Version, leave the tag blank if this service is not to be deployed',
 											name: 'STAFF_ADMIN_VERSION'),
+									string(defaultValue: "",
+											description: 'Enter Staff Admin Version, leave the tag blank if this service is not to be deployed',
+											name: 'STUDENT_PROFILE_VERSION'),
+									string(defaultValue: "",
+											description: 'Enter Staff Admin Version, leave the tag blank if this service is not to be deployed',
+											name: 'STUDENT_PROFILE_API_VERSION'),
+									string(defaultValue: "",
+											description: 'Enter Staff Admin Version, leave the tag blank if this service is not to be deployed',
+											name: 'STUDENT_PROFILE_EMAIL_API_VERSION'),
 							])
 					// Save to variables. Default to empty string if not found.
 					DIGITAL_ID_API_VERSION = tagInput.DIGITAL_ID_API_VERSION?:''
@@ -68,6 +80,9 @@ pipeline {
 					STUDENT_API_VERSION = tagInput.STUDENT_API_VERSION?:''
 					PEN_REQUEST_VERSION = tagInput.PEN_REQUEST_VERSION?:''
 					STAFF_ADMIN_VERSION = tagInput.STAFF_ADMIN_VERSION?:''
+					STUDENT_PROFILE_VERSION = tagInput.STUDENT_PROFILE_VERSION?:''
+					STUDENT_PROFILE_API_VERSION = tagInput.STUDENT_PROFILE_API_VERSION?:''
+					STUDENT_PROFILE_EMAIL_API_VERSION = tagInput.STUDENT_PROFILE_EMAIL_API_VERSION?:''
 				}
 			}
 		}
@@ -263,6 +278,66 @@ pipeline {
                 script{
                    dir('tools/jenkins'){
                       sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE"
+                   }
+                }
+            }
+		}
+		stage('Deploying & configuring Student Profile API in Dev'){
+			when {
+				expression {
+					return "${STUDENT_PROFILE_API_VERSION}" != "<Not Required>" && "${STUDENT_PROFILE_API_VERSION}" != "";
+				}
+			}
+			environment {
+			   APP_NAME = "student-profile-api"
+			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-API/master/tools/openshift/api.dc.yaml"
+            }
+			steps {
+			    deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-profile-api', 'student-profile-api', JOB_NAME, "${STUDENT_PROFILE_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}")
+			    configMapSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
+                script{
+                   dir('tools/jenkins'){
+                      sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-API/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE"
+                   }
+                }
+            }
+		}
+		stage('Deploying & configuring Student Profile Email API in Dev'){
+			when {
+				expression {
+					return "${STUDENT_PROFILE_EMAIL_API_VERSION}" != "<Not Required>" && "${STUDENT_PROFILE_EMAIL_API_VERSION}" != "";
+				}
+			}
+			environment {
+			   APP_NAME = "student-profile-email-api"
+			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-EMAIL-API/master/tools/openshift/api.dc.yaml"
+            }
+			steps {
+			    deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-profile-email-api', 'student-profile-email-api', JOB_NAME, "${STUDENT_PROFILE_EMAIL_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}")
+			    configMapChesSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
+                script{
+                   dir('tools/jenkins'){
+                      sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-EMAIL-API/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE"
+                   }
+                }
+            }
+		}
+		stage('Deploying & configuring Student Profile Frontend and Backend in Dev'){
+			when {
+				expression {
+					return "${STUDENT_PROFILE_VERSION}" != "<Not Required>" && "${STUDENT_PROFILE_VERSION}" != "";
+				}
+			}
+			environment {
+			   APP_NAME = "student-profile"
+			   DC_URL_FRONTEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE/master/tools/openshift/frontend-static.dc.yaml"
+			   DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE/master/tools/openshift/backend.dc.yaml"
+            }
+			steps {
+			    deployUIStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-profile', 'student-profile', JOB_NAME, "${STUDENT_PROFILE_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}")
+                script{
+                   dir('tools/jenkins'){
+                      sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE"
                    }
                 }
             }
