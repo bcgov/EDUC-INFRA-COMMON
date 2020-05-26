@@ -487,4 +487,4 @@ objects:
          	  def dcFrontendStatic = openshift.apply(dcFrontendStaticTemplate).narrow('dc')
          	}
            }
-         }}}
+         }
