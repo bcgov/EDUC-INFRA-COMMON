@@ -1,2 +1,2 @@
 nodejs:latest
-httpRequest:latest
+http_request:latest
