@@ -1,7 +1,7 @@
 FROM jenkins/jenkins:jdk11
 USER 0
-COPY plugins.txt /plugins.txt
-RUN /usr/local/bin/install-plugins.sh /plugins.txt
+#COPY plugins.txt /plugins.txt
+#RUN /usr/local/bin/install-plugins.sh /plugins.txt
 USER root
 RUN yum search wget
 RUN yum install -y wget
