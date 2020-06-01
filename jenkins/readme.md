@@ -33,5 +33,5 @@ oc delete all,configmap,pvc,serviceaccount,rolebinding,secret,build -l template=
 ```
 To delete custom Jenkins image and build run
 ```
-oc -n c2mvws-tools delete all,template,secret,cm,pvc,sa,rolebinding --selector app=jenkins-custom
+oc -n <namespace>-tools delete all,template,secret,cm,pvc,sa,rolebinding --selector app=jenkins-custom
 ```
