@@ -20,10 +20,9 @@ objects:
         type: Git
       strategy:
         dockerStrategy:
-          from:
-            kind: ImageStreamTag
-            name: ${BASE_IMAGE}:${BASE_IMAGE_VERSION}
-            namespace: ${BASE_IMAGE_NAMESPACE}
+          env:
+            - name: BUILD_LOGLEVEL
+              value: '2'
         type: Docker
       output:
         to:
@@ -75,7 +74,7 @@ parameters:
     displayName: BASE_IMAGE
     name: BASE_IMAGE
     required: true
-    value: jenkins2
+    value: jenkins
   - description: BASE_IMAGE_NAMESPACE
     displayName: BASE_IMAGE_NAMESPACE
     name: BASE_IMAGE_NAMESPACE
