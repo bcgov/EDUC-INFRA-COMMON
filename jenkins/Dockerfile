@@ -29,17 +29,7 @@ RUN set -o errexit -o nounset \
 VOLUME /home/groovy/.groovy/grapes
 
 WORKDIR /home/groovy
-
-#RUN apt-get update \
-#    && echo "Installing build dependencies" \
-#    && apt-get install --yes --no-install-recommends \
-#        dirmngr \
-#        fontconfig \
-#        gnupg \
-#        unzip \
-#        wget \
-#    && rm --recursive --force /var/lib/apt/lists/*
-
+RUN chmod 777 /home/groovy
 ENV GROOVY_VERSION 3.0.4
 RUN set -o errexit -o nounset \
     && echo "Downloading Groovy" \
@@ -60,10 +50,5 @@ RUN set -o errexit -o nounset \
     && echo "Editing startGroovy to include java.xml.bind module" \
     && sed --in-place 's|startGroovy ( ) {|startGroovy ( ) {\n    JAVA_OPTS="$JAVA_OPTS --add-modules=ALL-SYSTEM"|' "${GROOVY_HOME}/bin/startGroovy"
 
-USER groovy
-
-RUN set -o errexit -o nounset \
-    && echo "Testing Groovy installation" \
-    && groovy --version
 # drop back to the regular jenkins user - good practice
 USER 1001
