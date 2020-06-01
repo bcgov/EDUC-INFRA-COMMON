@@ -30,7 +30,7 @@ VOLUME /home/groovy/.groovy/grapes
 
 WORKDIR /home/groovy
 RUN chmod 777 /home/groovy
-ENV GROOVY_VERSION 3.0.4
+ENV GROOVY_VERSION 2.5.9
 RUN set -o errexit -o nounset \
     && echo "Downloading Groovy" \
     && wget --no-verbose --output-document=groovy.zip "https://archive.apache.org/dist/groovy/${GROOVY_VERSION}/distribution/apache-groovy-binary-${GROOVY_VERSION}.zip" \
