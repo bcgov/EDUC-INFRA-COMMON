@@ -3,8 +3,8 @@ USER 0
 #COPY plugins.txt /plugins.txt
 #RUN /usr/local/bin/install-plugins.sh /plugins.txt
 USER root
-RUN yum search wget
-RUN yum install -y wget
+#RUN yum search wget
+#RUN yum install -y wget
 RUN wget https://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo 
 RUN yum install -y apache-maven
 RUN yum-config-manager --enable rhel-7-server-optional-rpms
@@ -15,8 +15,8 @@ RUN yum-config-manager --enable rhel-7-server-optional-rpms
 #ENV JENKINS_OPTS --enable-future-java
 
 
-VOLUME jenkins-home:/var/jenkins_home 
-VOLUME jenkins/jenkins:jdk11
+#VOLUME jenkins-home:/var/jenkins_home 
+#VOLUME jenkins/jenkins:jdk11
 
 # drop back to the regular jenkins user - good practice
 USER 1001
