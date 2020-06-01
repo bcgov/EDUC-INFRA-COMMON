@@ -30,15 +30,15 @@ VOLUME /home/groovy/.groovy/grapes
 
 WORKDIR /home/groovy
 
-RUN apt-get update \
-    && echo "Installing build dependencies" \
-    && apt-get install --yes --no-install-recommends \
-        dirmngr \
-        fontconfig \
-        gnupg \
-        unzip \
-        wget \
-    && rm --recursive --force /var/lib/apt/lists/*
+#RUN apt-get update \
+#    && echo "Installing build dependencies" \
+#    && apt-get install --yes --no-install-recommends \
+#        dirmngr \
+#        fontconfig \
+#        gnupg \
+#        unzip \
+#        wget \
+#    && rm --recursive --force /var/lib/apt/lists/*
 
 ENV GROOVY_VERSION 3.0.4
 RUN set -o errexit -o nounset \
