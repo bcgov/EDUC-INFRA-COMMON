@@ -20,9 +20,10 @@ objects:
         type: Git
       strategy:
         dockerStrategy:
-          env:
-            - name: BUILD_LOGLEVEL
-              value: '2'
+          from:
+            kind: ImageStreamTag
+            name: ${BASE_IMAGE}:${BASE_IMAGE_VERSION}
+            namespace: ${BASE_IMAGE_NAMESPACE}
         type: Docker
       output:
         to:
