@@ -3,6 +3,8 @@ USER 0
 COPY plugins.txt /plugins.txt
 RUN /usr/local/bin/install-plugins.sh /plugins.txt
 USER root
+RUN yum search wget
+RUN yum install -y wget
 RUN wget https://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo 
 RUN yum install -y apache-maven
 RUN yum-config-manager --enable rhel-7-server-optional-rpms
