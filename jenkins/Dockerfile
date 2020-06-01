@@ -10,8 +10,7 @@ RUN yum-config-manager --enable rhel-7-server-optional-rpms
 #RUN alternatives --set java $(alternatives --display java | grep java-11 | awk '/family.*x86_64/ { print $1; }')
 #RUN alternatives --set javac $(alternatives --display javac | grep java-11 | awk '/family.*x86_64/ { print $1; }')
 #ENV JAVA_TOOL_OPTIONS -XX:+UnlockExperimentalVMOptions -Dsun.zip.disableMemoryMapping=true
-ENV JENKINS_OPTS --enable-future-java \
-     -v jenkins-home:/var/jenkins_home \
+ENV JENKINS_OPTS -v jenkins-home:/var/jenkins_home \
      jenkins/jenkins:jdk11
 
 # drop back to the regular jenkins user - good practice
