@@ -1,4 +1,4 @@
-FROM openshift/jenkins:latest
+FROM openshift/jenkins2:latest
 USER 0
 COPY plugins.txt /plugins.txt
 RUN /usr/local/bin/install-plugins.sh /plugins.txt
