@@ -34,3 +34,22 @@ oc delete svc services-card-api-master
 oc delete configmap services-card-api-config-map
 oc delete configmap services-card-api-dev-setup-config
 oc delete dc services-card-api-master
+
+#Remove SOAM API
+oc delete route soam-api-master
+oc delete svc soam-api-master
+oc delete configmap soam-api-config-map
+oc delete dc soam-api-master
+
+#Remove SOAM SSO
+oc delete all,rc,svc,dc,route,pvc,secret,sa -l app-name=sso
+oc delete pvc -l statefulset=sso-pgsql-dev
+oc delete cm -l cluster-name=sso-pgsql-dev
+
+#Remove NATS
+oc delete all,rc,svc,dc,route,pvc,secret -l app=nats
+oc delete configmap nats-config
+
+#Remove STAN
+oc delete all,rc,svc,dc,route,pvc,secret -l app=stan
+oc delete configmap stan-config
