@@ -93,10 +93,10 @@ objects:
             image: nats:2.1.6-alpine3.11
             resources:
               requests:
-                cpu: "15m"
-                memory: "64Mi"
+                cpu: "25m"
+                memory: "128Mi"
               limits:
-                cpu: "30m"
+                cpu: "50m"
                 memory: "256Mi"
             ports:
               - containerPort: 4222

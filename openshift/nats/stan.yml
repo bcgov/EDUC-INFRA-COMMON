@@ -89,8 +89,8 @@ spec:
           image: nats-streaming:0.17.0
           resources:
             requests:
-              cpu: "20m"
-              memory: "64Mi"
+              cpu: "25m"
+              memory: "128Mi"
             limits:
               cpu: "50m"
               memory: "256Mi"
