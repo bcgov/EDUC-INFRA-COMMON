@@ -25,7 +25,7 @@ objects:
          def TOOLS = 'c2mvws-dev'
          def TARGET_ENVIRONMENT = 'c2mvws-test'
          def JOB_NAME = 'master'
-         def STAGING_ENV = 'Test'
+         def STAGING_ENV = 'Prod'
          def APP_DOMAIN = 'pathfinder.gov.bc.ca'
          
          pipeline {
