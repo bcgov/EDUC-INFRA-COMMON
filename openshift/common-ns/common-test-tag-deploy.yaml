@@ -19,28 +19,30 @@ objects:
          def DIGITAL_ID_API_VERSION = '<Not Required>'
          def PEN_DEMOG_API_VERSION = '<Not Required>'
          def PEN_REQUEST_API_VERSION = '<Not Required>'
-         def PEN_REQUEST_EMAIL_API_VERSION = '<Not Required>'
          def SERVICES_CARD_API_VERSION = '<Not Required>'
          def SOAM_API_VERSION = '<Not Required>'
          def STUDENT_API_VERSION = '<Not Required>'
-         def PEN_REQUEST_VERSION = '<Not Required>'
-         def STAFF_ADMIN_VERSION = '<Not Required>'
-         def STUDENT_PROFILE_VERSION = '<Not Required>'
          def STUDENT_PROFILE_API_VERSION = '<Not Required>'
-         def STUDENT_PROFILE_EMAIL_API_VERSION = '<Not Required>'
          
-         def TOOLS = 'c2mvws-dev'
-         def TARGET_ENVIRONMENT = 'c2mvws-test'
+         def TOOLS = 'mvubjx-dev'
+         def TARGET_ENVIRONMENT = 'mvubjx-test'
          def JOB_NAME = 'master'
          def STAGING_ENV = 'Test'
          def APP_DOMAIN = 'pathfinder.gov.bc.ca'
          
          pipeline {
              environment {
-         	  NAMESPACE='c2mvws'
+         	  NAMESPACE='mvubjx'
+         	  DEV_EXCHANGE_REALM='v45fd2kb'
+              MIN_REPLICAS = "1"
+              MAX_REPLICAS = "1"
+              MIN_CPU = "30m"
+              MAX_CPU = "300m"
+              MIN_MEM = "650Mi"
+              MAX_MEM = "750Mi"    
              }
              agent any
-         	stages {
+         	 stages {
          		stage('Select Versions for Deployment') {
          			steps {
          				script {
@@ -59,9 +61,6 @@ objects:
          											description: 'Enter PEN Request API Version, leave the tag blank if this service is not to be deployed',
          											name: 'PEN_REQUEST_API_VERSION'),
          									string(defaultValue: "",
-         											description: 'Enter PEN Request Email API Version, leave the tag blank if this service is not to be deployed',
-         											name: 'PEN_REQUEST_EMAIL_API_VERSION'),
-         									string(defaultValue: "",
          											description: 'Enter Services Card API Version, leave the tag blank if this service is not to be deployed',
          											name: 'SERVICES_CARD_API_VERSION'),
          									string(defaultValue: "",
@@ -71,42 +70,17 @@ objects:
          											description: 'Enter Student API Version, leave the tag blank if this service is not to be deployed',
          											name: 'STUDENT_API_VERSION'),
          									string(defaultValue: "",
-         											description: 'Enter PEN Request Version, leave the tag blank if this service is not to be deployed',
-         											name: 'PEN_REQUEST_VERSION'),
-         									string(defaultValue: "",
-         											description: 'Enter Staff Admin Version, leave the tag blank if this service is not to be deployed',
-         											name: 'STAFF_ADMIN_VERSION'),
-         									string(defaultValue: "",
-         											description: 'Enter Staff Admin Version, leave the tag blank if this service is not to be deployed',
-         											name: 'STUDENT_PROFILE_VERSION'),
-         									string(defaultValue: "",
          											description: 'Enter Staff Admin Version, leave the tag blank if this service is not to be deployed',
          											name: 'STUDENT_PROFILE_API_VERSION'),
-         									string(defaultValue: "",
-         											description: 'Enter Staff Admin Version, leave the tag blank if this service is not to be deployed',
-         											name: 'STUDENT_PROFILE_EMAIL_API_VERSION'),
          							])
          					// Save to variables. Default to empty string if not found.
          					DIGITAL_ID_API_VERSION = tagInput.DIGITAL_ID_API_VERSION?:''
          					PEN_DEMOG_API_VERSION = tagInput.PEN_DEMOG_API_VERSION?:''
          					PEN_REQUEST_API_VERSION = tagInput.PEN_REQUEST_API_VERSION?:''
-         					PEN_REQUEST_EMAIL_API_VERSION = tagInput.PEN_REQUEST_EMAIL_API_VERSION?:''
          					SERVICES_CARD_API_VERSION = tagInput.SERVICES_CARD_API_VERSION?:''
          					SOAM_API_VERSION = tagInput.SOAM_API_VERSION?:''
          					STUDENT_API_VERSION = tagInput.STUDENT_API_VERSION?:''
-         					PEN_REQUEST_VERSION = tagInput.PEN_REQUEST_VERSION?:''
-         					STAFF_ADMIN_VERSION = tagInput.STAFF_ADMIN_VERSION?:''
-         					STUDENT_PROFILE_VERSION = tagInput.STUDENT_PROFILE_VERSION?:''
          					STUDENT_PROFILE_API_VERSION = tagInput.STUDENT_PROFILE_API_VERSION?:''
-         					STUDENT_PROFILE_EMAIL_API_VERSION = tagInput.STUDENT_PROFILE_EMAIL_API_VERSION?:''
-         				}
-         			}
-         		}
-         		stage('Deployment Credentials & Approval') {
-         			steps {
-         				timeout(time:2, unit:'DAYS')
-         				{
-         				   input message: 'Do you approve this deployment to Test?'
          				}
          			}
          		}
@@ -119,7 +93,7 @@ objects:
          			  }
          		  }
          		}
-         		stage('Deploying & configuring Digital ID API in Test'){
+         		stage('Digital ID API'){
          			when {
          				expression {
          					return "${DIGITAL_ID_API_VERSION}" != "<Not Required>" && "${DIGITAL_ID_API_VERSION}" != "";
@@ -139,7 +113,7 @@ objects:
                          }
                      }
          		}
-         		stage('Deploying & configuring PEN Demographics API in Test'){
+         		stage('PEN Demographics API'){
          			when {
          				expression {
          					return "${PEN_DEMOG_API_VERSION}" != "<Not Required>" && "${PEN_DEMOG_API_VERSION}" != "";
@@ -159,7 +133,7 @@ objects:
                          }
                      }
          		}
-         		stage('Deploying & configuring PEN Request API in Test'){
+         		stage('PEN Request API'){
          			when {
          				expression {
          					return "${PEN_REQUEST_API_VERSION}" != "<Not Required>" && "${PEN_REQUEST_API_VERSION}" != "";
@@ -179,27 +153,7 @@ objects:
                          }
                      }
          		}
-         		stage('Deploying & configuring PEN Request Email API in Test'){
-         			when {
-         				expression {
-         					return "${PEN_REQUEST_EMAIL_API_VERSION}" != "<Not Required>" && "${PEN_REQUEST_EMAIL_API_VERSION}" != "";
-         				}
-         			}
-         			environment {
-         			   APP_NAME = "pen-request-email-api"
-         			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST-EMAIL-API/master/tools/openshift/api.dc.yaml"
-                     }
-         			steps {
-         			    deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request-email-api', 'pen-request-email-api', JOB_NAME, "${PEN_REQUEST_EMAIL_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}")
-         			    configMapChesSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
-                         script{
-                            dir('tools/jenkins'){
-                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST-EMAIL-API/master/tools/jenkins/update-configmap.sh | bash -s test $APP_NAME $NAMESPACE"
-                            }
-                         }
-                     }
-         		}
-         		stage('Deploying & configuring Services Card API in Test'){
+         		stage('Services Card API'){
          			when {
          				expression {
          					return "${SERVICES_CARD_API_VERSION}" != "<Not Required>" && "${SERVICES_CARD_API_VERSION}" != "";
@@ -219,7 +173,7 @@ objects:
                          }
                      }
          		}
-         		stage('Deploying & configuring SOAM API in Test'){
+         		stage('SOAM API'){
          			when {
          				expression {
          					return "${SOAM_API_VERSION}" != "<Not Required>" && "${SOAM_API_VERSION}" != "";
@@ -232,13 +186,14 @@ objects:
          			steps {
          			    deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-soam-api', 'soam-api', JOB_NAME, "${SOAM_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}")
                          script{
-                            dir('tools/jenkins'){
-                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-SOAM-API/master/tools/jenkins/update-configmap.sh | bash -s test $APP_NAME $NAMESPACE"
+                            dir('tools/jenkins'){ 
+                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-SOAM-API/master/tools/jenkins/update-configmap.sh | bash -s test $APP_NAME $NAMESPACE $DEV_EXCHANGE_REALM"
                             }
                          }
+                         deployStageNoTag(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-soam-api', 'soam-api', JOB_NAME, "${SOAM_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}")
                      }
          		}
-         		stage('Deploying & configuring Student API in Test'){
+         		stage('Student API'){
          			when {
          				expression {
          					return "${STUDENT_API_VERSION}" != "<Not Required>" && "${STUDENT_API_VERSION}" != "";
@@ -258,47 +213,7 @@ objects:
                          }
                      }
          		}
-         		stage('Deploying & configuring PEN Request Frontend and Backend in Test'){
-         			when {
-         				expression {
-         					return "${PEN_REQUEST_VERSION}" != "<Not Required>" && "${PEN_REQUEST_VERSION}" != "";
-         				}
-         			}
-         			environment {
-         			   APP_NAME = "pen-request"
-         			   DC_URL_FRONTEND = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST/master/tools/openshift/frontend-static.dc.yaml"
-         			   DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST/master/tools/openshift/backend.dc.yaml"
-                     }
-         			steps {
-         			    deployUIStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request', 'pen-request', JOB_NAME, "${PEN_REQUEST_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}")
-                         script{
-                            dir('tools/jenkins'){
-                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST/master/tools/jenkins/update-configmap.sh | bash -s test $APP_NAME $NAMESPACE"
-                            }
-                         }
-                     }
-         		}
-         		stage('Deploying & configuring Student Admin Frontend and Backend in Test'){
-         			when {
-         				expression {
-         					return "${STAFF_ADMIN_VERSION}" != "<Not Required>" && "${STAFF_ADMIN_VERSION}" != "";
-         				}
-         			}
-         			environment {
-         			   APP_NAME = "student-admin"
-         			   DC_URL_FRONTEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/openshift/frontend-static.dc.yaml"
-         			   DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/openshift/backend.dc.yaml"
-                     }
-         			steps {
-         			    deployUIStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-admin', 'student-admin', JOB_NAME, "${STAFF_ADMIN_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}")
-                         script{
-                            dir('tools/jenkins'){
-                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/jenkins/update-configmap.sh | bash -s test $APP_NAME $NAMESPACE"
-                            }
-                         }
-                     }
-         		}
-         		stage('Deploying & configuring Student Profile API in Test'){
+         		stage('Student Profile API'){
          			when {
          				expression {
          					return "${STUDENT_PROFILE_API_VERSION}" != "<Not Required>" && "${STUDENT_PROFILE_API_VERSION}" != "";
@@ -314,46 +229,6 @@ objects:
                          script{
                             dir('tools/jenkins'){
                                sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-API/master/tools/jenkins/update-configmap.sh | bash -s test $APP_NAME $NAMESPACE"
-                            }
-                         }
-                     }
-         		}
-         		stage('Deploying & configuring Student Profile Email API in Test'){
-         			when {
-         				expression {
-         					return "${STUDENT_PROFILE_EMAIL_API_VERSION}" != "<Not Required>" && "${STUDENT_PROFILE_EMAIL_API_VERSION}" != "";
-         				}
-         			}
-         			environment {
-         			   APP_NAME = "student-profile-email-api"
-         			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-EMAIL-API/master/tools/openshift/api.dc.yaml"
-                     }
-         			steps {
-         			    deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-profile-email-api', 'student-profile-email-api', JOB_NAME, "${STUDENT_PROFILE_EMAIL_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}")
-         			    configMapChesSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
-                         script{
-                            dir('tools/jenkins'){
-                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-EMAIL-API/master/tools/jenkins/update-configmap.sh | bash -s test $APP_NAME $NAMESPACE"
-                            }
-                         }
-                     }
-         		}
-         		stage('Deploying & configuring Student Profile Frontend and Backend in Test'){
-         			when {
-         				expression {
-         					return "${STUDENT_PROFILE_VERSION}" != "<Not Required>" && "${STUDENT_PROFILE_VERSION}" != "";
-         				}
-         			}
-         			environment {
-         			   APP_NAME = "student-profile"
-         			   DC_URL_FRONTEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE/master/tools/openshift/frontend-static.dc.yaml"
-         			   DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE/master/tools/openshift/backend.dc.yaml"
-                     }
-         			steps {
-         			    deployUIStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-profile', 'student-profile', JOB_NAME, "${STUDENT_PROFILE_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}")
-                         script{
-                            dir('tools/jenkins'){
-                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE/master/tools/jenkins/update-configmap.sh | bash -s test $APP_NAME $NAMESPACE"
                             }
                          }
                      }
@@ -393,41 +268,6 @@ objects:
              }
          }
          
-         def configMapChesSetup(String appName,String appNameUpper, String namespace){
-             script {
-         	  
-               try{
-                 sh( script: "oc project ${namespace}-test", returnStdout: true)
-                 sh( script: "oc describe configmaps ${appName}-test-setup-config", returnStdout: true)
-                 sh( script: "oc project ${namespace}-tools", returnStdout: true)
-                 echo 'Config map already exists. Moving to next stage...'
-               } catch(e){
-                   configProperties = input(
-                   id: 'configProperties', message: "Please enter the required credentials to allow ${appName} to run:",
-                   parameters: [
-                       string(defaultValue: "",
-                               description: 'JDBC connect string for database',
-                               name: 'CHES_CLIENT_ID'),
-                       string(defaultValue: "",
-                               description: "Username for ${appName} to connect to the database",
-                               name: "CHES_CLIENT_SECRET"),
-                       string(defaultValue: "",
-                               description: "Password for ${appName} to connect to the database",
-                               name: "CHES_ENDPOINT_URL"),
-                       string(defaultValue: "",
-                               description: "Password for ${appName} to connect to the database",
-                               name: "CHES_TOKEN_URL"),
-                   ])
-         		sh """
-         		  set +x
-         		  echo Running curl command...
-         		  oc create -n ${namespace}-test configmap ${appName}-test-setup-config --from-literal=CHES_CLIENT_ID=${configProperties.CHES_CLIENT_ID} --from-literal=CHES_TOKEN_URL=${configProperties.CHES_TOKEN_URL} --from-literal=CHES_ENDPOINT_URL=${configProperties.CHES_ENDPOINT_URL} --from-literal=CHES_CLIENT_SECRET=${configProperties.CHES_CLIENT_SECRET} --dry-run -o yaml | oc apply -f -
-         		  oc project ${namespace}-tools
-         		"""
-               }
-             }
-         }
-         
          def deployStage(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String rawApiDcURL) {
            openshift.withCluster() {
          	openshift.withProject(projectEnv) {
@@ -440,7 +280,13 @@ objects:
          		"NAMESPACE=${projectEnv}",
          		"APP_NAME=${appName}",
          		"HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain}",
-         		"TAG=${tag}"
+                "TAG=${tag}",
+                "MIN_REPLICAS=${MIN_REPLICAS}",
+                "MAX_REPLICAS=${MAX_REPLICAS}",
+                "MIN_CPU=${MIN_CPU}",
+                "MAX_CPU=${MAX_CPU}",
+                "MIN_MEM=${MIN_MEM}",
+                "MAX_MEM=${MAX_MEM}"
          	  )
          
          	  echo "Applying Deployment for ${appName}"
@@ -449,42 +295,28 @@ objects:
            }
          }
          
-         def deployUIStage(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String rawApiDcURLFrontend, String rawApiDcURLBackend) {
+         def deployStageNoTag(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String rawApiDcURL) {
            openshift.withCluster() {
          	openshift.withProject(projectEnv) {
-         	  echo "Tagging Image ${repoName}-backend:${jobName} with version ${tag}"
-         	  openshift.tag("${toolsEnv}/${repoName}-backend:${tag}", "${repoName}-backend:${tag}")
-         
-         	  echo "Tagging Image ${repoName}-frontend-static:${jobName} with version ${tag}"
-         	  openshift.tag("${toolsEnv}/${repoName}-frontend-static:${tag}", "${repoName}-frontend-static:${tag}")
-         	
-         	
-         	  echo "Processing DeploymentConfig ${appName}-backend..."
-         	  def dcBackendTemplate = openshift.process('-f',
-         		"${rawApiDcURLBackend}",
+         	  def dcTemplate = openshift.process('-f',
+         		"${rawApiDcURL}",
          		"REPO_NAME=${repoName}",
          		"JOB_NAME=${jobName}",
          		"NAMESPACE=${projectEnv}",
          		"APP_NAME=${appName}",
          		"HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain}",
-         		"TAG=${tag}"
-         	  )
-         		
-         	  def dcBackend = openshift.apply(dcBackendTemplate).narrow('dc')
-         
-         	  echo "Processing DeploymentConfig ${appName}-frontend-static..."
-         	  def dcFrontendStaticTemplate = openshift.process('-f',
-         		"${rawApiDcURLFrontend}",
-         		"REPO_NAME=${repoName}",
-         		"JOB_NAME=${jobName}",
-         		"NAMESPACE=${projectEnv}",
-         		"APP_NAME=${appName}",
-         		"HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain}",
-         		"TAG=${tag}"
+         		"TAG=${tag}",
+                "MIN_REPLICAS=${MIN_REPLICAS}",
+                "MAX_REPLICAS=${MAX_REPLICAS}",
+                "MIN_CPU=${MIN_CPU}",
+                "MAX_CPU=${MAX_CPU}",
+                "MIN_MEM=${MIN_MEM}",
+                "MAX_MEM=${MAX_MEM}"
          	  )
          
-         	  echo "Applying Deployment ${appName}-frontend-static..."
-         	  def dcFrontendStatic = openshift.apply(dcFrontendStaticTemplate).narrow('dc')
+         	  echo "Applying Deployment for ${appName}"
+         	  def dc = openshift.apply(dcTemplate).narrow('dc')
          	}
            }
          }
+         
