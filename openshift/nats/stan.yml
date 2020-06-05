@@ -89,10 +89,10 @@ spec:
           image: nats-streaming:0.17.0
           resources:
             requests:
-              cpu: "50m"
-              memory: "64Mi"
+              cpu: "25m"
+              memory: "128Mi"
             limits:
-              cpu: "100m"
+              cpu: "50m"
               memory: "256Mi"
           ports:
             - containerPort: 8222
