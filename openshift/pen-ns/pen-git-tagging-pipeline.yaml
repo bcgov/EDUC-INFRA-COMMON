@@ -167,4 +167,5 @@ objects:
                 }
             
             }
+            }
       type: JenkinsPipeline
