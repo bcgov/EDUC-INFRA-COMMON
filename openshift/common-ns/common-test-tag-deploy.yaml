@@ -173,26 +173,6 @@ objects:
                          }
                      }
          		}
-         		stage('SOAM API'){
-         			when {
-         				expression {
-         					return "${SOAM_API_VERSION}" != "<Not Required>" && "${SOAM_API_VERSION}" != "";
-         				}
-         			}
-         			environment {
-         			   APP_NAME = "soam-api"
-         			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-SOAM-API/master/tools/openshift/api.dc.yaml"
-                     }
-         			steps {
-         			    deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-soam-api', 'soam-api', JOB_NAME, "${SOAM_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}")
-                         script{
-                            dir('tools/jenkins'){ 
-                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-SOAM-API/master/tools/jenkins/update-configmap.sh | bash -s test $APP_NAME $NAMESPACE $DEV_EXCHANGE_REALM"
-                            }
-                         }
-                         deployStageNoTag(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-soam-api', 'soam-api', JOB_NAME, "${SOAM_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}")
-                     }
-         		}
          		stage('Student API'){
          			when {
          				expression {
@@ -231,6 +211,26 @@ objects:
                                sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-API/master/tools/jenkins/update-configmap.sh | bash -s test $APP_NAME $NAMESPACE"
                             }
                          }
+                     }
+         		}
+         		stage('SOAM API'){
+         			when {
+         				expression {
+         					return "${SOAM_API_VERSION}" != "<Not Required>" && "${SOAM_API_VERSION}" != "";
+         				}
+         			}
+         			environment {
+         			   APP_NAME = "soam-api"
+         			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-SOAM-API/master/tools/openshift/api.dc.yaml"
+                     }
+         			steps {
+         			    deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-soam-api', 'soam-api', JOB_NAME, "${SOAM_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}")
+                         script{
+                            dir('tools/jenkins'){ 
+                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-SOAM-API/master/tools/jenkins/update-configmap.sh | bash -s test $APP_NAME $NAMESPACE $DEV_EXCHANGE_REALM"
+                            }
+                         }
+                         deployStageNoTag(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-soam-api', 'soam-api', JOB_NAME, "${SOAM_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}")
                      }
          		}
          	}
