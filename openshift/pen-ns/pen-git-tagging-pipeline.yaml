@@ -2,14 +2,14 @@
 apiVersion: v1
 kind: Template
 labels: 
-  template: git-tagging-template
+  template: pen-git-tagging-template
 metadata: 
-  name: git-tagging-template
+  name: pen-git-tagging-template
 objects:
 - apiVersion: v1
   kind: BuildConfig
   metadata: 
-    name: "git-tagging-pipeline"
+    name: "pen-git-tagging-pipeline"
   spec:
     strategy:
       jenkinsPipelineStrategy:
@@ -32,39 +32,7 @@ objects:
                 environment {
                    APPROVERS = ''
                 }
-                agent {
-                   kubernetes {
-                     label 'mavenPod-dev'
-                     cloud 'openshift'
-                     defaultContainer 'jnlp'
-                     serviceAccount 'jenkins'
-                     yaml """
-                       kind: Pod
-                       metadata:
-                         name: jenkins-slave
-                       spec:
-                         containers:
-                         - name: jnlp
-                           image: registry.access.redhat.com/openshift3/jenkins-agent-maven-35-rhel7
-                           privileged: false
-                           alwaysPullImage: false
-                           workingDir: /tmp
-                           ttyEnabled: false
-                           resourceRequestCpu: 3
-                           resourceRequestMemory: 2Gi
-                           resourceLimitCpu: 3
-                           resourceLimitMemory: 2Gi
-                           volumeMounts:
-                           - mountPath: '/home/jenkins/.m2'
-                             name: pvc
-                         volumes:
-                         - name: pvc
-                           persistentVolumeClaim:
-                             claimName: 'maven-slave-pvc'
-            
-                     """
-                   }
-                }
+                agent any
                 stages {
             		stage('Deployment Credentials & Approval') {
             			steps {
