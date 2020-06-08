@@ -1,0 +1,41 @@
+---
+apiVersion: v1
+kind: Template
+labels: 
+  template: keycloak-test-template
+metadata: 
+  name: keycloak-test-template
+objects:
+- apiVersion: v1
+  kind: BuildConfig
+  metadata: 
+    name: "keycloak-test-pipeline"
+  spec:
+    source:
+      git:
+        uri: "https://github.com/bcgov/EDUC-KEYCLOAK-SOAM"
+    strategy:
+      jenkinsPipelineStrategy:
+        jenkinsfile: | 
+         pipeline {
+             environment {
+         	  NAMESPACE='mvubjx-test'
+             }
+             agent any
+         	 stages {
+                stage('Checkout') {
+                    steps {
+                        git branch: 'master', url: 'https://github.com/bcgov/EDUC-KEYCLOAK-SOAM.git'
+                    }
+                }
+         		stage('Deploy KC'){
+         		  steps{
+         			  script{
+         				  dir('.pipeline'){
+         					  sh "curl -sSL 'https://raw.githubusercontent.com/BCDevOps/pipeline-cli/v1.0/cli.sh' | bash -s deploy -- --pr=235 --env=test"
+                          }
+                     }
+         	      }
+         	    }
+             }
+         }
