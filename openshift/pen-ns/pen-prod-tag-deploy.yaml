@@ -153,7 +153,7 @@ objects:
          			   DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST/master/tools/openshift/backend.dc.yaml"
                      }
          			steps {
-         			    deployUIStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request', 'pen-request', JOB_NAME, "${PEN_REQUEST_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}", "3", "3", "32m", "64m", "200Mi", "250Mi")
+         			    deployUIStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request', 'pen-request', JOB_NAME, "${PEN_REQUEST_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}", "3", "3", "25m", "50m", "200Mi", "250Mi")
                          script{
                             dir('tools/jenkins'){
                                sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST/master/tools/jenkins/update-configmap.sh | bash -s prod $APP_NAME $NAMESPACE $COMMON_NAMESPACE"
@@ -173,7 +173,7 @@ objects:
          			   DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/openshift/backend.dc.yaml"
                      }
          			steps {
-         			    deployUIStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-admin', 'student-admin', JOB_NAME, "${STAFF_ADMIN_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}", "3", "3", "32m", "64m", "200Mi", "250Mi")
+         			    deployUIStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-admin', 'student-admin', JOB_NAME, "${STAFF_ADMIN_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}", "3", "3", "25m", "50m", "200Mi", "250Mi")
                          script{
                             dir('tools/jenkins'){
                                sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/jenkins/update-configmap.sh | bash -s prod $APP_NAME $NAMESPACE $COMMON_NAMESPACE"
@@ -214,7 +214,7 @@ objects:
          			   DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE/master/tools/openshift/backend.dc.yaml"
                      }
          			steps {
-         			    deployUIStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-profile', 'student-profile', JOB_NAME, "${STUDENT_PROFILE_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}", "3", "3", "32m", "64m", "200Mi", "250Mi")
+         			    deployUIStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-profile', 'student-profile', JOB_NAME, "${STUDENT_PROFILE_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}", "3", "3", "25m", "50m", "200Mi", "250Mi")
                          script{
                             dir('tools/jenkins'){
                                sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE/master/tools/jenkins/update-configmap.sh | bash -s prod $APP_NAME $NAMESPACE $COMMON_NAMESPACE"
