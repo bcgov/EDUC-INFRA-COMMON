@@ -11,12 +11,12 @@ data:
     streaming {
      ns: "nats://nats:4222"
      sv: false
-     id: educ_pen_nats_cluster
+     id: educ_nats_cluster
      store: file
-     dir: /data/ecu-pen-nats-cluster/store
+     dir: /data/educ-nats-cluster/store
      cluster {
        node_id: $POD_NAME
-       log_path: /data/ecu-pen-nats-cluster/log
+       log_path: /data/educ-nats-cluster/log
        # Explicit names of resulting peers
        peers: ["stan-0","stan-1","stan-2"]
      }
@@ -58,10 +58,10 @@ spec:
   replicas: 3
   volumeClaimTemplates:
     - metadata:
-        name: stan-educ-pen-vol
+        name: stan-educ-vol
       spec:
         accessModes:
-          - ReadWriteOnce
+          - ReadWriteMany
         volumeMode: "Filesystem"
         persistentVolumeReclaimPolicy: Delete
         resources:
@@ -115,11 +115,13 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+            - name: TZ
+              value: America/Vancouver
           volumeMounts:
             - name: config-volume
               mountPath: /etc/stan-config
-            - name: stan-educ-pen-vol
-              mountPath: /data/ecu-pen-nats-cluster
+            - name: stan-educ-vol
+              mountPath: /data/educ-nats-cluster
           livenessProbe:
             httpGet:
               path: /
