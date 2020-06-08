@@ -2,14 +2,14 @@
 apiVersion: v1
 kind: Template
 labels: 
-  template: dev-template
+  template: pen-dev-template
 metadata: 
-  name: dev-template
+  name: pen-dev-template
 objects:
 - apiVersion: v1
   kind: BuildConfig
   metadata: 
-    name: "dev-pipeline"
+    name: "pen-dev-pipeline"
   spec:
     strategy:
       jenkinsPipelineStrategy:

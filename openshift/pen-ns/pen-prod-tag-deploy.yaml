@@ -2,14 +2,14 @@
 apiVersion: v1
 kind: Template
 labels: 
-  template: prod-template
+  template: pen-prod-template
 metadata: 
-  name: prod-template
+  name: pen-prod-template
 objects:
 - apiVersion: v1
   kind: BuildConfig
   metadata: 
-    name: "prod-pipeline"
+    name: "pen-prod-pipeline"
   spec:
     strategy:
       jenkinsPipelineStrategy:
