@@ -36,8 +36,8 @@ objects:
               APPROVERS = ''
          	  NAMESPACE='mvubjx'
          	  DEV_EXCHANGE_REALM='v45fd2kb'
-              MIN_REPLICAS = "1"
-              MAX_REPLICAS = "1"
+              MIN_REPLICAS = "3"
+              MAX_REPLICAS = "3"
               MIN_CPU = "30m"
               MAX_CPU = "300m"
               MIN_MEM = "650Mi"
