@@ -30,6 +30,12 @@ oc delete svc pen-demographics-api-master
 oc delete configmap pen-demog-api-config-map
 oc delete dc pen-demographics-api-master
 
+#Remove PEN Request Email API
+oc delete route pen-request-email-api-master
+oc delete svc pen-request-email-api-master
+oc delete configmap pen-request-email-api-config-map
+oc delete dc pen-request-email-api-master
+
 #Remove SOAM API
 oc delete route soam-api-master
 oc delete svc soam-api-master
