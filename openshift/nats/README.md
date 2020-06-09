@@ -3,7 +3,7 @@
 
 `Step 2.`  run the command, replacing the question mark with proper namespace.
  
- `oc new-app -f https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/feature/nats/openshift/nats/nats.yml -p POD_NAMESPACE=?`
+ `oc new-app -f https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/nats/nats.yml -p POD_NAMESPACE=?`
  
 ### TO Deploy Nats Streaming To an Environment
 `Step 1.`  NATS should be up and running for NATS Streaming(STAN) to work.
