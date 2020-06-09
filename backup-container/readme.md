@@ -12,12 +12,22 @@ Note that you will need [openshift-developer-tools](https://github.com/BCDevOps/
 6. Create config map
 `oc -n <namespace> create -f <path>backup-conf-configmap_DeploymentConfig.json`
 6. Process the deployment template 
-`oc -n <namespace> process -f <path-to-dc>backup-deploy.json -p IMAGE_NAMESPACE=<namespace> -p TAG_NAME=<tag-name> -p DATABASE_DEPLOYMENT_NAME=<database-service-name> -p DATABASE_USER_KEY_NAME=<db-secret-key-user> -p DATABASE_PASSWORD_KEY_NAME=<db-secret-key-password> -p WEBHOOK_URL=<webhook-url> -p DAILY_BACKUPS=<daily-backups> -p WEEKLY_BACKUPS=<weekly-backups> -p MONTHLY_BACKUPS=<monthy-backups> -p BACKUP_VOLUME_NAME=<backup-volume-name> -p BACKUP_VOLUME_SIZE=<backup-volume-size -o yaml |oc create -f -`
+`oc -n <namespace> process -f <path-to-dc>backup-deploy.json -p IMAGE_NAMESPACE=<namespace> -p TAG_NAME=<tag-name> -p DATABASE_DEPLOYMENT_NAME=<database-service-name> -p DATABASE_USER_KEY_NAME=<db-secret-key-user> -p DATABASE_PASSWORD_KEY_NAME=<db-secret-key-password> -p WEBHOOK_URL=<webhook-url> -p DAILY_BACKUPS=<daily-backups> -p WEEKLY_BACKUPS=<weekly-backups> -p MONTHLY_BACKUPS=<monthy-backups> -p BACKUP_VOLUME_NAME=<backup-volume-name> -p BACKUP_VOLUME_SIZE=<backup-volume-size> -o yaml |oc create -f -`
 
 ## Clean up
 To remove the backup container resources, run the following commands. 
 - `oc delete all --field-selector metadata.name=backup-postgres`
-- ``
+- `oc delete configmap --field-selector metadata.name=backup-conf`
 - `oc delete ServiceInstance --field-selector metadata.name=<BACKUP_VOLUME_NAME>`
 - `oc delete pvc --field-selector metadata.name=backup-verification`
 If secrets are not used by anything else, you can delete those too.
+
+## Actions cheat sheet
+Navigate to the terminal of the backup-container pod.
+### One off back up
+`backup.sh -1`
+### One off verification
+`backup.sh -v all`
+### Restore
+First stop all services connecting to the db then run the following.
+`backup.sh -r <host>/<db-name>`
