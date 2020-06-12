@@ -3,6 +3,8 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: stan-config
+  labels:
+    app: stan
 data:
   stan.conf: |
     port: 4222
