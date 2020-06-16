@@ -159,11 +159,11 @@
             },
             "resources": {
               "limits": {
-                "cpu": 4,
+                "cpu": "100m",
                 "memory": "${MEMORY_LIMIT}"
               },
               "requests": {
-                "cpu": 1,
+                "cpu": "1",
                 "memory": "1Gi"
               }
             },
@@ -316,7 +316,7 @@
     "description": "Maximum amount of memory the container can use.",
     "displayName": "Memory Limit",
     "name": "MEMORY_LIMIT",
-    "value": "2Gi"
+    "value": "128Mi"
   },
   {
     "description": "Volume space available for data, e.g. 512Mi, 2Gi.",
