@@ -15,6 +15,7 @@ objects:
   metadata:
     name: nats-config
     labels:
+      app: nats
   data:
     nats.conf: |-
         pid_file: "/var/run/nats/nats.pid"
