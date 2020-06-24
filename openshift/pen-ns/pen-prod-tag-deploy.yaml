@@ -17,6 +17,7 @@ objects:
          def APPROVERS = 'NONE'
          def IDIR = 'NONE'
          def IDIR_PW = 'NONE'
+         def PEN_REQUEST_SAGA_API_VERSION = '<Not Required>'
          def PEN_REQUEST_EMAIL_API_VERSION = '<Not Required>'
          def PEN_REQUEST_VERSION = '<Not Required>'
          def STAFF_ADMIN_VERSION = '<Not Required>'
@@ -63,11 +64,15 @@ objects:
          									string(defaultValue: "",
          											description: 'Enter Staff Admin Version, leave the tag blank if this service is not to be deployed',
          											name: 'STUDENT_PROFILE_VERSION'),
+                                            string(defaultValue: "",
+                                                description: 'Enter Staff Admin Version, leave the tag blank if this service is not to be deployed',
+                                                name: 'STUDENT_PROFILE_EMAIL_API_VERSION'),
          									string(defaultValue: "",
-         											description: 'Enter Staff Admin Version, leave the tag blank if this service is not to be deployed',
-         											name: 'STUDENT_PROFILE_EMAIL_API_VERSION'),
+         											description: 'Enter pen request saga api version, leave the tag blank if this service is not to be deployed',
+         											name: 'PEN_REQUEST_SAGA_API_VERSION'),
          							])
          					// Save to variables. Default to empty string if not found.
+                            PEN_REQUEST_SAGA_API_VERSION = tagInput.PEN_REQUEST_SAGA_API_VERSION?:''
          					PEN_REQUEST_EMAIL_API_VERSION = tagInput.PEN_REQUEST_EMAIL_API_VERSION?:''
          					PEN_REQUEST_VERSION = tagInput.PEN_REQUEST_VERSION?:''
          					STAFF_ADMIN_VERSION = tagInput.STAFF_ADMIN_VERSION?:''
@@ -119,6 +124,27 @@ objects:
                            }
          			  }
          		  }
+         		}
+         		stage('PEN Request Saga API'){
+         			when {
+         				expression {
+         					return "${PEN_REQUEST_SAGA_API_VERSION}" != "<Not Required>" && "${PEN_REQUEST_SAGA_API_VERSION}" != "";
+         				}
+         			}
+         			environment {
+         			   APP_NAME = "pen-request-saga-api"
+         			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST-SAGA-API/master/tools/openshift/api.dc.yaml"
+                     }
+         			steps {
+         			    deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request-saga-api', 'pen-request-saga-api', JOB_NAME, "${PEN_REQUEST_SAGA_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "1", "1", "30m", "300m", "650Mi", "750Mi")
+         			    configMapSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
+                         script{
+                            dir('tools/jenkins'){
+                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST-SAGA-API/master/tools/jenkins/update-configmap.sh | bash -s prod $APP_NAME $NAMESPACE $COMMON_NAMESPACE"
+                            }
+                         }
+                        deployStageNoTag(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request-saga-api', 'pen-request-saga-api', JOB_NAME, "${PEN_REQUEST_SAGA_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "1", "1", "30m", "300m", "650Mi", "750Mi")
+                     }
          		}
          		stage('PEN Request Email API'){
          			when {
