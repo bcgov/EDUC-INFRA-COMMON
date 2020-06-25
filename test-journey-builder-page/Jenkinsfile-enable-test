@@ -11,7 +11,7 @@ pipeline {
 
     REPO_NAME = 'educ-infra-common'
     OWNER = 'bcgov'
-    NAME = 'maintenance-page'
+    NAME = 'test-journey-builder-page'
 
     APP_NAME = 'test-journey-builder-page'
     APP_DOMAIN = 'pathfinder.gov.bc.ca'
@@ -19,7 +19,7 @@ pipeline {
     SOURCE_REPO_RAW = 'https://github.com/${OWNER}/${REPO_NAME}/master'
     SOURCE_REPO_REF = 'master'
     SOURCE_REPO_URL = 'https://github.com/${OWNER}/${REPO_NAME}.git'
-    CONTEXT_DIR = 'maintenance-page/html'
+    CONTEXT_DIR = 'test-journey-builder-page/html'
 
     TOOLS_HOST_ROUTE = "${APP_NAME}-${TOOLS}.${APP_DOMAIN}"
     DEV_HOST_ROUTE = "${APP_NAME}-${DEV}.${APP_DOMAIN}"
@@ -99,45 +99,6 @@ pipeline {
         }
       }
     }
-    stage('Update route') {
-      steps {
-        script {
-          openshift.withCluster() {
-            openshift.withProject(TEST) {
-              echo 'Pointing GetMyPen route to maintenance page'
-              openshift.patch("route/pen-request-frontend-master", '\'{"spec":{"to":{"name":"maintenance-page"}}}\'')
-              openshift.patch("route/pen-request-frontend-master", '\'{"spec":{"port":{"targetPort":"8080-tcp"}}}\'')
-            }
-          }
-        }
-      }
-      post {
-        success {
-          echo 'Route successfully changed'
-        }
-        failure {
-          echo 'Failed to change route'
-        }
-      }
-    }
-    /*stage('e2e tests') {
-      agent {
-        node {
-          label 'nodejs10'
-        }
-      }
-      steps {
-        script {
-          timeout(10) {
-            dir('frontend') {
-              echo 'Running e2e tests'
-              sh 'npm install'
-              sh 'npm run test:e2e'
-            }
-          }
-        }
-      }
-    }*/
   }
 }
 
