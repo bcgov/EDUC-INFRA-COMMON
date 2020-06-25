@@ -1,0 +1,112 @@
+---
+apiVersion: v1
+kind: Template
+labels:
+  template: "${NAME}-dc-template"
+metadata:
+  name: "${NAME}-dc-template"
+  creationTimestamp:
+objects:
+  - apiVersion: v1
+    kind: DeploymentConfig
+    metadata:
+      annotations:
+        openshift.io/generated-by: OpenShiftNewApp
+        template.alpha.openshift.io/wait-for-ready: "true"
+      creationTimestamp:
+      labels:
+        app: "${NAME}"
+      name: "${NAME}"
+    spec:
+      replicas: 1
+      selector:
+        app: "${NAME}"
+        deploymentconfig: "${NAME}"
+      strategy:
+        type: Rolling
+      template:
+        metadata:
+          annotations:
+            openshift.io/generated-by: OpenShiftNewApp
+          name: "${NAME}"
+          labels:
+            app: "${NAME}"
+            deploymentconfig: "${NAME}"
+        spec:
+          containers:
+            - image: " "
+              imagePullPolicy: IfNotPresent
+              livenessProbe:
+                timeoutSeconds: 3
+                initialDelaySeconds: 30
+                httpGet:
+                  path: "/"
+                  port: 8080
+              name: "${NAME}"
+              ports:
+                - containerPort: 8080
+                  protocol: TCP
+              readinessProbe:
+                timeoutSeconds: 3
+                initialDelaySeconds: 3
+                httpGet:
+                  path: "/"
+                  port: 8080
+              resources:
+                limits:
+                  memory: "500Mi"
+      triggers:
+        - type: ConfigChange
+        - imageChangeParams:
+            automatic: true
+            containerNames:
+              - "${NAME}"
+            from:
+              kind: ImageStreamTag
+              name: "${NAME}:latest"
+          type: ImageChange
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: ${NAME}
+      annotations:
+        openshift.io/generated-by: OpenShiftNewApp
+        service.alpha.openshift.io/serving-cert-secret-name: "student-admin-backend-cert"
+      creationTimestamp:
+      labels:
+        app: "${NAME}"
+    spec:
+      ports:
+        - name: 8080-tcp
+          port: 8080
+          protocol: TCP
+          targetPort: 8080
+        - name: 443-https
+          port: 443
+          protocol: TCP
+          targetPort: 443
+      selector:
+        app: "${NAME}"
+        deploymentconfig: "${NAME}"
+  - apiVersion: autoscaling/v2beta1
+    kind: HorizontalPodAutoscaler
+    metadata:
+      name: "${NAME}-cpu-autoscaler"
+    spec:
+      scaleTargetRef:
+        apiVersion: apps.openshift.io/v1
+        kind: DeploymentConfig
+        name: "${NAME}"
+        subresource: scale
+      minReplicas: 3
+      maxReplicas: 5
+      metrics:
+        - type: Resource
+          resource:
+            name: cpu
+            targetAverageUtilization: 90
+parameters:
+  - name: NAME
+    description: The name assigned to ojects defined by this template
+    required: true
+    value: "test-journey-builder-page"

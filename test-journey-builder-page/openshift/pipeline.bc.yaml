@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: Template
+labels:
+  template: journey-builder-page-pipeline
+metadata:
+  name: journey-builder-page-pipeline
+objects:
+  - apiVersion: v1
+    kind: BuildConfig
+    metadata:
+      name: "journey-builder-page-test-pipeline"
+    spec:
+      source:
+        git:
+          uri: "https://github.com/bcgov/EDUC-INFRA-COMMON"
+      strategy:
+        jenkinsPipelineStrategy:
+          jenkinsfilePath: test-journey-builder-page/Jenkinsfile-enable-test
