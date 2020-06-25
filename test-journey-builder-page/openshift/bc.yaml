@@ -50,7 +50,7 @@ parameters:
   - name: NAME
     description: The name assigned to ojects defined by this template
     required: true
-    value: "test-journey-builder-page-build-config"
+    value: "test-journey-builder-page"
   - name: SOURCE_REPO_REF
     description: Git Pull Request Reference (i.e. 'pull/CHANGE_ID/head')
     required: true
