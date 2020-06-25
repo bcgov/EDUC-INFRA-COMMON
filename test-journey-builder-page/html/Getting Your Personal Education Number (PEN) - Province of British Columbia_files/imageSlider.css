@@ -1,0 +1,428 @@
+.constrained {
+	margin: 0 auto;
+ 	max-width: 1150px;
+	padding: 0 15px 2em;
+	position: relative;
+}
+
+@media (max-width: 1200px) {
+	.constrained {
+	 	max-width: 970px;
+	}
+}
+@media (max-width: 992px) {
+	.constrained {
+	 	max-width: 750px;
+	}
+}
+
+#carousel {
+	padding-top: 170px;
+	height: 100%;
+	width: 100%;
+}
+
+#carousel .controls {
+	width: 100%;
+	height: 100px;
+	top: 0;
+}
+
+.environment-qa #carousel .controls {
+	height: 170px;
+}
+
+#carousel .controls .back {
+	font-size: 50px;
+	color: white;
+	cursor: pointer;
+	text-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
+	width:30px;
+	height:40px;
+	position:absolute;
+	margin-top:-100px;
+	margin-left:-40px;
+	background-image: url(/StaticWebResources/static/gov3/images/home/arrow_background.png);
+	background-position: 60% 50%;
+	z-index: 99;
+}
+
+#carousel .controls .forward {
+	float: right;
+	font-size: 50px;
+	color: white;
+	cursor: pointer;
+	text-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
+	width:30px;
+	height:40px;
+	margin-top:-100px;
+	margin-right:-40px;
+	background-image: url(/StaticWebResources/static/gov3/images/home/arrow_background.png);
+	background-position: 60% 50%;
+	-moz-transform: scaleX(-1);
+    -o-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    -ms-transform: scaleX(-1);
+    transform: scaleX(-1);
+    -ms-filter: "FlipH";
+    filter: FlipH;
+	z-index: 99;
+}
+
+.environment-qa #carousel .controls .back,
+.environment-qa #carousel .controls .forward {
+	margin-top: -30px;
+}
+
+#carousel .page {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	display: none;
+}
+
+.environment-qa #carousel .page {
+	top: 62px;
+}
+
+#carousel:focus {
+    outline: none;
+}
+
+#carousel .page.current {
+	display: block;
+}
+
+#carousel .page .background {
+	position: relative;
+}
+
+body.environment-qa div#homeTemplate #carousel .page .background .wrapper {
+	top: 61px;
+}
+
+body.environment-prod div#homeTemplate #carousel .page .background .wrapper {
+	top: 69px;
+}
+
+#carousel .page .background .wrapper {
+	position: absolute;
+	left: 0;
+	width: 100%;
+}
+
+
+#carousel .page .background .wrapper img {
+	width: 100%;
+}
+
+#carousel .page .background .background-fade {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	background-size: contain;
+	background-repeat: repeat-x;
+	background-position: center bottom;
+	background-image: url(/StaticWebResources/static/gov3/images/home/gradient.png);
+}
+
+#carousel .page .content {
+	position: relative;
+	margin-top: 130px;
+}
+
+#carousel .page .content .wrapper {
+	position: absolute;
+	top: 10px;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	padding: 0 15px;
+}
+
+#carousel .page .content .wrapper div {
+	width: 50%;
+	background-color: #003366;	/*For IE*/
+	background-color: rgba(0, 51, 102, 0.8);
+	color: #FFFFFF;
+	padding: 15px;
+	max-height: 290px;
+	overflow: hidden;
+/* 	z-index: 100; */
+}
+
+#carousel .page .content .wrapper div.alternate {
+	float: right;
+}
+
+#carousel .page .content .wrapper div h1,
+#carousel .page .content .wrapper div h2 {
+	font-size: 36px;
+	font-weight: 600;
+	padding: 0;
+	margin-bottom: 9px;
+	background: none;
+	height: auto;
+	color: #FFFFFF;
+	margin-top: 0;
+}
+
+#carousel .page .content .wrapper div span {
+	font-size: 18px;
+	font-weight: normal;
+	line-height: 22px;
+}
+
+#carousel .page .content .wrapper div a {
+	font-weight: 600;
+	margin-top: 20px;
+	text-decoration: none;
+	color: white;
+	position: relative;
+	padding-left: 15px;
+	display: block;
+}
+
+#carousel .page .content .wrapper div a:hover {
+	text-decoration: underline;
+	color: #B1BFD3;	
+}
+
+#carousel .page .content .wrapper div a:before {
+	border: 5px solid transparent;
+	border-left-color: #fff;
+	content: '';
+	height: 0;
+	position: absolute;
+	left: 0;
+	top: 8px;
+	width: 0;
+}
+
+/****** TOPIC / THEME SPECIFIC STYLES ******/
+
+.topicThemeCarousel {
+	position: relative;
+	max-height: 220px;
+}
+
+.topicThemeCarousel:empty {
+	display:none;
+}
+
+.topicThemeCarousel #carousel .page .background .wrapper {
+	position: absolute;
+	top: 0px;
+	left: 0;
+	width: 100%;
+	max-height: 220px;
+	overflow: hidden;
+}
+
+.topicThemeCarousel #carousel .page .background .background-fade {
+/* 	remove fade effect */
+	display:none;
+}
+
+.topicThemeCarousel #carousel{
+/* 	padding-top: 0px; */
+	max-height: 220px;
+	margin-bottom: 25px;
+	overflow: hidden;
+}
+
+.topicThemeCarousel #carousel .constrained{
+	margin-top: 0px;
+}
+
+
+
+.topicThemeCarousel #carousel .page .content .wrapper div{
+	min-width: 50%;
+	max-width: 75%;
+	width: auto;
+	max-height:198px;
+	overflow:hidden;
+}
+
+.topicThemeCarousel #carousel .page .content .wrapper div h2{
+	margin-top: 0px;
+	font-size: 18px;
+}
+
+.topicThemeCarousel #carousel .page .content .wrapper div span{
+	font-size: 13px;
+	line-height: 1em;
+}
+
+.topicThemeCarousel #carousel .controls .back, .environment-qa .topicThemeCarousel #carousel .controls .back{
+	margin-top: -75px;
+	margin-left: 0px;
+}
+
+.topicThemeCarousel #carousel .controls .forward, .environment-qa .topicThemeCarousel #carousel .controls .forward{
+	margin-top: -75px;
+	margin-right: 0px;
+}
+
+.topicThemeCarousel #carousel .page .content .wrapper{
+	padding: 0 50px;
+}
+
+.environment-qa .topicThemeCarousel #carousel .page {
+	top: 0px;
+	max-height: 225px;
+	overflow: hidden;
+}
+
+#carousel .page .content .wrapper div a,
+#carousel .page .content .wrapper div a.pull-left {
+	text-decoration: underline;
+}
+
+@media (max-width: 767px) {
+	#carousel{
+		padding-top: 180px;
+	}
+    .environment-qa #carousel .page {
+	    top: 0;
+    }               	
+	#carousel .page .background .wrapper {
+		top:0;
+	    overflow: hidden;
+	}
+	#carousel .page .background .wrapper img {
+	    height: 100%;
+	    width: 100%;
+	}
+	#carousel .page .content {
+   		margin-top: 40px;
+	}
+	#carousel .page .content .wrapper{
+		top:0;
+	}
+	#carousel .page .content .wrapper div {
+	    height: 225px;
+	    padding: 15px;
+	    width: 100%;
+	}
+	#carousel .page .content .wrapper div h2 {
+	    font-size: 26px;
+	    font-weight: 600;
+	    height: auto;
+	    margin-bottom: 10px;
+	}
+	#carousel .page .content .wrapper div span {
+	    font-size: 14px;
+	}	
+	#carousel .page .content .wrapper div a {
+	    margin-top: 15px;
+	}
+	#carousel .controls {
+	    top: 25px;
+	    float:right;
+	    width:100px;
+	}
+	#carousel .controls .back,#carousel .controls .forward  {
+		 position: relative;
+		 margin:0;
+	}
+	
+	.topicThemeCarousel #carousel .page .content .wrapper{
+		padding: 0px;
+		margin-top: -50px;
+	}
+	
+	.topicThemeCarousel #carousel .page .content .wrapper div{
+		min-width: 100%;
+		max-width: 100%;
+		padding-top: 25px;
+		min-height:220px;
+	}
+	
+}
+
+@media (max-width: 1200px) {
+	.contentPageMainColumn.col-sm-9.col-md-5.col-lg-6 .topicThemeCarousel #carousel .page .content .wrapper div{
+		height: 220px;
+		max-height:220px;
+		width:100%;
+		max-width:100%;
+		padding: 25px 45px 0 45px;
+	}
+	
+	.contentPageMainColumn.col-sm-9.col-md-5.col-lg-6 .topicThemeCarousel #carousel .page{
+		top: -10px;
+	}
+	
+	.contentPageMainColumn.col-sm-9.col-md-5.col-lg-6 .topicThemeCarousel #carousel .page .background{
+		display:none;
+	}
+	
+	.contentPageMainColumn.col-sm-9.col-md-5.col-lg-6 .topicThemeCarousel #carousel .page .content .wrapper{
+		padding: 0;
+	}
+	
+	.contentPageMainColumn.col-sm-9.col-md-5.col-lg-6 .topicThemeCarousel #carousel .constrained{
+		z-index: 99;
+	}
+}
+
+@media print {
+	
+	#carousel {
+		display: block;
+		position: relative;
+/* 		margin-top:75px; */
+/* 		margin-bottom:-75px; */
+		padding: 10px 0 0 0;
+		height: 150px;
+    	overflow: hidden;	
+	}
+	
+	#carousel .page {
+		position: relative;
+	}
+	
+	#carousel .page .content {
+	    position: relative;
+	    margin: 0;
+	}
+	
+	.constrained {
+		padding: 0;
+	}
+	
+	#carousel .page .content .wrapper {
+		position:relative;
+    	top: 10px;
+	    padding: 0;
+	}
+	
+	#carousel .page .background .wrapper img{
+		display:none;
+	}
+	
+	#carousel .controls{
+		display:none;
+	}
+	
+	#carousel .page .content .wrapper div h2{
+		position: relative;
+	}
+	
+	#carousel .page .content .wrapper div{
+		width: 100%;
+		padding: 0;
+		overflow: visible;
+		display:block;
+	}
+}
+
+.imageSliderDiv:hover {
+	cursor: pointer;
+}
