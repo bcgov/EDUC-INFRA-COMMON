@@ -16,8 +16,7 @@ objects:
         jenkinsfile: | 
          def IDIR = 'NONE'
          def IDIR_PW = 'NONE'
-         def PEN_REQUEST_EMAIL_API_VERSION = '<Not Required>'
-         def PEN_REQUEST_VERSION = '<Not Required>'
+				 def STUDENT_PROFILE_SAGA_API_VERSION = '<Not Required>'
          def STAFF_ADMIN_VERSION = '<Not Required>'
          def STUDENT_PROFILE_VERSION = '<Not Required>'
          def STUDENT_PROFILE_EMAIL_API_VERSION = '<Not Required>'
@@ -44,28 +43,20 @@ objects:
          							parameters: [
          
          									string(defaultValue: "",
-         											description: 'Enter PEN Request Email API Version, leave the tag blank if this service is not to be deployed',
-         											name: 'PEN_REQUEST_EMAIL_API_VERSION'),
-         									string(defaultValue: "",
-         											description: 'Enter PEN Request Version, leave the tag blank if this service is not to be deployed',
-         											name: 'PEN_REQUEST_VERSION'),
-         									string(defaultValue: "",
          											description: 'Enter Staff Admin Version, leave the tag blank if this service is not to be deployed',
          											name: 'STAFF_ADMIN_VERSION'),
          									string(defaultValue: "",
-         											description: 'Enter Staff Admin Version, leave the tag blank if this service is not to be deployed',
+         											description: 'Enter Student Profile Version, leave the tag blank if this service is not to be deployed',
          											name: 'STUDENT_PROFILE_VERSION'),
-                                            string(defaultValue: "",
-                                                description: 'Enter Staff Admin Version, leave the tag blank if this service is not to be deployed',
-                                                name: 'STUDENT_PROFILE_EMAIL_API_VERSION'),
+                          string(defaultValue: "",
+                              description: 'Enter Student Profile Email API Version, leave the tag blank if this service is not to be deployed',
+                              name: 'STUDENT_PROFILE_EMAIL_API_VERSION'),
          									string(defaultValue: "",
-         											description: 'Enter pen request saga api version, leave the tag blank if this service is not to be deployed',
-         											name: 'PEN_REQUEST_SAGA_API_VERSION'),
+         											description: 'Enter Student Profile Saga API version, leave the tag blank if this service is not to be deployed',
+         											name: 'STUDENT_PROFILE_SAGA_API_VERSION'),
          							])
          					// Save to variables. Default to empty string if not found.
-                            PEN_REQUEST_SAGA_API_VERSION = tagInput.PEN_REQUEST_SAGA_API_VERSION?:''
-         					PEN_REQUEST_EMAIL_API_VERSION = tagInput.PEN_REQUEST_EMAIL_API_VERSION?:''
-         					PEN_REQUEST_VERSION = tagInput.PEN_REQUEST_VERSION?:''
+                  STUDENT_PROFILE_SAGA_API_VERSION = tagInput.STUDENT_PROFILE_SAGA_API_VERSION?:''
          					STAFF_ADMIN_VERSION = tagInput.STAFF_ADMIN_VERSION?:''
          					STUDENT_PROFILE_VERSION = tagInput.STUDENT_PROFILE_VERSION?:''
          					STUDENT_PROFILE_EMAIL_API_VERSION = tagInput.STUDENT_PROFILE_EMAIL_API_VERSION?:''
@@ -81,66 +72,27 @@ objects:
          			  }
          		  }
          		}
-         		stage('PEN Request Saga API'){
+         		stage('Student Profile Saga API'){
          			when {
          				expression {
-         					return "${PEN_REQUEST_SAGA_API_VERSION}" != "<Not Required>" && "${PEN_REQUEST_SAGA_API_VERSION}" != "";
+         					return "${STUDENT_PROFILE_SAGA_API_VERSION}" != "<Not Required>" && "${STUDENT_PROFILE_SAGA_API_VERSION}" != "";
          				}
          			}
          			environment {
-         			   APP_NAME = "pen-request-saga-api"
-         			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST-SAGA-API/master/tools/openshift/api.dc.yaml"
+         			   APP_NAME = "student-profile-saga-api"
+         			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-SAGA-API/master/tools/openshift/api.dc.yaml"
                      }
          			steps {
-         			    deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request-saga-api', 'pen-request-saga-api', JOB_NAME, "${PEN_REQUEST_SAGA_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "1", "1", "30m", "300m", "650Mi", "750Mi")
+								  deployPatroniSecrets(STAGING_ENV, TARGET_ENVIRONMENT)
+                  deployPatroni(STAGING_ENV, TARGET_ENVIRONMENT)
+         			    deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-profile-saga-api', 'student-profile-saga-api', JOB_NAME, "${STUDENT_PROFILE_SAGA_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "1", "1", "30m", "300m", "650Mi", "750Mi")
          			    configMapSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
                          script{
                             dir('tools/jenkins'){
-                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST-SAGA-API/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE $COMMON_NAMESPACE"
+                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-SAGA-API/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE $COMMON_NAMESPACE"
                             }
                          }
-                        deployStageNoTag(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request-saga-api', 'pen-request-saga-api', JOB_NAME, "${PEN_REQUEST_SAGA_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "1", "1", "30m", "300m", "650Mi", "750Mi")
-                     }
-         		}
-         		stage('PEN Request Email API'){
-         			when {
-         				expression {
-         					return "${PEN_REQUEST_EMAIL_API_VERSION}" != "<Not Required>" && "${PEN_REQUEST_EMAIL_API_VERSION}" != "";
-         				}
-         			}
-         			environment {
-         			   APP_NAME = "pen-request-email-api"
-         			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST-EMAIL-API/master/tools/openshift/api.dc.yaml"
-                     }
-         			steps {
-         			    deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request-email-api', 'pen-request-email-api', JOB_NAME, "${PEN_REQUEST_EMAIL_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "1", "1", "30m", "300m", "650Mi", "750Mi")
-         			    configMapChesSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
-                         script{
-                            dir('tools/jenkins'){
-                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST-EMAIL-API/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE $COMMON_NAMESPACE"
-                            }
-                         }
-                        deployStageNoTag(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request-email-api', 'pen-request-email-api', JOB_NAME, "${PEN_REQUEST_EMAIL_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "1", "1", "30m", "300m", "650Mi", "750Mi")
-                     }
-         		}
-         		stage('PEN Request Frontend and Backend'){
-         			when {
-         				expression {
-         					return "${PEN_REQUEST_VERSION}" != "<Not Required>" && "${PEN_REQUEST_VERSION}" != "";
-         				}
-         			}
-         			environment {
-         			   APP_NAME = "pen-request"
-         			   DC_URL_FRONTEND = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST/master/tools/openshift/frontend-static.dc.yaml"
-         			   DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST/master/tools/openshift/backend.dc.yaml"
-                     }
-         			steps {
-         			    deployUIStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-pen-request', 'pen-request', JOB_NAME, "${PEN_REQUEST_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}", "1", "1", "25m", "50m", "150Mi", "250Mi")
-                         script{
-                            dir('tools/jenkins'){
-                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE $COMMON_NAMESPACE"
-                            }
-                         }
+                        deployStageNoTag(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-profile-saga-api', 'student-profile-saga-api', JOB_NAME, "${STUDENT_PROFILE_SAGA_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "1", "1", "30m", "300m", "650Mi", "750Mi")
                      }
          		}
          		stage('Student Admin Frontend and Backend'){
@@ -376,4 +328,54 @@ objects:
          	  def dcFrontendStatic = openshift.apply(dcFrontendStaticTemplate).narrow('dc')
          	}
            }
+         }
+         
+         def deployPatroniSecrets(String stageEnv, String projectEnv) {
+          openshift.withCluster() {
+            openshift.withProject(projectEnv) {
+              def patroni = openshift.selector('statefulset', "${APP_NAME}-pgsql-${stageEnv}")
+              if(!patroni.exists()){
+                def dcTemplate = openshift.process('-f',
+                  'tools/openshift/patroni/patroni-postgresql-secrets.yaml',
+                  "NAME=${APP_NAME}-pgsql",
+                  "SUFFIX=-${stageEnv}",
+                  "APP_DB_NAME=student_profile_saga",
+                  "APP_DB_USERNAME=student_profile_saga"
+                )
+                
+                echo "Applying Deployment Patroni secrets"
+                def template = openshift.apply(dcTemplate).narrow('dc')
+                // Wait for deployments to roll out
+                timeout(5) {
+                  template.rollout().status('--watch=true')
+                } else {
+                  echo "Deployment of patroni secrets already exists, so skipping to next step"
+                }
+              }
+            }
+          }						
+         }
+         
+         def deployPatroni(String stageEnv, String projectEnv) {
+          openshift.withCluster() {
+            openshift.withProject(projectEnv) {
+              def patroni = openshift.selector('statefulset', "${APP_NAME}-pgsql-${stageEnv}")
+              if(!patroni.exists()){
+                def dcTemplate = openshift.process('-f',
+                  'tools/openshift/patroni/patroni-postgresql.yaml',
+                  "NAME=${APP_NAME}-pgsql",
+                  "SUFFIX=-${stageEnv}",
+                  "INSTANCE=${APP_NAME}-pgsql-${stage)"
+                )
+                
+                echo "Applying Deployment patroni"
+                def template = openshift.apply(dcTemplate).narrow('statefulset')
+                timeout(5) {
+                  template.rollout().status('--watch=true')
+                }
+              } else {
+                echo "Deployment of patroni already exists, so skipping to next step"
+              }
+            }
+          }
          }

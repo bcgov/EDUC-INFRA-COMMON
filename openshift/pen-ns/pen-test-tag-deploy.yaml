@@ -17,8 +17,6 @@ objects:
          def IDIR = 'NONE'
          def IDIR_PW = 'NONE'
          def STUDENT_PROFILE_SAGA_API_VERSION = '<Not Required>'
-         def PEN_REQUEST_EMAIL_API_VERSION = '<Not Required>'
-         def PEN_REQUEST_VERSION = '<Not Required>'
          def STAFF_ADMIN_VERSION = '<Not Required>'
          def STUDENT_PROFILE_VERSION = '<Not Required>'
          def STUDENT_PROFILE_EMAIL_API_VERSION = '<Not Required>'
