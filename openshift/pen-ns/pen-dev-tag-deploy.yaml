@@ -25,6 +25,7 @@ objects:
          def TARGET_ENVIRONMENT = 'c2mvws-dev'
          def JOB_NAME = 'master'
          def STAGING_ENV = 'Dev'
+         def TARGET_ENV = 'dev'
          def APP_DOMAIN = 'pathfinder.gov.bc.ca'
          
          pipeline {
@@ -83,16 +84,16 @@ objects:
          			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-SAGA-API/master/tools/openshift/api.dc.yaml"
                      }
          			steps {
-                  deployPatroniSecrets(STAGING_ENV, TARGET_ENVIRONMENT)
-                  deployPatroni(STAGING_ENV, TARGET_ENVIRONMENT)
-         			    deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-profile-saga-api', 'student-profile-saga-api', JOB_NAME, "${STUDENT_PROFILE_SAGA_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "1", "1", "30m", "300m", "650Mi", "750Mi")
+                  deployPatroniSecrets(TARGET_ENV, TARGET_ENVIRONMENT)
+                  deployPatroni(TARGET_ENV, TARGET_ENVIRONMENT)
+         			    deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-profile-saga-api', 'student-profile-saga-api', JOB_NAME, "${STUDENT_PROFILE_SAGA_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "1", "1", "30m", "300m", "650Mi", "750Mi", TARGET_ENV)
          			    configMapSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
                          script{
                             dir('tools/jenkins'){
                                sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-SAGA-API/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE $COMMON_NAMESPACE"
                             }
                          }
-                        deployStageNoTag(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-profile-saga-api', 'student-profile-saga-api', JOB_NAME, "${STUDENT_PROFILE_SAGA_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "1", "1", "30m", "300m", "650Mi", "750Mi")
+                        deployStageNoTag(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-profile-saga-api', 'student-profile-saga-api', JOB_NAME, "${STUDENT_PROFILE_SAGA_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "1", "1", "30m", "300m", "650Mi", "750Mi", TARGET_ENV)
                      }
          		}
          		stage('Student Admin Frontend and Backend'){
@@ -126,14 +127,14 @@ objects:
          			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-EMAIL-API/master/tools/openshift/api.dc.yaml"
                      }
          			steps {
-         			    deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-profile-email-api', 'student-profile-email-api', JOB_NAME, "${STUDENT_PROFILE_EMAIL_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "1", "1", "30m", "300m", "650Mi", "750Mi")
+         			    deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-profile-email-api', 'student-profile-email-api', JOB_NAME, "${STUDENT_PROFILE_EMAIL_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "1", "1", "30m", "300m", "650Mi", "750Mi", null)
          			    configMapChesSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
                          script{
                             dir('tools/jenkins'){
                                sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-EMAIL-API/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE $COMMON_NAMESPACE"
                             }
                          }
-                         deployStageNoTag(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-profile-email-api', 'student-profile-email-api', JOB_NAME, "${STUDENT_PROFILE_EMAIL_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "1", "1", "30m", "300m", "650Mi", "750Mi")
+                         deployStageNoTag(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-profile-email-api', 'student-profile-email-api', JOB_NAME, "${STUDENT_PROFILE_EMAIL_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "1", "1", "30m", "300m", "650Mi", "750Mi", TARGET_ENV)
                      }
          		}
          		stage('Student Profile Frontend and Backend'){
@@ -226,7 +227,7 @@ objects:
              }
          }
          
-         def deployStage(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem) {
+         def deployStage(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv) {
            openshift.withCluster() {
          	openshift.withProject(projectEnv) {
          	  echo "Tagging ${appName} image with version ${tag}"
@@ -244,7 +245,8 @@ objects:
                 "MIN_CPU=${minCPU}",
                 "MAX_CPU=${maxCPU}",
                 "MIN_MEM=${minMem}",
-                "MAX_MEM=${maxMem}"
+                "MAX_MEM=${maxMem}",
+                "ENV=${targetEnv}"
          	  )
          
          	  echo "Applying Deployment for ${appName}"
@@ -253,7 +255,7 @@ objects:
            }
          }
          
-         def deployStageNoTag(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem) {
+         def deployStageNoTag(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv) {
            openshift.withCluster() {
          	openshift.withProject(projectEnv) {
          	  def dcTemplate = openshift.process('-f',
@@ -269,7 +271,8 @@ objects:
                 "MIN_CPU=${minCPU}",
                 "MAX_CPU=${maxCPU}",
                 "MIN_MEM=${minMem}",
-                "MAX_MEM=${maxMem}"
+                "MAX_MEM=${maxMem}",
+                "ENV=${targetEnv}"
          	  )
          
          	  echo "Applying Deployment for ${appName}"
@@ -336,7 +339,7 @@ objects:
               def patroni = openshift.selector('statefulset', "${APP_NAME}-pgsql-${stageEnv}")
               if(!patroni.exists()){
                 def dcTemplate = openshift.process('-f',
-                  'tools/openshift/patroni/patroni-postgresql-secrets.yaml',
+                  'https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/patroni/patroni-postgresql-secrets.yaml',
                   "NAME=${APP_NAME}-pgsql",
                   "SUFFIX=-${stageEnv}",
                   "APP_DB_NAME=student_profile_saga",
@@ -348,10 +351,12 @@ objects:
                 // Wait for deployments to roll out
                 timeout(5) {
                   template.rollout().status('--watch=true')
-                } else {
+                }
+         }
+                else {
                   echo "Deployment of patroni secrets already exists, so skipping to next step"
                 }
-              }
+
             }
           }						
          }
@@ -362,10 +367,10 @@ objects:
               def patroni = openshift.selector('statefulset', "${APP_NAME}-pgsql-${stageEnv}")
               if(!patroni.exists()){
                 def dcTemplate = openshift.process('-f',
-                  'tools/openshift/patroni/patroni-postgresql.yaml',
+                  'https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/patroni/patroni-postgresql.yaml',
                   "NAME=${APP_NAME}-pgsql",
                   "SUFFIX=-${stageEnv}",
-                  "INSTANCE=${APP_NAME}-pgsql-${stage)"
+                  "INSTANCE=${APP_NAME}-pgsql-${stage}"
                 )
                 
                 echo "Applying Deployment patroni"
