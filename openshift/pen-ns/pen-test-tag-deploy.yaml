@@ -335,7 +335,7 @@ objects:
          def deployPatroniSecrets(String stageEnv, String projectEnv) {
           openshift.withCluster() {
             openshift.withProject(projectEnv) {
-              def patroni = openshift.selector('statefulset', "${APP_NAME}-pgsql-dev")
+              def patroni = openshift.selector('statefulset', "${APP_NAME}-pgsql-${stageEnv}")
               if(!patroni.exists()){
                 def dcTemplate = openshift.process('-f',
                   'tools/openshift/patroni/patroni-postgresql-secrets.yaml',
@@ -361,7 +361,7 @@ objects:
          def deployPatroni(String stageEnv, String projectEnv) {
           openshift.withCluster() {
             openshift.withProject(projectEnv) {
-              def patroni = openshift.selector('statefulset', "${APP_NAME}-pgsql-dev")
+              def patroni = openshift.selector('statefulset', "${APP_NAME}-pgsql-${stageEnv}")
               if(!patroni.exists()){
                 def dcTemplate = openshift.process('-f',
                   'tools/openshift/patroni/patroni-postgresql.yaml',
