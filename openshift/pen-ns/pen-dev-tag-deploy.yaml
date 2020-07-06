@@ -16,7 +16,7 @@ objects:
         jenkinsfile: | 
          def IDIR = 'NONE'
          def IDIR_PW = 'NONE'
-				 def STUDENT_PROFILE_SAGA_API_VERSION = '<Not Required>'
+         def STUDENT_PROFILE_SAGA_API_VERSION = '<Not Required>'
          def STAFF_ADMIN_VERSION = '<Not Required>'
          def STUDENT_PROFILE_VERSION = '<Not Required>'
          def STUDENT_PROFILE_EMAIL_API_VERSION = '<Not Required>'
@@ -83,7 +83,7 @@ objects:
          			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-SAGA-API/master/tools/openshift/api.dc.yaml"
                      }
          			steps {
-								  deployPatroniSecrets(STAGING_ENV, TARGET_ENVIRONMENT)
+                  deployPatroniSecrets(STAGING_ENV, TARGET_ENVIRONMENT)
                   deployPatroni(STAGING_ENV, TARGET_ENVIRONMENT)
          			    deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-profile-saga-api', 'student-profile-saga-api', JOB_NAME, "${STUDENT_PROFILE_SAGA_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "1", "1", "30m", "300m", "650Mi", "750Mi")
          			    configMapSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
