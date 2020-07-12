@@ -25,7 +25,7 @@ data:
      store_limits: {
        # Override some global limits
        max_channels: 0
-       max_msgs: 0
+       max_msgs: 10000
        max_bytes: 0
      }
     }
