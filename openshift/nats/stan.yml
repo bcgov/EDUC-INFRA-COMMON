@@ -27,6 +27,8 @@ data:
        max_channels: 0
        max_msgs: 10000
        max_bytes: 0
+       max_age: "48h"
+       max_inactivity: "12h"
      }
     }
 ---
