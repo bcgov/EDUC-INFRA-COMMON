@@ -1,3 +1,21 @@
+ echo "Loading deployment helpers"
+
+def performApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv){
+    deployStage(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem, targetEnv);
+    script{
+        dir('tools/jenkins'){
+            sh "bash ./download-kc.sh \"${NAMESPACE}\""
+        }
+    }
+    configMapSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
+    script{
+      dir('tools/jenkins'){
+        def configVars
+        sh "bash ./update-configmap.sh \"dev\" ${APP_NAME} ${NAMESPACE}"
+      }
+    }
+}
+
  def configMapSetup(String appName,String appNameUpper, String namespace){
      script {
 
@@ -274,3 +292,5 @@
     }
   }
  }
+
+ return this;
