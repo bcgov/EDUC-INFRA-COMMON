@@ -1,16 +1,15 @@
  echo "Loading deployment helpers"
 
-def performApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv){
+def performApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE){
     deployStage(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem, targetEnv);
     script{
         dir('tools/jenkins'){
-            sh "bash ./download-kc.sh \"${NAMESPACE}\""
+            sh "bash https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh \"${NAMESPACE}\""
         }
     }
     configMapSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
     script{
       dir('tools/jenkins'){
-        def configVars
         sh "bash ./update-configmap.sh \"dev\" ${APP_NAME} ${NAMESPACE}"
       }
     }
