@@ -4,7 +4,7 @@ def performApiDeploy(String stageEnv, String projectEnv, String repoName, String
     deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
     script{
         dir('tools/jenkins'){
-            sh "bash https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh \"${NAMESPACE}\""
+            sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh \"${NAMESPACE}\""
         }
     }
     configMapSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
