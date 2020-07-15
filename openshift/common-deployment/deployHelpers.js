@@ -92,14 +92,14 @@ def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, St
     }
 }
 
-def performUIDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String frontendDC, String backendDC, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String commonNamespace){
+def performUIDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String frontendDCRaw, String backendDCRaw, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String commonNamespace){
     script {
       openshift.withCluster() {
         openshift.withProject("${projectEnv}") {
           def frontendDC = openshift.selector('dc', "${appName}-frontend-${JOB_NAME}")
           def backendDC = openshift.selector('dc', "${appName}-backend-${JOB_NAME}")
           if (!frontendDC.exists() || !backendDC.exists()) {
-            deployUIStage(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, frontendDC, backendDC, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
+            deployUIStage(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, frontendDCRaw, backendDCRaw, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
           } else {
             echo "Deployments already exists, so skipping to config map update"
           }
@@ -118,7 +118,7 @@ def performUIDeploy(String stageEnv, String projectEnv, String repoName, String 
         sh "bash ./update-configmap.sh ${targetEnv} ${appName} ${NAMESPACE} ${commonNamespace}"
       }
     }
-    deployUIStage(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, frontendDC, backendDC, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
+    deployUIStage(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, frontendDCRaw, backendDCRaw, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
 }
 
 def configMapSetup(String appName,String appNameUpper, String namespace){
