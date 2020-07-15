@@ -3,7 +3,7 @@
 def performApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE){
     script {
       openshift.withCluster() {
-        openshift.withProject("${targetEnv}") {
+        openshift.withProject("${targetEnvironment}") {
           def dcApi = openshift.selector('dc', "${appName}-${jobName}")
           if (!dcApi.exists()) {
             deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
@@ -31,7 +31,7 @@ def performApiDeploy(String stageEnv, String projectEnv, String repoName, String
 def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String DEV_EXCHANGE_REALM){
     script {
       openshift.withCluster() {
-        openshift.withProject("${targetEnv}") {
+        openshift.withProject("${targetEnvironment}") {
           def soamDC = openshift.selector('dc', "${appName}-${jobName}")
           if (!soamDC.exists()) {
             deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
