@@ -10,7 +10,22 @@ def performApiDeploy(String stageEnv, String projectEnv, String repoName, String
     configMapSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
     script{
       dir('tools/jenkins'){
-        sh "bash ./update-configmap.sh \"dev\" ${APP_NAME} ${NAMESPACE}"
+        sh "bash ./update-configmap.sh ${TARGET_ENV} ${APP_NAME} ${NAMESPACE}"
+      }
+    }
+}
+
+def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String DEV_EXCHANGE_REALM){
+    deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
+    script{
+        dir('tools/jenkins'){
+            sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
+        }
+    }
+    configMapSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
+    script{
+      dir('tools/jenkins'){
+        sh "bash ./update-configmap.sh ${TARGET_ENV} ${APP_NAME} ${NAMESPACE} ${DEV_EXCHANGE_REALM}"
       }
     }
 }
