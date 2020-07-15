@@ -19,7 +19,7 @@ def performApiDeploy(String stageEnv, String projectEnv, String repoName, String
             sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
         }
     }
-    configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE);
+    configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${stageEnv}");
     script{
       dir('tools/jenkins'){
         sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\""
@@ -47,7 +47,7 @@ def performEmailApiDeploy(String stageEnv, String projectEnv, String repoName, S
             sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
         }
     }
-    configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE);
+    configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${stageEnv}");
     script{
       dir('tools/jenkins'){
         sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\""
@@ -75,7 +75,7 @@ def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, St
             sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
         }
     }
-    configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE);
+    configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${stageEnv}");
     script{
       dir('tools/jenkins'){
         sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${DEV_EXCHANGE_REALM}\""
@@ -112,7 +112,7 @@ def performUIDeploy(String stageEnv, String projectEnv, String repoName, String 
             sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
         }
     }
-    configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE);
+    configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${stageEnv}");
     script{
       dir('tools/jenkins'){
         sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${commonNamespace}\""
@@ -121,13 +121,13 @@ def performUIDeploy(String stageEnv, String projectEnv, String repoName, String 
     deployUIStage(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, frontendDCRaw, backendDCRaw, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
 }
 
-def configMapSetup(String appName,String appNameUpper, String namespace){
+def configMapSetup(String appName,String appNameUpper, String namespace, String targetEnv, String stageEnv){
     script {
 
       try{
-        sh( script: "oc project ${namespace}-dev", returnStdout: true)
-        sh( script: "oc describe configmaps ${appName}-dev-setup-config", returnStdout: true)
-        sh( script: "oc project ${namespace}-tools", returnStdout: true)
+        sh( script: "oc project ${namespace}-${targetEnv}", returnStdout: true)
+        sh( script: "oc describe configmaps ${appName}-${targetEnv}-setup-config", returnStdout: true)
+        sh( script: "oc project ${namespace}-${stageEnv}", returnStdout: true)
         echo 'Config map already exists. Moving to next stage...'
       } catch(e){
           configProperties = input(
@@ -149,19 +149,19 @@ def configMapSetup(String appName,String appNameUpper, String namespace){
 		sh """
 		  set +x
 		  echo Running curl command...
-		  oc create -n ${namespace}-dev configmap ${appName}-dev-setup-config --from-literal=SPLUNK_TOKEN_${appNameUpper}=${configProperties.SPLUNK_TOKEN} --from-literal=DB_JDBC_CONNECT_STRING=${configProperties.DB_JDBC_CONNECT_STRING} --from-literal=DB_USER_${appNameUpper}=${configProperties.DB_USER} --from-literal=DB_PWD_${appNameUpper}=${configProperties.DB_PWD} --dry-run -o yaml | oc apply -f -
+		  oc create -n ${namespace}-${targetEnv} configmap ${appName}-${targetEnv}-setup-config --from-literal=SPLUNK_TOKEN_${appNameUpper}=${configProperties.SPLUNK_TOKEN} --from-literal=DB_JDBC_CONNECT_STRING=${configProperties.DB_JDBC_CONNECT_STRING} --from-literal=DB_USER_${appNameUpper}=${configProperties.DB_USER} --from-literal=DB_PWD_${appNameUpper}=${configProperties.DB_PWD} --dry-run -o yaml | oc apply -f -
 		  oc project ${namespace}-tools
 		"""
       }
     }
 }
 
-def configMapChesSetup(String appName,String appNameUpper, String namespace){
+def configMapChesSetup(String appName,String appNameUpper, String namespace, String targetEnv, String stageEnv){
     script {
        try{
-        sh( script: "oc project ${namespace}-dev", returnStdout: true)
-        sh( script: "oc describe configmaps ${appName}-dev-setup-config", returnStdout: true)
-        sh( script: "oc project ${namespace}-tools", returnStdout: true)
+        sh( script: "oc project ${namespace}-${targetEnv}", returnStdout: true)
+        sh( script: "oc describe configmaps ${appName}-${targetEnv}-setup-config", returnStdout: true)
+        sh( script: "oc project ${namespace}-${stageEnv}", returnStdout: true)
         echo 'Config map already exists. Moving to next stage...'
       } catch(e){
           configProperties = input(
@@ -183,7 +183,7 @@ def configMapChesSetup(String appName,String appNameUpper, String namespace){
        sh """
          set +x
          echo Running curl command...
-         oc create -n ${namespace}-dev configmap ${appName}-dev-setup-config --from-literal=CHES_CLIENT_ID=${configProperties.CHES_CLIENT_ID} --from-literal=CHES_TOKEN_URL=${configProperties.CHES_TOKEN_URL} --from-literal=CHES_ENDPOINT_URL=${configProperties.CHES_ENDPOINT_URL} --from-literal=CHES_CLIENT_SECRET=${configProperties.CHES_CLIENT_SECRET} --dry-run -o yaml | oc apply -f -
+         oc create -n ${namespace}-${targetEnv} configmap ${appName}-${targetEnv}-setup-config --from-literal=CHES_CLIENT_ID=${configProperties.CHES_CLIENT_ID} --from-literal=CHES_TOKEN_URL=${configProperties.CHES_TOKEN_URL} --from-literal=CHES_ENDPOINT_URL=${configProperties.CHES_ENDPOINT_URL} --from-literal=CHES_CLIENT_SECRET=${configProperties.CHES_CLIENT_SECRET} --dry-run -o yaml | oc apply -f -
          oc project ${namespace}-tools
        """
       }
