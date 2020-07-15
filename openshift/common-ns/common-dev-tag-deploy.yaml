@@ -26,6 +26,7 @@ objects:
 
          def TOOLS = 'mvubjx-tools'
          def TARGET_ENVIRONMENT = 'mvubjx-dev'
+         def TARGET_ENV = 'dev'
          def JOB_NAME = 'master'
          def STAGING_ENV = 'Dev'
          def APP_DOMAIN = 'pathfinder.gov.bc.ca'
