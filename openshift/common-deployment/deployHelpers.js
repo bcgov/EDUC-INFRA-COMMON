@@ -127,7 +127,7 @@ def configMapSetup(String appName,String appNameUpper, String namespace, String 
       try{
         sh( script: "oc project ${namespace}-${targetEnv}", returnStdout: true)
         sh( script: "oc describe configmaps ${appName}-${targetEnv}-setup-config", returnStdout: true)
-        sh( script: "oc project ${namespace}-${stageEnv}", returnStdout: true)
+        sh( script: "oc project ${stageEnv}", returnStdout: true)
         echo 'Config map already exists. Moving to next stage...'
       } catch(e){
           configProperties = input(
@@ -161,7 +161,7 @@ def configMapChesSetup(String appName,String appNameUpper, String namespace, Str
        try{
         sh( script: "oc project ${namespace}-${targetEnv}", returnStdout: true)
         sh( script: "oc describe configmaps ${appName}-${targetEnv}-setup-config", returnStdout: true)
-        sh( script: "oc project ${namespace}-${stageEnv}", returnStdout: true)
+        sh( script: "oc project ${stageEnv}", returnStdout: true)
         echo 'Config map already exists. Moving to next stage...'
       } catch(e){
           configProperties = input(
