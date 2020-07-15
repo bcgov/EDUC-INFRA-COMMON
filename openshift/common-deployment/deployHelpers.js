@@ -19,7 +19,7 @@ def performApiDeploy(String stageEnv, String projectEnv, String repoName, String
             sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
         }
     }
-    configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${stageEnv}");
+    configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${toolsEnv}");
     script{
       dir('tools/jenkins'){
         sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\""
@@ -47,7 +47,7 @@ def performEmailApiDeploy(String stageEnv, String projectEnv, String repoName, S
             sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
         }
     }
-    configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${stageEnv}");
+    configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${toolsEnv}");
     script{
       dir('tools/jenkins'){
         sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\""
@@ -75,7 +75,7 @@ def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, St
             sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
         }
     }
-    configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${stageEnv}");
+    configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${toolsEnv}");
     script{
       dir('tools/jenkins'){
         sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${DEV_EXCHANGE_REALM}\""
@@ -112,7 +112,7 @@ def performUIDeploy(String stageEnv, String projectEnv, String repoName, String 
             sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
         }
     }
-    configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${stageEnv}");
+    configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${toolsEnv}");
     script{
       dir('tools/jenkins'){
         sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${commonNamespace}\""
