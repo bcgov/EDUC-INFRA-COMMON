@@ -57,7 +57,7 @@ def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, St
 
     script {
       openshift.withCluster() {
-        openshift.withProject("${targetEnv}") {
+        openshift.withProject("${projectEnv}") {
           openshift.selector('dc', "sso-${targetEnv}").rollout().latest()
         }
       }
