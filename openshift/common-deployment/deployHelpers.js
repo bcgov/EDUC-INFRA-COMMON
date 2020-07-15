@@ -78,7 +78,7 @@ def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, St
     configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE);
     script{
       dir('tools/jenkins'){
-        sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${DEV_EXCHANGE_REALM}\""
+        sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${DEV_EXCHANGE_REALM}\""
       }
     }
     deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
@@ -115,7 +115,7 @@ def performUIDeploy(String stageEnv, String projectEnv, String repoName, String 
     configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE);
     script{
       dir('tools/jenkins'){
-        sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${commonNamespace}\""
+        sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${commonNamespace}\""
       }
     }
     deployUIStage(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, frontendDCRaw, backendDCRaw, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
