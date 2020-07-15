@@ -57,7 +57,7 @@ objects:
          											name: 'STUDENT_PROFILE_SAGA_API_VERSION'),
          							])
          					// Save to variables. Default to empty string if not found.
-                  STUDENT_PROFILE_SAGA_API_VERSION = tagInput.STUDENT_PROFILE_SAGA_API_VERSION?:''
+                            STUDENT_PROFILE_SAGA_API_VERSION = tagInput.STUDENT_PROFILE_SAGA_API_VERSION?:''
          					STAFF_ADMIN_VERSION = tagInput.STAFF_ADMIN_VERSION?:''
          					STUDENT_PROFILE_VERSION = tagInput.STUDENT_PROFILE_VERSION?:''
          					STUDENT_PROFILE_EMAIL_API_VERSION = tagInput.STUDENT_PROFILE_EMAIL_API_VERSION?:''

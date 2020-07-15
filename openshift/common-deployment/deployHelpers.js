@@ -19,10 +19,10 @@ def performApiDeploy(String stageEnv, String projectEnv, String repoName, String
             sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
         }
     }
-    configMapSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
+    configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE);
     script{
       dir('tools/jenkins'){
-        sh "bash ./update-configmap.sh ${TARGET_ENV} ${APP_NAME} ${NAMESPACE}"
+        sh "bash ./update-configmap.sh ${targetEnv} ${appName} ${NAMESPACE}"
       }
     }
     deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
@@ -47,10 +47,10 @@ def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, St
             sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
         }
     }
-    configMapSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
+    configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE);
     script{
       dir('tools/jenkins'){
-        sh "bash ./update-configmap.sh ${TARGET_ENV} ${APP_NAME} ${NAMESPACE} ${DEV_EXCHANGE_REALM}"
+        sh "bash ./update-configmap.sh ${targetEnv} ${appName} ${NAMESPACE} ${DEV_EXCHANGE_REALM}"
       }
     }
     deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
@@ -62,6 +62,35 @@ def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, St
         }
       }
     }
+}
+
+def performUIDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String commonNamespace){
+    script {
+      openshift.withCluster() {
+        openshift.withProject("${projectEnv}") {
+          def frontendDC = openshift.selector('dc', "${appName}-frontend-${JOB_NAME}")
+          def backendDC = openshift.selector('dc', "${appName}-backend-${JOB_NAME}")
+          if (!frontendDC.exists() || !backendDC.exists()) {
+            deployUIStage(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, frontendDC, backendDC, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
+          } else {
+            echo "Deployments already exists, so skipping to config map update"
+          }
+        }
+      }
+    }
+
+    script{
+        dir('tools/jenkins'){
+            sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
+        }
+    }
+    configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE);
+    script{
+      dir('tools/jenkins'){
+        sh "bash ./update-configmap.sh ${targetEnv} ${appName} ${NAMESPACE} ${commonNamespace}"
+      }
+    }
+    deployUIStage(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, frontendDC, backendDC, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
 }
 
 def configMapSetup(String appName,String appNameUpper, String namespace){
@@ -336,6 +365,59 @@ def deployPatroni(String stageEnv, String projectEnv) {
      }
    }
  }
+}
+
+def triggerWorkflow(String token) {
+  def dispatchRequest = """
+    {
+      "event_type": "smoke-test-test-admin"
+    }
+  """
+  def response = httpRequest customHeaders: [[name: 'Authorization', value: "token ${token}"], [name: 'Accept', value: "application/vnd.github.ant-man-preview+json"]], contentType: 'APPLICATION_JSON', httpMode: 'POST', requestBody: dispatchRequest, url: "https://api.github.com/repos/${OWNER}/${TESTS_REPO_NAME}/dispatches"
+  echo "triggerWorkflow Status: ${response.status}"
+  echo "triggered test workflow in Github Actions!"
+}
+
+def getLatestWorkflowRun(String token) {
+  def response = httpRequest customHeaders: [[name: 'Authorization', value: "token ${token}"], [name: 'Accept', value: "application/vnd.github.ant-man-preview+json"]], url: "https://api.github.com/repos/${OWNER}/${TESTS_REPO_NAME}/actions/runs?branch=master&event=repository_dispatch"
+  echo "getLatestWorkflowRun Status: ${response.status}"
+  //echo "Content: ${response.content}"
+  def jsonObj = readJSON text: response.content
+  echo "Total count: ${jsonObj.total_count}"
+  def latestRun = jsonObj.total_count > 0 ? jsonObj.workflow_runs.max { it.created_at } : null
+  latestRun ? latestRun.id : null
+}
+
+def getWorkflowRunById(String token, long runId) {
+  def response = httpRequest customHeaders: [[name: 'Authorization', value: "token ${token}"], [name: 'Accept', value: "application/vnd.github.ant-man-preview+json"]], url: "https://api.github.com/repos/${OWNER}/${TESTS_REPO_NAME}/actions/runs/${runId}"
+  echo "getWorkflowRunById Status: ${response.status}"
+  //echo "Content: ${response.content}"
+  def jsonObj = readJSON text: response.content
+  [jsonObj.status, jsonObj.conclusion]
+}
+
+def waitForWorkflowRunComplete(String token) {
+  sleep(5)
+  def latestRunId = getLatestWorkflowRun(token)
+  if(!latestRunId) {
+    error('No workflow run in Github Actions. Aborting the build!')
+  } else {
+    def count = 60  //timeout (60 * 10) seconds = 10 minutes
+    def status, conclusion
+    while(count-- > 0 && status != 'completed') {
+      (status, conclusion) = getWorkflowRunById(token, latestRunId)
+      if(status != 'completed') {
+        echo "Waiting for workflow run complete: ${count}"
+        sleep(10)
+      }
+    }
+
+    if(status == 'completed' && conclusion != 'success') {
+      error("Workflow run was ${conclusion}. Aborting the build!")
+    } else if(count <= 0) {
+      error('Workflow run query timed out. Aborting the build!')
+    }
+  }
 }
 
 return this;

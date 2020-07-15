@@ -114,7 +114,9 @@ objects:
          			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-DIGITALID-API/master/tools/openshift/api.dc.yaml"
                      }
          			steps {
+                      script{
                         extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", APP_NAME, JOB_NAME, "${DIGITAL_ID_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
+                      }
                      }
          		}
          		stage('PEN Demographics API'){
@@ -129,7 +131,9 @@ objects:
          			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-DEMOG-API/master/tools/openshift/api.dc.yaml"
                      }
          			steps {
+                      script{
                         extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", APP_NAME, JOB_NAME, "${PEN_DEMOG_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
+                      }
                      }
          		}
          		stage('PEN Request API'){
@@ -144,7 +148,9 @@ objects:
          			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST-API/master/tools/openshift/api.dc.yaml"
                      }
          			steps {
+                      script{
                         extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", APP_NAME, JOB_NAME, "${PEN_REQUEST_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
+                      }
                      }
          		}
          		stage('Services Card API'){
@@ -159,7 +165,9 @@ objects:
          			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-SERVICES-CARD-API/master/tools/openshift/api.dc.yaml"
                      }
          			steps {
+                      script{
                         extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", APP_NAME, JOB_NAME, "${SERVICES_CARD_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
+                      }
                      }
          		}
          		stage('Student API'){
@@ -174,7 +182,9 @@ objects:
          			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-API/master/tools/openshift/api.dc.yaml"
                      }
          			steps {
+                      script{
                         extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", APP_NAME, JOB_NAME, "${STUDENT_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
+                      }
                      }
          		}
          		stage('Student Profile API'){
@@ -189,7 +199,9 @@ objects:
          			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-API/master/tools/openshift/api.dc.yaml"
                      }
          			steps {
+                      script{
                         extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", APP_NAME, JOB_NAME, "${STUDENT_PROFILE_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
+                      }
                      }
          		}
          		stage('SOAM API'){
@@ -204,7 +216,9 @@ objects:
          			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-SOAM-API/master/tools/openshift/api.dc.yaml"
                      }
          			steps {
+                      script{
                         extJSHelper.performSoamApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", APP_NAME, JOB_NAME, "${SOAM_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
+                      }
                      }
          		}
          	}
