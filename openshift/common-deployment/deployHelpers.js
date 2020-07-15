@@ -41,6 +41,14 @@ def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, St
       }
     }
     deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
+
+    script {
+      openshift.withCluster() {
+        openshift.withProject("${targetEnv}") {
+          openshift.selector('dc', "sso-${targetEnv}").rollout().latest()
+        }
+      }
+    }
 }
 
 def configMapSetup(String appName,String appNameUpper, String namespace){
