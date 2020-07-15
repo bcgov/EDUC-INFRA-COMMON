@@ -1,7 +1,19 @@
  echo "Loading deployment helpers"
 
 def performApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE){
-    deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
+    script {
+      openshift.withCluster() {
+        openshift.withProject("${targetEnv}") {
+          def dcApi = openshift.selector('dc', "${appName}-${jobName}")
+          if (!dcApi.exists()) {
+            deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
+          } else {
+            echo "Deployments already exists, skipping to config map update"
+          }
+        }
+      }
+    }
+
     script{
         dir('tools/jenkins'){
             sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
@@ -13,6 +25,7 @@ def performApiDeploy(String stageEnv, String projectEnv, String repoName, String
         sh "bash ./update-configmap.sh ${TARGET_ENV} ${APP_NAME} ${NAMESPACE}"
       }
     }
+    deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
 }
 
 def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String DEV_EXCHANGE_REALM){
