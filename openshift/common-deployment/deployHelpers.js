@@ -92,7 +92,7 @@ def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, St
     }
 }
 
-def performUIDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String commonNamespace){
+def performUIDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String frontendDC, String backendDC, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String commonNamespace){
     script {
       openshift.withCluster() {
         openshift.withProject("${projectEnv}") {
@@ -123,7 +123,8 @@ def performUIDeploy(String stageEnv, String projectEnv, String repoName, String 
 
 def configMapSetup(String appName,String appNameUpper, String namespace){
     script {
-       try{
+
+      try{
         sh( script: "oc project ${namespace}-dev", returnStdout: true)
         sh( script: "oc describe configmaps ${appName}-dev-setup-config", returnStdout: true)
         sh( script: "oc project ${namespace}-tools", returnStdout: true)
@@ -141,13 +142,16 @@ def configMapSetup(String appName,String appNameUpper, String namespace){
               password(defaultValue: "",
                       description: "Password for ${appName} to connect to the database",
                       name: "DB_PWD"),
+              string(defaultValue: "",
+                      description: "Token for ${appName} FluentBit sidecar to connect to the Splunk",
+                      name: "SPLUNK_TOKEN"),
           ])
-       sh """
-         set +x
-         echo Running curl command...
-         oc create -n ${namespace}-dev configmap ${appName}-dev-setup-config --from-literal=DB_JDBC_CONNECT_STRING=${configProperties.DB_JDBC_CONNECT_STRING} --from-literal=DB_USER_${appNameUpper}=${configProperties.DB_USER} --from-literal=DB_PWD_${appNameUpper}=${configProperties.DB_PWD} --dry-run -o yaml | oc apply -f -
-         oc project ${namespace}-tools
-       """
+		sh """
+		  set +x
+		  echo Running curl command...
+		  oc create -n ${namespace}-dev configmap ${appName}-dev-setup-config --from-literal=SPLUNK_TOKEN_${appNameUpper}=${configProperties.SPLUNK_TOKEN} --from-literal=DB_JDBC_CONNECT_STRING=${configProperties.DB_JDBC_CONNECT_STRING} --from-literal=DB_USER_${appNameUpper}=${configProperties.DB_USER} --from-literal=DB_PWD_${appNameUpper}=${configProperties.DB_PWD} --dry-run -o yaml | oc apply -f -
+		  oc project ${namespace}-tools
+		"""
       }
     }
 }
