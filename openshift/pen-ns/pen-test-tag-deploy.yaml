@@ -391,7 +391,7 @@ objects:
             def patroni = openshift.selector('statefulset', "${APP_NAME}-pgsql-${stageEnv}")
             if(!patroni.exists()){
               def dcTemplate = openshift.process('-f',
-                'https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/patroni/patroni-postgresql-secrets.yaml',
+                'https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-SAGA-API/master/tools/openshift/patroni/patroni-postgresql-secrets.yaml',
                 "NAME=${APP_NAME}-pgsql",
                 "SUFFIX=-${stageEnv}",
                 "APP_DB_NAME=student_profile_saga",
@@ -419,7 +419,7 @@ objects:
             def patroni = openshift.selector('statefulset', "${APP_NAME}-pgsql-${stageEnv}")
             if(!patroni.exists()){
               def dcTemplate = openshift.process('-f',
-                'https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/patroni/patroni-postgresql.yaml',
+                'https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-SAGA-API/master/tools/openshift/patroni/patroni-postgresql.yaml',
                 "NAME=${APP_NAME}-pgsql",
                 "SUFFIX=-${stageEnv}",
                 "INSTANCE=${APP_NAME}-pgsql-${stageEnv}"
