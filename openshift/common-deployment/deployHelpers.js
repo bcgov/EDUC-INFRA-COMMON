@@ -2,19 +2,7 @@
 
 def performApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE){
     script {
-      openshift.withCluster() {
-        openshift.withProject("${projectEnv}") {
-          def dcApi = openshift.selector('dc', "${appName}-${jobName}")
-          if (!dcApi.exists()) {
-            deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
-          } else {
-            echo "Deployments already exists, skipping to config map update"
-          }
-        }
-      }
-    }
-
-    script{
+        deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
         dir('tools/jenkins'){
             sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
         }
@@ -24,53 +12,39 @@ def performApiDeploy(String stageEnv, String projectEnv, String repoName, String
       dir('tools/jenkins'){
         sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\""
       }
+
+      openshift.withCluster() {
+        openshift.withProject("${appName}-${jobName}") {
+          openshift.selector('dc', "${appName}-${jobName}").rollout().latest()
+        }
+      }
     }
-    deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
 }
 
 def performEmailApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE){
-    script {
-      openshift.withCluster() {
-        openshift.withProject("${projectEnv}") {
-          def dcApi = openshift.selector('dc', "${appName}-${jobName}")
-          if (!dcApi.exists()) {
-            deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
-          } else {
-            echo "Deployments already exists, skipping to config map update"
-          }
-        }
-      }
-    }
-
     script{
+        deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
         dir('tools/jenkins'){
             sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
         }
     }
-    configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${toolsEnv}");
+    configMapChesSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${toolsEnv}");
     script{
       dir('tools/jenkins'){
         sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\""
       }
+
+      openshift.withCluster() {
+        openshift.withProject("${appName}-${jobName}") {
+          openshift.selector('dc', "${appName}-${jobName}").rollout().latest()
+        }
+      }
     }
-    deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
 }
 
 def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String DEV_EXCHANGE_REALM){
     script {
-      openshift.withCluster() {
-        openshift.withProject("${projectEnv}") {
-          def soamDC = openshift.selector('dc', "${appName}-${jobName}")
-          if (!soamDC.exists()) {
-            deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
-          } else {
-            echo "Deployments already exists, skipping to config map update"
-          }
-        }
-      }
-    }
-
-    script{
+        deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
         dir('tools/jenkins'){
             sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
         }
@@ -80,12 +54,9 @@ def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, St
       dir('tools/jenkins'){
         sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${DEV_EXCHANGE_REALM}\""
       }
-    }
-    deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
-
-    script {
       openshift.withCluster() {
         openshift.withProject("${projectEnv}") {
+          openshift.selector('dc', "${appName}-${jobName}").rollout().latest()
           openshift.selector('dc', "sso-${targetEnv}").rollout().latest()
         }
       }
@@ -94,20 +65,7 @@ def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, St
 
 def performUIDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String frontendDCRaw, String backendDCRaw, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String commonNamespace){
     script {
-      openshift.withCluster() {
-        openshift.withProject("${projectEnv}") {
-          def frontendDC = openshift.selector('dc', "${appName}-frontend-${JOB_NAME}")
-          def backendDC = openshift.selector('dc', "${appName}-backend-${JOB_NAME}")
-          if (!frontendDC.exists() || !backendDC.exists()) {
-            deployUIStage(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, frontendDCRaw, backendDCRaw, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
-          } else {
-            echo "Deployments already exists, so skipping to config map update"
-          }
-        }
-      }
-    }
-
-    script{
+        deployUIStage(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, frontendDCRaw, backendDCRaw, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
         dir('tools/jenkins'){
             sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
         }
@@ -117,8 +75,13 @@ def performUIDeploy(String stageEnv, String projectEnv, String repoName, String 
       dir('tools/jenkins'){
         sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${commonNamespace}\""
       }
+      openshift.withCluster() {
+        openshift.withProject("${projectEnv}") {
+          openshift.selector('dc', "${appName}-${jobName}").rollout().latest()
+        }
+      }
     }
-    deployUIStage(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, frontendDCRaw, backendDCRaw, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
+    deployUIStage(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, frontendDCRaw, backendDCRaw, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
 }
 
 def configMapSetup(String appName,String appNameUpper, String namespace, String targetEnv, String stageEnv){
