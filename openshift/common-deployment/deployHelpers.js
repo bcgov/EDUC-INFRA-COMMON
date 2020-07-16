@@ -1,55 +1,55 @@
  echo "Loading deployment helpers"
 
-def performApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE){
+def performApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String stageEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE){
     script {
-        deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
+        deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, stageEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
         dir('tools/jenkins'){
             sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
         }
     }
-    configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${toolsEnv}");
+    configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${stageEnv}");
     script{
       dir('tools/jenkins'){
         sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\""
       }
 
       openshift.withCluster() {
-        openshift.withProject("${appName}-${jobName}") {
+        openshift.withProject("${projectEnv}") {
           openshift.selector('dc', "${appName}-${jobName}").rollout().latest()
         }
       }
     }
 }
 
-def performEmailApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE){
+def performEmailApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String stageEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String commonNamespace){
     script{
-        deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
+        deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, stageEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
         dir('tools/jenkins'){
             sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
         }
     }
-    configMapChesSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${toolsEnv}");
+    configMapChesSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${stageEnv}");
     script{
       dir('tools/jenkins'){
-        sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\""
+        sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${commonNamespace}\""
       }
 
       openshift.withCluster() {
-        openshift.withProject("${appName}-${jobName}") {
+        openshift.withProject("${projectEnv}") {
           openshift.selector('dc', "${appName}-${jobName}").rollout().latest()
         }
       }
     }
 }
 
-def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String DEV_EXCHANGE_REALM){
+def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String stageEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String DEV_EXCHANGE_REALM){
     script {
-        deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
+        deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, stageEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
         dir('tools/jenkins'){
             sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
         }
     }
-    configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${toolsEnv}");
+    configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${stageEnv}");
     script{
       dir('tools/jenkins'){
         sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${DEV_EXCHANGE_REALM}\""
@@ -63,14 +63,14 @@ def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, St
     }
 }
 
-def performUIDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String frontendDCRaw, String backendDCRaw, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String commonNamespace){
+def performUIDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String stageEnv, String targetEnvironment, String appDomain, String frontendDCRaw, String backendDCRaw, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String commonNamespace){
     script {
-        deployUIStage(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, frontendDCRaw, backendDCRaw, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
+        deployUIStage(stageEnv, projectEnv, repoName, appName, jobName,  tag, stageEnv, targetEnvironment, appDomain, frontendDCRaw, backendDCRaw, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
         dir('tools/jenkins'){
             sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
         }
     }
-    configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${toolsEnv}");
+    configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${stageEnv}");
     script{
       dir('tools/jenkins'){
         sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${commonNamespace}\""
@@ -81,7 +81,7 @@ def performUIDeploy(String stageEnv, String projectEnv, String repoName, String 
         }
       }
     }
-    deployUIStage(stageEnv, projectEnv, repoName, appName, jobName,  tag, toolsEnv, targetEnvironment, appDomain, frontendDCRaw, backendDCRaw, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
+    deployUIStage(stageEnv, projectEnv, repoName, appName, jobName,  tag, stageEnv, targetEnvironment, appDomain, frontendDCRaw, backendDCRaw, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
 }
 
 def configMapSetup(String appName,String appNameUpper, String namespace, String targetEnv, String stageEnv){
@@ -153,11 +153,11 @@ def configMapChesSetup(String appName,String appNameUpper, String namespace, Str
     }
 }
 
-def deployStage(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv) {
+def deployStage(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String stageEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv) {
   openshift.withCluster() {
    openshift.withProject(projectEnv) {
      echo "Tagging ${appName} image with version ${tag}"
-     openshift.tag("${toolsEnv}/${repoName}-${jobName}:latest", "${repoName}-${jobName}:${tag}")
+     openshift.tag("${stageEnv}/${repoName}-${jobName}:latest", "${repoName}-${jobName}:${tag}")
      def dcTemplate = openshift.process('-f',
        "${rawApiDcURL}",
        "REPO_NAME=${repoName}",
@@ -181,7 +181,7 @@ def deployStage(String stageEnv, String projectEnv, String repoName, String appN
   }
 }
 
-def deployStageNoTag(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv) {
+def deployStageNoTag(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String stageEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv) {
   openshift.withCluster() {
    openshift.withProject(projectEnv) {
      def dcTemplate = openshift.process('-f',
@@ -207,11 +207,11 @@ def deployStageNoTag(String stageEnv, String projectEnv, String repoName, String
   }
 }
 
-def deployStageNoEnv(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem) {
+def deployStageNoEnv(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String stageEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem) {
   openshift.withCluster() {
    openshift.withProject(projectEnv) {
      echo "Tagging ${appName} image with version ${tag}"
-     openshift.tag("${toolsEnv}/${repoName}-${jobName}:latest", "${repoName}-${jobName}:${tag}")
+     openshift.tag("${stageEnv}/${repoName}-${jobName}:latest", "${repoName}-${jobName}:${tag}")
      def dcTemplate = openshift.process('-f',
        "${rawApiDcURL}",
        "REPO_NAME=${repoName}",
@@ -234,7 +234,7 @@ def deployStageNoEnv(String stageEnv, String projectEnv, String repoName, String
   }
 }
 
-def deployStageNoTagNoEnv(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem) {
+def deployStageNoTagNoEnv(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String stageEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem) {
   openshift.withCluster() {
    openshift.withProject(projectEnv) {
      def dcTemplate = openshift.process('-f',
@@ -259,14 +259,14 @@ def deployStageNoTagNoEnv(String stageEnv, String projectEnv, String repoName, S
   }
 }
 
-def deployUIStage(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String toolsEnv, String targetEnvironment, String appDomain, String rawApiDcURLFrontend, String rawApiDcURLBackend, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem) {
+def deployUIStage(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String stageEnv, String targetEnvironment, String appDomain, String rawApiDcURLFrontend, String rawApiDcURLBackend, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem) {
   openshift.withCluster() {
    openshift.withProject(projectEnv) {
      echo "Tagging Image ${repoName}-backend:${jobName} with version ${tag}"
-     openshift.tag("${toolsEnv}/${repoName}-backend:latest", "${repoName}-backend:${tag}")
+     openshift.tag("${stageEnv}/${repoName}-backend:latest", "${repoName}-backend:${tag}")
 
      echo "Tagging Image ${repoName}-frontend-static:${jobName} with version ${tag}"
-     openshift.tag("${toolsEnv}/${repoName}-frontend-static:latest", "${repoName}-frontend-static:${tag}")
+     openshift.tag("${stageEnv}/${repoName}-frontend-static:latest", "${repoName}-frontend-static:${tag}")
 
      echo "Processing DeploymentConfig ${appName}-backend..."
      def dcBackendTemplate = openshift.process('-f',
