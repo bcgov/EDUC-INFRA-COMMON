@@ -61,6 +61,11 @@ def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, St
       }
       openshift.withCluster() {
         openshift.withProject("${projectEnv}") {
+          def dcApp = openshift.selector('dc', "${appName}-${jobName}")
+          dcApp.rollout().cancel()
+          timeout(10) {
+            dcApp.rollout().status('--watch=true')
+          }
           openshift.selector('dc', "${appName}-${jobName}").rollout().latest()
           openshift.selector('dc', "sso-${targetEnv}").rollout().latest()
         }
@@ -82,8 +87,19 @@ def performUIDeploy(String stageEnv, String projectEnv, String repoName, String 
       }
       openshift.withCluster() {
         openshift.withProject("${projectEnv}") {
-          openshift.selector('dc', "${appName}-backend-${jobName}").rollout().latest()
-          openshift.selector('dc', "${appName}-frontend-${jobName}").rollout().latest()
+          def dcAppBE = openshift.selector('dc', "${appName}-backend-${jobName}")
+          dcAppBE.rollout().cancel()
+          timeout(10) {
+            dcAppBE.rollout().status('--watch=true')
+          }
+          dcAppBE.rollout().latest()
+
+          def dcAppFE = openshift.selector('dc', "${appName}-frontend-${jobName}")
+          dcAppFE.rollout().cancel()
+          timeout(10) {
+            dcAppFE.rollout().status('--watch=true')
+          }
+          dcAppFE.rollout().latest()
         }
       }
     }
