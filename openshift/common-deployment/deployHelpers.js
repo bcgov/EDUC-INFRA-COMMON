@@ -77,7 +77,8 @@ def performUIDeploy(String stageEnv, String projectEnv, String repoName, String 
       }
       openshift.withCluster() {
         openshift.withProject("${projectEnv}") {
-          openshift.selector('dc', "${appName}-${jobName}").rollout().latest()
+          openshift.selector('dc', "${appName}-backend-${jobName}").rollout().latest()
+          openshift.selector('dc', "${appName}-frontend-${jobName}").rollout().latest()
         }
       }
     }
