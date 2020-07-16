@@ -49,7 +49,7 @@ def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, St
             sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
         }
     }
-    configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
+    configMapSetupSplunkOnly("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
     script{
       dir('tools/jenkins'){
         sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${DEV_EXCHANGE_REALM}\""
@@ -70,7 +70,7 @@ def performUIDeploy(String stageEnv, String projectEnv, String repoName, String 
             sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
         }
     }
-    configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
+    configMapSetupSplunkOnly("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
     script{
       dir('tools/jenkins'){
         sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${commonNamespace}\""
@@ -80,6 +80,32 @@ def performUIDeploy(String stageEnv, String projectEnv, String repoName, String 
           openshift.selector('dc', "${appName}-backend-${jobName}").rollout().latest()
           openshift.selector('dc', "${appName}-frontend-${jobName}").rollout().latest()
         }
+      }
+    }
+}
+
+def configMapSetupSplunkOnly(String appName,String appNameUpper, String namespace, String targetEnv, String sourceEnv){
+    script {
+
+      try{
+        sh( script: "oc project ${namespace}-${targetEnv}", returnStdout: true)
+        sh( script: "oc describe configmaps ${appName}-${targetEnv}-setup-config", returnStdout: true)
+        sh( script: "oc project ${sourceEnv}", returnStdout: true)
+        echo 'Config map already exists. Moving to next stage...'
+      } catch(e){
+          configProperties = input(
+          id: 'configProperties', message: "Please enter the required credentials to allow ${appName} to run:",
+          parameters: [
+              string(defaultValue: "",
+                      description: "Token for ${appName} FluentBit sidecar to connect to the Splunk",
+                      name: "SPLUNK_TOKEN"),
+          ])
+		sh """
+		  set +x
+		  echo Running curl command...
+		  oc create -n ${namespace}-${targetEnv} configmap ${appName}-${targetEnv}-setup-config --from-literal=SPLUNK_TOKEN_${appNameUpper}=${configProperties.SPLUNK_TOKEN} --dry-run -o yaml | oc apply -f -
+		  oc project ${namespace}-tools
+		"""
       }
     }
 }
