@@ -63,9 +63,9 @@ def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, St
     }
 }
 
-def performUIDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String frontendDCRaw, String backendDCRaw, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String commonNamespace){
+def performUIDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String frontendDCRaw, String backendDCRaw, String minReplicasFE, String maxReplicasFE, String minCPUFE, String maxCPUFE, String minMemFE, String maxMemFE, String minReplicasBE, String maxReplicasBE, String minCPUBE, String maxCPUBE, String minMemBE, String maxMemBE, String targetEnv, String NAMESPACE, String commonNamespace){
     script {
-        deployUIStage(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, frontendDCRaw, backendDCRaw, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
+        deployUIStage(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, frontendDCRaw, backendDCRaw, minReplicasFE, maxReplicasFE, minCPUFE, maxCPUFE, minMemFE, maxMemFE, minReplicasBE, maxReplicasBE, minCPUBE, maxCPUBE, minMemBE, maxMemBE)
         dir('tools/jenkins'){
             sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
         }
@@ -267,57 +267,6 @@ def deployStageNoTagNoEnv(String stageEnv, String projectEnv, String repoName, S
 
      echo "Applying Deployment for ${appName}"
      def dc = openshift.apply(dcTemplate).narrow('dc')
-   }
-  }
-}
-
-def deployUIStage(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURLFrontend, String rawApiDcURLBackend, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem) {
-  openshift.withCluster() {
-   openshift.withProject(projectEnv) {
-     echo "Tagging Image ${repoName}-backend:${jobName} with version ${tag}"
-     openshift.tag("${sourceEnv}/${repoName}-backend:latest", "${repoName}-backend:${tag}")
-
-     echo "Tagging Image ${repoName}-frontend-static:${jobName} with version ${tag}"
-     openshift.tag("${sourceEnv}/${repoName}-frontend-static:latest", "${repoName}-frontend-static:${tag}")
-
-     echo "Processing DeploymentConfig ${appName}-backend..."
-     def dcBackendTemplate = openshift.process('-f',
-       "${rawApiDcURLBackend}",
-       "REPO_NAME=${repoName}",
-       "JOB_NAME=${jobName}",
-       "NAMESPACE=${projectEnv}",
-       "APP_NAME=${appName}",
-       "HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain}",
-       "TAG=${tag}",
-       "MIN_REPLICAS=${minReplicas}",
-       "MAX_REPLICAS=${maxReplicas}",
-       "MIN_CPU=${minCPU}",
-       "MAX_CPU=${maxCPU}",
-       "MIN_MEM=${minMem}",
-       "MAX_MEM=${maxMem}"
-     )
-
-     def dcBackend = openshift.apply(dcBackendTemplate).narrow('dc')
-
-     echo "Processing DeploymentConfig ${appName}-frontend-static..."
-     def dcFrontendStaticTemplate = openshift.process('-f',
-       "${rawApiDcURLFrontend}",
-       "REPO_NAME=${repoName}",
-       "JOB_NAME=${jobName}",
-       "NAMESPACE=${projectEnv}",
-       "APP_NAME=${appName}",
-       "HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain}",
-       "TAG=${tag}",
-       "MIN_REPLICAS=${minReplicas}",
-       "MAX_REPLICAS=${maxReplicas}",
-       "MIN_CPU=${minCPU}",
-       "MAX_CPU=${maxCPU}",
-       "MIN_MEM=${minMem}",
-       "MAX_MEM=${maxMem}"
-     )
-
-     echo "Applying Deployment ${appName}-frontend-static..."
-     def dcFrontendStatic = openshift.apply(dcFrontendStaticTemplate).narrow('dc')
    }
   }
 }
