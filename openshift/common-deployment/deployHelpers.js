@@ -142,11 +142,23 @@ def configMapChesSetup(String appName,String appNameUpper, String namespace, Str
               string(defaultValue: "",
                       description: "Password for ${appName} to connect to the database",
                       name: "CHES_TOKEN_URL"),
+              string(defaultValue: "",
+                      description: 'JDBC connect string for database',
+                      name: 'DB_JDBC_CONNECT_STRING'),
+              string(defaultValue: "",
+                      description: "Username for ${appName} to connect to the database",
+                      name: "DB_USER"),
+              password(defaultValue: "",
+                      description: "Password for ${appName} to connect to the database",
+                      name: "DB_PWD"),
+              string(defaultValue: "",
+                description: "Token for ${appName} FluentBit sidecar to connect to the Splunk",
+                name: "SPLUNK_TOKEN"),
           ])
        sh """
          set +x
          echo Running curl command...
-         oc create -n ${namespace}-${targetEnv} configmap ${appName}-${targetEnv}-setup-config --from-literal=CHES_CLIENT_ID=${configProperties.CHES_CLIENT_ID} --from-literal=CHES_TOKEN_URL=${configProperties.CHES_TOKEN_URL} --from-literal=CHES_ENDPOINT_URL=${configProperties.CHES_ENDPOINT_URL} --from-literal=CHES_CLIENT_SECRET=${configProperties.CHES_CLIENT_SECRET} --dry-run -o yaml | oc apply -f -
+         oc create -n ${namespace}-${targetEnv} configmap ${appName}-${targetEnv}-setup-config --from-literal=SPLUNK_TOKEN_${appNameUpper}=${configProperties.SPLUNK_TOKEN} --from-literal=DB_JDBC_CONNECT_STRING=${configProperties.DB_JDBC_CONNECT_STRING} --from-literal=DB_USER_${appNameUpper}=${configProperties.DB_USER} --from-literal=DB_PWD_${appNameUpper}=${configProperties.DB_PWD} --from-literal=CHES_CLIENT_ID=${configProperties.CHES_CLIENT_ID} --from-literal=CHES_TOKEN_URL=${configProperties.CHES_TOKEN_URL} --from-literal=CHES_ENDPOINT_URL=${configProperties.CHES_ENDPOINT_URL} --from-literal=CHES_CLIENT_SECRET=${configProperties.CHES_CLIENT_SECRET} --dry-run -o yaml | oc apply -f -
          oc project ${namespace}-tools
        """
       }
