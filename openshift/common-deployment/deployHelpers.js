@@ -48,7 +48,11 @@ def performEmailApiDeploy(String stageEnv, String projectEnv, String repoName, S
           def dcApp = openshift.selector('dc', "${appName}-${jobName}")
           dcApp.rollout().cancel()
           timeout(10) {
-            dcApp.rollout().status('--watch=true')
+            try{
+               dcApp.rollout().status('--watch=true')
+            }catch(Exception e){
+              //Do nothing
+            }
           }
           openshift.selector('dc', "${appName}-${jobName}").rollout().latest()
         }
@@ -73,7 +77,11 @@ def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, St
           def dcApp = openshift.selector('dc', "${appName}-${jobName}")
           dcApp.rollout().cancel()
           timeout(10) {
-            dcApp.rollout().status('--watch=true')
+            try{
+                dcApp.rollout().status('--watch=true')
+            }catch(Exception e){
+              //Do nothing
+            }
           }
           openshift.selector('dc', "${appName}-${jobName}").rollout().latest()
           openshift.selector('dc', "sso-${targetEnv}").rollout().latest()
@@ -99,14 +107,22 @@ def performUIDeploy(String stageEnv, String projectEnv, String repoName, String 
           def dcAppBE = openshift.selector('dc', "${appName}-backend-${jobName}")
           dcAppBE.rollout().cancel()
           timeout(10) {
-            dcAppBE.rollout().status('--watch=true')
+            try{
+              dcAppBE.rollout().status('--watch=true')
+            }catch(Exception e){
+              //Do nothing
+            }
           }
           dcAppBE.rollout().latest()
 
           def dcAppFE = openshift.selector('dc', "${appName}-frontend-${jobName}")
           dcAppFE.rollout().cancel()
           timeout(10) {
-            dcAppFE.rollout().status('--watch=true')
+            try{
+              dcAppFE.rollout().status('--watch=true')
+            }catch(Exception e){
+              //Do nothing
+            }
           }
           dcAppFE.rollout().latest()
         }
