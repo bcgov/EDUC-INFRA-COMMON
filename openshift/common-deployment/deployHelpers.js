@@ -41,6 +41,11 @@ def performEmailApiDeploy(String stageEnv, String projectEnv, String repoName, S
 
       openshift.withCluster() {
         openshift.withProject("${projectEnv}") {
+          def dcApp = openshift.selector('dc', "${appName}-${jobName}")
+          dcApp.rollout().cancel()
+          timeout(10) {
+            dcApp.rollout().status('--watch=true')
+          }
           openshift.selector('dc', "${appName}-${jobName}").rollout().latest()
         }
       }
@@ -124,7 +129,7 @@ def configMapSetupSplunkOnly(String appName,String appNameUpper, String namespac
 		sh """
 		  set +x
 		  echo Running curl command...
-		  oc create -n ${namespace}-${targetEnv} configmap ${appName}-${targetEnv}-setup-config --from-literal=SPLUNK_TOKEN_${appNameUpper}=${configProperties.SPLUNK_TOKEN} --dry-run -o yaml | oc apply -f -
+		  oc create -n ${namespace}-${targetEnv} configmap ${appName}-${targetEnv}-setup-config --from-literal=SPLUNK_TOKEN_${appNameUpper}=${configProperties} --dry-run -o yaml | oc apply -f -
 		  oc project ${namespace}-tools
 		"""
       }
