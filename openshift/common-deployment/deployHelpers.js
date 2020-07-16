@@ -15,6 +15,11 @@ def performApiDeploy(String stageEnv, String projectEnv, String repoName, String
 
       openshift.withCluster() {
         openshift.withProject("${projectEnv}") {
+          def dcApp = openshift.selector('dc', "${appName}-${jobName}")
+          dcApp.rollout().cancel()
+          timeout(10) {
+            dcApp.rollout().status('--watch=true')
+          }
           openshift.selector('dc', "${appName}-${jobName}").rollout().latest()
         }
       }
