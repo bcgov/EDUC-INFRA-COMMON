@@ -45,8 +45,7 @@ def performSagaApiDeploy(String stageEnv, String projectEnv, String repoName, St
           }
         }
       }
-
-      deployStage(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
+      deployStage(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem, targetEnv)
       dir('tools/jenkins'){
           sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
       }
@@ -261,32 +260,6 @@ def deployStage(String stageEnv, String projectEnv, String repoName, String appN
    openshift.withProject(projectEnv) {
      echo "Tagging ${appName} image with version ${tag}"
      openshift.tag("${sourceEnv}/${repoName}-${jobName}:latest", "${repoName}-${jobName}:${tag}")
-     def dcTemplate = openshift.process('-f',
-       "${rawApiDcURL}",
-       "REPO_NAME=${repoName}",
-       "JOB_NAME=${jobName}",
-       "NAMESPACE=${projectEnv}",
-       "APP_NAME=${appName}",
-       "HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain}",
-       "TAG=${tag}",
-       "MIN_REPLICAS=${minReplicas}",
-       "MAX_REPLICAS=${maxReplicas}",
-       "MIN_CPU=${minCPU}",
-       "MAX_CPU=${maxCPU}",
-       "MIN_MEM=${minMem}",
-       "MAX_MEM=${maxMem}",
-       "ENV=${targetEnv}"
-     )
-
-     echo "Applying Deployment for ${appName}"
-     def dc = openshift.apply(dcTemplate).narrow('dc')
-   }
-  }
-}
-
-def deployStageNoTag(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv) {
-  openshift.withCluster() {
-   openshift.withProject(projectEnv) {
      def dcTemplate = openshift.process('-f',
        "${rawApiDcURL}",
        "REPO_NAME=${repoName}",
