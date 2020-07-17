@@ -32,16 +32,14 @@ def performEmailApiDeploy(String stageEnv, String projectEnv, String repoName, S
     performStandardRollout(appName, projectEnv, jobName)
 }
 
-
-
 def performSagaApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String commonNamespace){
     script{
       openshift.withCluster() {
         openshift.withProject("${projectEnv}") {
           def patroni = openshift.selector('statefulset', "${appName}-pgsql-${targetEnv}")
           if(!patroni.exists()){
-            deployPatroniSecrets("${targetEnv}", "${sourceEnv}")
-            deployPatroni("${targetEnv}", "${sourceEnv}")
+            deployPatroniSecrets("${targetEnv}", "${sourceEnv}", "${appName}")
+            deployPatroni("${targetEnv}", "${sourceEnv}", "${appName}")
           }else {
             echo "Deployment of patroni secrets already exists, so skipping to next step"
           }
@@ -363,14 +361,14 @@ def deployUIStage(String stageEnv, String projectEnv, String repoName, String ap
   }
 }
 
-def deployPatroniSecrets(String stageEnv, String projectEnv) {
+def deployPatroniSecrets(String stageEnv, String projectEnv, String appName) {
  openshift.withCluster() {
-   openshift.withProject(projectEnv) {
-     def patroni = openshift.selector('statefulset', "${APP_NAME}-pgsql-${stageEnv}")
+   openshift.withProject("{projectEnv}") {
+     def patroni = openshift.selector('statefulset', "${appName}-pgsql-${stageEnv}")
      if(!patroni.exists()){
        def dcTemplate = openshift.process('-f',
          'https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/patroni/patroni-postgresql-secrets.yaml',
-         "NAME=${APP_NAME}-pgsql",
+         "NAME=${appName}-pgsql",
          "SUFFIX=-${stageEnv}",
          "APP_DB_NAME=student_profile_saga",
          "APP_DB_USERNAME=student_profile_saga"
@@ -391,16 +389,16 @@ def deployPatroniSecrets(String stageEnv, String projectEnv) {
   }
 }
 
-def deployPatroni(String stageEnv, String projectEnv) {
+def deployPatroni(String stageEnv, String projectEnv, String appName) {
  openshift.withCluster() {
-   openshift.withProject(projectEnv) {
-     def patroni = openshift.selector('statefulset', "${APP_NAME}-pgsql-${stageEnv}")
+   openshift.withProject("{projectEnv}") {
+     def patroni = openshift.selector('statefulset', "${appName}-pgsql-${stageEnv}")
      if(!patroni.exists()){
        def dcTemplate = openshift.process('-f',
          'https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/patroni/patroni-postgresql.yaml',
-         "NAME=${APP_NAME}-pgsql",
+         "NAME=${appName}-pgsql",
          "SUFFIX=-${stageEnv}",
-         "INSTANCE=${APP_NAME}-pgsql-${stageEnv}"
+         "INSTANCE=${appName}-pgsql-${stageEnv}"
        )
 
        echo "Applying Deployment patroni"
