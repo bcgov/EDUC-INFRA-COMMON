@@ -30,6 +30,7 @@ objects:
 
          pipeline {
              environment {
+              extJSHelper = '';
          	  NAMESPACE='c2mvws'
          	  COMMON_NAMESPACE='mvubjx'
              }
@@ -64,12 +65,11 @@ objects:
          				}
          			}
          		}
-         		stage('Download setup files'){
+         		stage('Initialize deploy library'){
          		  steps{
          			  script{
-         				  dir('tools/jenkins'){
-         					  sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/pipelines/common/download-kc.sh | bash -s c2mvws"
-                           }
+                         sh "wget -O - https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/deployHelpers.js > deployHelpers.js"
+                         extJSHelper = evaluate readFile('deployHelpers.js')
          			  }
          		  }
          		}
@@ -81,20 +81,18 @@ objects:
          			}
          			environment {
          			   APP_NAME = "student-profile-saga-api"
+                       REPO_NAME = "educ-student-profile-saga-api"
          			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-SAGA-API/master/tools/openshift/api.dc.yaml"
+                       MIN_REPLICAS = "1"
+                       MAX_REPLICAS = "1"
+                       MIN_CPU = "30m"
+                       MAX_CPU = "300m"
+                       MIN_MEM = "650Mi"
+                       MAX_MEM = "750Mi"
                      }
          			steps {
-                  deployPatroniSecrets(TARGET_ENV, TARGET_ENVIRONMENT)
-                  deployPatroni(TARGET_ENV, TARGET_ENVIRONMENT)
-         			    deployStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-profile-saga-api', 'student-profile-saga-api', JOB_NAME, "${STUDENT_PROFILE_SAGA_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "1", "1", "30m", "300m", "650Mi", "750Mi", TARGET_ENV)
-         			    configMapSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
-                         script{
-                            dir('tools/jenkins'){
-                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-SAGA-API/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE $COMMON_NAMESPACE"
-                            }
-                         }
-                        deployStageNoTag(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-profile-saga-api', 'student-profile-saga-api', JOB_NAME, "${STUDENT_PROFILE_SAGA_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "1", "1", "30m", "300m", "650Mi", "750Mi", TARGET_ENV)
-                     }
+                       extJSHelper.performSagaApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${STUDENT_PROFILE_SAGA_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "${MIN_REPLICAS}", "${MAX_REPLICAS}", "${MIN_CPU}", "${MAX_CPU}", "${MIN_MEM}", "${MAX_MEM}", "${TARGET_ENV}", "${NAMESPACE}", "${COMMON_NAMESPACE}")
+                    }
          		}
          		stage('Student Admin Frontend and Backend'){
          			when {
@@ -104,17 +102,27 @@ objects:
          			}
          			environment {
          			   APP_NAME = "student-admin"
+                       REPO_NAME = "educ-student-admin"
          			   DC_URL_FRONTEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/openshift/frontend-static.dc.yaml"
          			   DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/openshift/backend.dc.yaml"
+                       MIN_REPLICAS_FE = "1"
+                       MAX_REPLICAS_FE = "1"
+                       MIN_CPU_FE = "25m"
+                       MAX_CPU_FE = "50m"
+                       MIN_MEM_FE = "50Mi"
+                       MAX_MEM_FE = "100Mi"
+                       MIN_REPLICAS_BE = "1"
+                       MAX_REPLICAS_BE = "1"
+                       MIN_CPU_BE = "50m"
+                       MAX_CPU_BE = "100m"
+                       MIN_MEM_BE = "200Mi"
+                       MAX_MEM_BE = "250Mi"
                      }
          			steps {
-         			    deployUIStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-admin', 'student-admin', JOB_NAME, "${STAFF_ADMIN_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}", "1", "1", "25m", "50m", "150Mi", "250Mi")
-                         script{
-                            dir('tools/jenkins'){
-                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE $COMMON_NAMESPACE"
-                            }
-                         }
-                     }
+                       script{
+                          extJSHelper.performUIDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${STAFF_ADMIN_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}", "${MIN_REPLICAS_FE}", "${MAX_REPLICAS_FE}", "${MIN_CPU_FE}", "${MAX_CPU_FE}", "${MIN_MEM_FE}", "${MAX_MEM_FE}", "${MIN_REPLICAS_BE}", "${MAX_REPLICAS_BE}", "${MIN_CPU_BE}", "${MAX_CPU_BE}", "${MIN_MEM_BE}", "${MAX_MEM_BE}", TARGET_ENV, NAMESPACE, COMMON_NAMESPACE)
+                       }
+                    }
          		}
          		stage('Student Profile Email API'){
          			when {
@@ -124,17 +132,19 @@ objects:
          			}
          			environment {
          			   APP_NAME = "student-profile-email-api"
+                       REPO_NAME = "educ-student-profile-email-api"
          			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-EMAIL-API/master/tools/openshift/api.dc.yaml"
+                       MIN_REPLICAS = "1"
+                       MAX_REPLICAS = "1"
+                       MIN_CPU = "30m"
+                       MAX_CPU = "300m"
+                       MIN_MEM = "650Mi"
+                       MAX_MEM = "750Mi"
                      }
          			steps {
-         			    deployStageNoEnv(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-profile-email-api', 'student-profile-email-api', JOB_NAME, "${STUDENT_PROFILE_EMAIL_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "1", "1", "30m", "300m", "650Mi", "750Mi")
-         			    configMapChesSetup("${APP_NAME}","${APP_NAME}".toUpperCase(), NAMESPACE);
-                         script{
-                            dir('tools/jenkins'){
-                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-EMAIL-API/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE $COMMON_NAMESPACE"
-                            }
-                         }
-                         deployStageNoTagNoEnv(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-profile-email-api', 'student-profile-email-api', JOB_NAME, "${STUDENT_PROFILE_EMAIL_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "1", "1", "30m", "300m", "650Mi", "750Mi")
+                       script{
+                          extJSHelper.performEmailApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${STUDENT_PROFILE_EMAIL_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "${MIN_REPLICAS}", "${MAX_REPLICAS}", "${MIN_CPU}", "${MAX_CPU}", "${MIN_MEM}", "${MAX_MEM}", TARGET_ENV, NAMESPACE, COMMON_NAMESPACE)
+                       }
                      }
          		}
          		stage('Student Profile Frontend and Backend'){
@@ -145,16 +155,26 @@ objects:
          			}
          			environment {
          			   APP_NAME = "student-profile"
+                       REPO_NAME = "educ-student-profile"
          			   DC_URL_FRONTEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE/master/tools/openshift/frontend-static.dc.yaml"
          			   DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE/master/tools/openshift/backend.dc.yaml"
+                       MIN_REPLICAS_FE = "1"
+                       MAX_REPLICAS_FE = "1"
+                       MIN_CPU_FE = "25m"
+                       MAX_CPU_FE = "50m"
+                       MIN_MEM_FE = "50Mi"
+                       MAX_MEM_FE = "100Mi"
+                       MIN_REPLICAS_BE = "1"
+                       MAX_REPLICAS_BE = "1"
+                       MIN_CPU_BE = "50m"
+                       MAX_CPU_BE = "100m"
+                       MIN_MEM_BE = "200Mi"
+                       MAX_MEM_BE = "250Mi"
                      }
          			steps {
-         			    deployUIStage(STAGING_ENV, TARGET_ENVIRONMENT, 'educ-student-profile', 'student-profile', JOB_NAME, "${STUDENT_PROFILE_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}", "1", "1", "25m", "50m", "150Mi", "250Mi")
-                         script{
-                            dir('tools/jenkins'){
-                               sh "curl -s https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE/master/tools/jenkins/update-configmap.sh | bash -s dev $APP_NAME $NAMESPACE $COMMON_NAMESPACE"
-                            }
-                         }
+                       script{
+                          extJSHelper.performUIDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${STUDENT_PROFILE_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}", "${MIN_REPLICAS_FE}", "${MAX_REPLICAS_FE}", "${MIN_CPU_FE}", "${MAX_CPU_FE}", "${MIN_MEM_FE}", "${MAX_MEM_FE}", "${MIN_REPLICAS_BE}", "${MAX_REPLICAS_BE}", "${MIN_CPU_BE}", "${MAX_CPU_BE}", "${MIN_MEM_BE}", "${MAX_MEM_BE}", TARGET_ENV, NAMESPACE, COMMON_NAMESPACE)
+                       }
                      }
          		}
          	}
