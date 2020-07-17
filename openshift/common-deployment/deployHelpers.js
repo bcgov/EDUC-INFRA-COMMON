@@ -60,6 +60,48 @@ def performEmailApiDeploy(String stageEnv, String projectEnv, String repoName, S
     }
 }
 
+def performSagaApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String commonNamespace){
+    script{
+      openshift.withCluster() {
+        openshift.withProject("${projectEnv}") {
+          def patroni = openshift.selector('statefulset', "${appName}-pgsql-${targetEnv}")
+          if(!patroni.exists()){
+            deployPatroniSecrets("${targetEnv}", "${sourceEnv}")
+            deployPatroni("${targetEnv}", "${sourceEnv}")
+          }else {
+            echo "Deployment of patroni secrets already exists, so skipping to next step"
+          }
+        }
+      }
+
+      deployStage(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
+      dir('tools/jenkins'){
+          sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
+      }
+    }
+    configMapSetupSplunkOnly("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
+    script{
+      dir('tools/jenkins'){
+        sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${commonNamespace}\""
+      }
+
+      openshift.withCluster() {
+        openshift.withProject("${projectEnv}") {
+          def dcApp = openshift.selector('dc', "${appName}-${jobName}")
+          dcApp.rollout().cancel()
+          timeout(10) {
+            try{
+               dcApp.rollout().status('--watch=true')
+            }catch(Exception e){
+              //Do nothing
+            }
+          }
+          openshift.selector('dc', "${appName}-${jobName}").rollout().latest()
+        }
+      }
+    }
+}
+
 def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String DEV_EXCHANGE_REALM){
     script {
         deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
