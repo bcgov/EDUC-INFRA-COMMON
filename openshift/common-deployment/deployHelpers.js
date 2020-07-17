@@ -363,7 +363,7 @@ def deployUIStage(String stageEnv, String projectEnv, String repoName, String ap
 
 def deployPatroniSecrets(String stageEnv, String projectEnv, String appName) {
  openshift.withCluster() {
-   openshift.withProject("{projectEnv}") {
+   openshift.withProject("${projectEnv}") {
      def patroni = openshift.selector('statefulset', "${appName}-pgsql-${stageEnv}")
      if(!patroni.exists()){
        def dcTemplate = openshift.process('-f',
@@ -391,7 +391,7 @@ def deployPatroniSecrets(String stageEnv, String projectEnv, String appName) {
 
 def deployPatroni(String stageEnv, String projectEnv, String appName) {
  openshift.withCluster() {
-   openshift.withProject("{projectEnv}") {
+   openshift.withProject("${projectEnv}") {
      def patroni = openshift.selector('statefulset', "${appName}-pgsql-${stageEnv}")
      if(!patroni.exists()){
        def dcTemplate = openshift.process('-f',
