@@ -12,22 +12,8 @@ def performApiDeploy(String stageEnv, String projectEnv, String repoName, String
       dir('tools/jenkins'){
         sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\""
       }
-
-      openshift.withCluster() {
-        openshift.withProject("${projectEnv}") {
-          def dcApp = openshift.selector('dc', "${appName}-${jobName}")
-          dcApp.rollout().cancel()
-          timeout(10) {
-            try{
-                dcApp.rollout().status('--watch=true')
-            }catch(Exception e){
-              //Do nothing
-            }
-          }
-          openshift.selector('dc', "${appName}-${jobName}").rollout().latest()
-        }
-      }
     }
+    performStandardRollout(appName, projectEnv, jobName)
 }
 
 def performEmailApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String commonNamespace){
@@ -42,23 +28,11 @@ def performEmailApiDeploy(String stageEnv, String projectEnv, String repoName, S
       dir('tools/jenkins'){
         sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${commonNamespace}\""
       }
-
-      openshift.withCluster() {
-        openshift.withProject("${projectEnv}") {
-          def dcApp = openshift.selector('dc', "${appName}-${jobName}")
-          dcApp.rollout().cancel()
-          timeout(10) {
-            try{
-               dcApp.rollout().status('--watch=true')
-            }catch(Exception e){
-              //Do nothing
-            }
-          }
-          openshift.selector('dc', "${appName}-${jobName}").rollout().latest()
-        }
-      }
     }
+    performStandardRollout(appName, projectEnv, jobName)
 }
+
+
 
 def performSagaApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String commonNamespace){
     script{
@@ -84,22 +58,8 @@ def performSagaApiDeploy(String stageEnv, String projectEnv, String repoName, St
       dir('tools/jenkins'){
         sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${commonNamespace}\""
       }
-
-      openshift.withCluster() {
-        openshift.withProject("${projectEnv}") {
-          def dcApp = openshift.selector('dc', "${appName}-${jobName}")
-          dcApp.rollout().cancel()
-          timeout(10) {
-            try{
-               dcApp.rollout().status('--watch=true')
-            }catch(Exception e){
-              //Do nothing
-            }
-          }
-          openshift.selector('dc', "${appName}-${jobName}").rollout().latest()
-        }
-      }
     }
+    performStandardRollout(appName, projectEnv, jobName)
 }
 
 def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String DEV_EXCHANGE_REALM){
@@ -170,6 +130,25 @@ def performUIDeploy(String stageEnv, String projectEnv, String repoName, String 
         }
       }
     }
+}
+
+def performStandardRollout(String appName, String projectEnv, String jobName){
+  script{
+    openshift.withCluster() {
+      openshift.withProject("${projectEnv}") {
+        def dcApp = openshift.selector('dc', "${appName}-${jobName}")
+         dcApp.rollout().cancel()
+        timeout(10) {
+          try{
+              dcApp.rollout().status('--watch=true')
+          }catch(Exception e){
+            //Do nothing
+          }
+        }
+        openshift.selector('dc', "${appName}-${jobName}").rollout().latest()
+      }
+    }
+  }
 }
 
 def configMapSetupSplunkOnly(String appName,String appNameUpper, String namespace, String targetEnv, String sourceEnv){
