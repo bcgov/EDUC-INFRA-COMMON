@@ -333,58 +333,6 @@ def deployStageNoTag(String stageEnv, String projectEnv, String repoName, String
   }
 }
 
-def deployStageNoEnv(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem) {
-  openshift.withCluster() {
-   openshift.withProject(projectEnv) {
-     echo "Tagging ${appName} image with version ${tag}"
-     openshift.tag("${sourceEnv}/${repoName}-${jobName}:latest", "${repoName}-${jobName}:${tag}")
-     def dcTemplate = openshift.process('-f',
-       "${rawApiDcURL}",
-       "REPO_NAME=${repoName}",
-       "JOB_NAME=${jobName}",
-       "NAMESPACE=${projectEnv}",
-       "APP_NAME=${appName}",
-       "HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain}",
-       "TAG=${tag}",
-       "MIN_REPLICAS=${minReplicas}",
-       "MAX_REPLICAS=${maxReplicas}",
-       "MIN_CPU=${minCPU}",
-       "MAX_CPU=${maxCPU}",
-       "MIN_MEM=${minMem}",
-       "MAX_MEM=${maxMem}"
-     )
-
-     echo "Applying Deployment for ${appName}"
-     def dc = openshift.apply(dcTemplate).narrow('dc')
-   }
-  }
-}
-
-def deployStageNoTagNoEnv(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem) {
-  openshift.withCluster() {
-   openshift.withProject(projectEnv) {
-     def dcTemplate = openshift.process('-f',
-       "${rawApiDcURL}",
-       "REPO_NAME=${repoName}",
-       "JOB_NAME=${jobName}",
-       "NAMESPACE=${projectEnv}",
-       "APP_NAME=${appName}",
-       "HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain}",
-       "TAG=${tag}",
-       "MIN_REPLICAS=${minReplicas}",
-       "MAX_REPLICAS=${maxReplicas}",
-       "MIN_CPU=${minCPU}",
-       "MAX_CPU=${maxCPU}",
-       "MIN_MEM=${minMem}",
-       "MAX_MEM=${maxMem}"
-     )
-
-     echo "Applying Deployment for ${appName}"
-     def dc = openshift.apply(dcTemplate).narrow('dc')
-   }
-  }
-}
-
 def deployUIStage(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURLFrontend, String rawApiDcURLBackend, String minReplicasFE, String maxReplicasFE, String minCPUFE, String maxCPUFE, String minMemFE, String maxMemFE, String minReplicasBE, String maxReplicasBE, String minCPUBE, String maxCPUBE, String minMemBE, String maxMemBE) {
   openshift.withCluster() {
    openshift.withProject(projectEnv) {
