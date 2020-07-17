@@ -413,10 +413,10 @@ def deployPatroni(String stageEnv, String projectEnv, String appName) {
  }
 }
 
-def triggerWorkflow(String token) {
+def triggerWorkflow(String token, String eventType = 'smoke-test-test-admin') {
   def dispatchRequest = """
     {
-      "event_type": "smoke-test-test-admin"
+      "event_type": "${eventType}"
     }
   """
   def response = httpRequest customHeaders: [[name: 'Authorization', value: "token ${token}"], [name: 'Accept', value: "application/vnd.github.ant-man-preview+json"]], contentType: 'APPLICATION_JSON', httpMode: 'POST', requestBody: dispatchRequest, url: "https://api.github.com/repos/${OWNER}/${TESTS_REPO_NAME}/dispatches"
