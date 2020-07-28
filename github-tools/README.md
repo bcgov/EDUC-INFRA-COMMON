@@ -4,6 +4,8 @@ github-tools
 
 Commandline tools for Github
 
+Please use `oclif-dev pack` to generate a tarball distribution.
+
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 
 <!-- toc -->
