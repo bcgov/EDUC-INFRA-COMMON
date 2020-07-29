@@ -121,10 +121,10 @@ objects:
                  DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REG-BATCH-API/master/tools/openshift/api.dc.yaml"
                  MIN_REPLICAS = "3"
                  MAX_REPLICAS = "5"
-                 MIN_CPU = "30m"
-                 MAX_CPU = "150m"
+                 MIN_CPU = "50m"
+                 MAX_CPU = "300m"
                  MIN_MEM = "750Mi"
-                 MAX_MEM = "2048Mi"
+                 MAX_MEM = "1500Mi"
                 }
               steps {
                   script{
@@ -197,7 +197,7 @@ objects:
        			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-EMAIL-API/master/tools/openshift/api.dc.yaml"
                      MIN_REPLICAS = "3"
                      MAX_REPLICAS = "5"
-                     MIN_CPU = "30m"
+                     MIN_CPU = "50m"
                      MAX_CPU = "150m"
                      MIN_MEM = "650Mi"
                      MAX_MEM = "750Mi"
