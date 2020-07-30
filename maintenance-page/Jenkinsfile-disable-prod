@@ -18,10 +18,10 @@ pipeline {
           openshift.withCluster() {
             openshift.withProject(PROD) {
               echo 'Pointing GetMyPen route back to GetMyPEN'
-              openshift.patch("route/penvanityfrontend", '\'{"spec":{"to":{"name":"pen-request-frontend-master"}}}\'')
+              openshift.patch("route/penvanityfrontend", '\'{"spec":{"to":{"name":"student-profile-frontend-master"}}}\'')
               openshift.patch("route/penvanityfrontend", '\'{"spec":{"port":{"targetPort":"2015-tcp"}}}\'')
 
-              openshift.patch("route/penvanityfrontendwww", '\'{"spec":{"to":{"name":"pen-request-frontend-master"}}}\'')
+              openshift.patch("route/penvanityfrontendwww", '\'{"spec":{"to":{"name":"student-profile-frontend-master"}}}\'')
               openshift.patch("route/penvanityfrontendwww", '\'{"spec":{"port":{"targetPort":"2015-tcp"}}}\'')
             }
           }
