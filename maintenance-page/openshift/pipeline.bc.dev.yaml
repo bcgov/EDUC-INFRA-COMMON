@@ -1,0 +1,30 @@
+---
+apiVersion: v1
+kind: Template
+labels:
+  template: maintenance-page-dev-pipeline
+metadata:
+  name: maintenance-page-dev-pipeline
+objects:
+  - apiVersion: v1
+    kind: BuildConfig
+    metadata:
+      name: "enable-maintenance-page-dev-pipeline"
+    spec:
+      source:
+        git:
+          uri: "https://github.com/bcgov/EDUC-INFRA-COMMON"
+      strategy:
+        jenkinsPipelineStrategy:
+          jenkinsfilePath: maintenance-page/Jenkinsfile-enable-dev
+  - apiVersion: v1
+    kind: BuildConfig
+    metadata:
+      name: "disable-maintenance-page-dev-pipeline"
+    spec:
+      source:
+        git:
+          uri: "https://github.com/bcgov/EDUC-INFRA-COMMON"
+      strategy:
+        jenkinsPipelineStrategy:
+          jenkinsfilePath: maintenance-page/Jenkinsfile-disable-dev
