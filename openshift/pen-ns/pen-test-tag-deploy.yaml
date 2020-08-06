@@ -50,12 +50,15 @@ objects:
        									string(defaultValue: "",
        											description: 'Enter Student Profile Version, leave the tag blank if this service is not to be deployed',
        											name: 'STUDENT_PROFILE_VERSION'),
-                        string(defaultValue: "",
-                            description: 'Enter Student Profile Email API Version, leave the tag blank if this service is not to be deployed',
-                            name: 'STUDENT_PROFILE_EMAIL_API_VERSION'),
+                                        string(defaultValue: "",
+                                                description: 'Enter Student Profile Email API Version, leave the tag blank if this service is not to be deployed',
+                                                name: 'STUDENT_PROFILE_EMAIL_API_VERSION'),
        									string(defaultValue: "",
        											description: 'Enter Student Profile Saga API version, leave the tag blank if this service is not to be deployed',
        											name: 'STUDENT_PROFILE_SAGA_API_VERSION'),
+                                        string(defaultValue: "",
+                                                description: 'Enter Pen Reg Batch API version, leave the tag blank if this service is not to be deployed',
+                                                name: 'PEN_REG_BATCH_API_VERSION'),
        							])
        					// Save to variables. Default to empty string if not found.
                           STUDENT_PROFILE_SAGA_API_VERSION = tagInput.STUDENT_PROFILE_SAGA_API_VERSION?:''
