@@ -166,7 +166,7 @@ objects:
                        MIN_REPLICAS = "1"
                        MAX_REPLICAS = "1"
                        MIN_CPU = "50m"
-                       MAX_CPU = "150m"
+                       MAX_CPU = "300m"
                        MIN_MEM = "650Mi"
                        MAX_MEM = "750Mi"
                      }
