@@ -38,7 +38,7 @@ objects:
          	  DEV_EXCHANGE_REALM='v45fd2kb'
               MIN_REPLICAS = "1"
               MAX_REPLICAS = "1"
-              MIN_CPU = "30m"
+              MIN_CPU = "50m"
               MAX_CPU = "300m"
               MIN_MEM = "650Mi"
               MAX_MEM = "750Mi"    
