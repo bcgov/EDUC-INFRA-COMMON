@@ -32,5 +32,5 @@ oc exec -it redis-0 -- redis-cli --cluster create --cluster-replicas 1 $(oc get 
 * Run the following command to initialize the exporter:
 
 ```
-oc process -f redis-exporter.dc.yaml | oc create -f-
+oc process -f redis-exporter.yaml | oc create -f-
 ```
