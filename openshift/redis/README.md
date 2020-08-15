@@ -7,12 +7,12 @@ Redis can be deployed by cloning this repository locally from Git
 * Run the following command:
 
 ```
-oc process -f redis.dc.yaml | oc create -f-
+oc process -f https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/redis/redis.dc.yaml | oc create -f-
 ```
 
 
 ```
-oc process -f redis-exporter.dc.yaml | oc create -f-
+oc new-app -f https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/redis/redis-exporter.yaml -p NAMESPACE=<provide the namespace> -p ENVIRONMENT=<provide your environment here>
 ```
 
 ## Redis HA Deployment
@@ -22,7 +22,7 @@ Redis HA can be deployed by cloning this repository locally from Git
 * Run the following command:
 
 ```
-oc apply -f redis-ha.dc.yaml
+oc apply -f https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/redis/redis-ha.dc.yaml
 ```
 * Once the pods are running, run the following command to initialize the cluster:
 
@@ -32,5 +32,5 @@ oc exec -it redis-0 -- redis-cli --cluster create --cluster-replicas 1 $(oc get 
 * Run the following command to initialize the exporter:
 
 ```
-oc process -f redis-exporter.yaml | oc create -f-
+oc new-app -f https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/redis/redis-exporter.yaml -p NAMESPACE=<provide the namespace> -p ENVIRONMENT=<provide your environment here>
 ```
