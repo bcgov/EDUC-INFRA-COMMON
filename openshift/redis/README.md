@@ -36,8 +36,8 @@ oc new-app -f https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/o
 ```
 #Delete Scripts
 ##Redis
-`oc delete secret,service,dc redis`
+`oc -n <namespace-env> delete secret,service,dc redis`
 ##Redis HA
-`oc delete all,rc,svc,dc,route,pvc,secret,configmap,sa,RoleBinding -l app=redis`
+`oc delete -n <namespace-env> all,rc,svc,dc,route,pvc,secret,configmap,sa,RoleBinding -l app=redis`
 ##Redis Exporter
-`oc delete route,svc,dc redis-exporter`
+`oc delete -n <namespace-env> route,svc,dc redis-exporter`
