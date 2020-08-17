@@ -27,7 +27,6 @@ pipeline {
     PROD_HOST_ROUTE = "${APP_NAME}-${PROD}.${APP_DOMAIN}"
 
     MAINTENANCE_APP_NAME = 'student-profile'
-    MAINTENANCE_SERVICE_NAME = 'student-profile-frontend-master'
   }
 
   stages {
@@ -157,8 +156,7 @@ def deployStage(String projectEnv) {
       def dcBackendTemplate = openshift.process('-f',
               'maintenance-page/openshift/dc.yaml',
               "NAME=${NAME}",
-              "HOST_ROUTE=${MAINTENANCE_APP_NAME}-${DEV}.${APP_DOMAIN}",
-              "SERVICE_NAME=${MAINTENANCE_SERVICE_NAME}"
+              "HOST_ROUTE=${MAINTENANCE_APP_NAME}-${DEV}.${APP_DOMAIN}"
       )
 
       def dcBackend = openshift.apply(dcBackendTemplate).narrow('dc')

@@ -99,13 +99,13 @@ objects:
     spec:
       host: "${HOST_ROUTE}"
       port:
-        targetPort: 2015-tcp
+        targetPort: 8080-tcp
       tls:
         insecureEdgeTerminationPolicy: Redirect
         termination: edge
       to:
         kind: Service
-        name: "${SERVICE_NAME}"
+        name: "${NAME}"
         weight: 100
       wildcardPolicy: None
   - apiVersion: autoscaling/v2beta1
@@ -132,7 +132,4 @@ parameters:
     value: "maintenance-page"
   - name: HOST_ROUTE
     description: The host the route will use to expose service outside cluster
-    required: true
-  - name: SERVICE_NAME
-    description: The service the route will use to expose outside cluster
     required: true
