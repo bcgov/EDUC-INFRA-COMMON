@@ -88,6 +88,26 @@ objects:
       selector:
         app: "${NAME}"
         deploymentconfig: "${NAME}"
+  - apiVersion: v1
+    kind: Route
+    metadata:
+      annotations:
+        openshift.io/host.generated: 'true'
+      labels:
+        app: "${NAME}"
+      name: "${NAME}"
+    spec:
+      host: "${HOST_ROUTE}"
+      port:
+        targetPort: 2015-tcp
+      tls:
+        insecureEdgeTerminationPolicy: Redirect
+        termination: edge
+      to:
+        kind: Service
+        name: "${SERVICE_NAME}"
+        weight: 100
+      wildcardPolicy: None
   - apiVersion: autoscaling/v2beta1
     kind: HorizontalPodAutoscaler
     metadata:
@@ -110,3 +130,9 @@ parameters:
     description: The name assigned to ojects defined by this template
     required: true
     value: "maintenance-page"
+  - name: HOST_ROUTE
+    description: The host the route will use to expose service outside cluster
+    required: true
+  - name: SERVICE_NAME
+    description: The service the route will use to expose outside cluster
+    required: true

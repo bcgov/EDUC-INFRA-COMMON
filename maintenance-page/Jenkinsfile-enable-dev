@@ -25,6 +25,9 @@ pipeline {
     DEV_HOST_ROUTE = "${APP_NAME}-${DEV}.${APP_DOMAIN}"
     TEST_HOST_ROUTE = "${APP_NAME}-${TEST}.${APP_DOMAIN}"
     PROD_HOST_ROUTE = "${APP_NAME}-${PROD}.${APP_DOMAIN}"
+
+    MAINTENANCE_APP_NAME = 'student-profile'
+    MAINTENANCE_SERVICE_NAME = 'student-profile-frontend-master'
   }
 
   stages {
@@ -99,7 +102,7 @@ pipeline {
         }
       }
     }
-    stage('Update route') {
+    /*stage('Update route') {
       steps {
         script {
           openshift.withCluster() {
@@ -119,7 +122,7 @@ pipeline {
           echo 'Failed to change route'
         }
       }
-    }
+    }*/
     /*stage('e2e tests') {
       agent {
         node {
@@ -153,7 +156,9 @@ def deployStage(String projectEnv) {
       echo "Processing DeploymentConfig ${NAME}..."
       def dcBackendTemplate = openshift.process('-f',
               'maintenance-page/openshift/dc.yaml',
-              "NAME=${NAME}"
+              "NAME=${NAME}",
+              "HOST_ROUTE=${MAINTENANCE_APP_NAME}-${DEV}.${APP_DOMAIN}",
+              "SERVICE_NAME={MAINTENANCE_SERVICE_NAME}"
       )
 
       def dcBackend = openshift.apply(dcBackendTemplate).narrow('dc')
