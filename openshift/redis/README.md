@@ -34,3 +34,10 @@ oc exec -it redis-0 -- redis-cli --cluster create --cluster-replicas 1 $(oc get 
 ```
 oc new-app -f https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/redis/redis-exporter.yaml -p NAMESPACE=<provide the namespace> -p ENVIRONMENT=<provide your environment here>
 ```
+#Delete Scripts
+##Redis
+`oc delete secret,service,dc redis`
+##Redis HA
+`oc delete all,rc,svc,dc,route,pvc,secret,configmap,sa,RoleBinding -l app=redis`
+##Redis Exporter
+`oc delete route,svc,dc redis-exporter`
