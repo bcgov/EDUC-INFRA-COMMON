@@ -158,7 +158,7 @@ def deployStage(String projectEnv) {
               'maintenance-page/openshift/dc.yaml',
               "NAME=${NAME}",
               "HOST_ROUTE=${MAINTENANCE_APP_NAME}-${DEV}.${APP_DOMAIN}",
-              "SERVICE_NAME={MAINTENANCE_SERVICE_NAME}"
+              "SERVICE_NAME=${MAINTENANCE_SERVICE_NAME}"
       )
 
       def dcBackend = openshift.apply(dcBackendTemplate).narrow('dc')
