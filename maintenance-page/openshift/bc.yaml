@@ -30,7 +30,6 @@ objects:
       successfulBuildsHistoryLimit: 3
       failedBuildsHistoryLimit: 3
       source:
-        contextDir: "${CONTEXT_DIR}"
         git:
           ref: "${SOURCE_REPO_REF}"
           uri: "${SOURCE_REPO_URL}"
