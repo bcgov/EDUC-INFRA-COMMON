@@ -36,12 +36,8 @@ objects:
           uri: "${SOURCE_REPO_URL}"
         type: Git
       strategy:
-        sourceStrategy:
-          from:
-            kind: ImageStreamTag
-            namespace: "${NAMESPACE}"
-            name: "nginx:${NGINX_VERSION}"
-        type: Source
+        dockerStrategy:
+        type: Docker
       output:
         to:
           kind: ImageStreamTag
