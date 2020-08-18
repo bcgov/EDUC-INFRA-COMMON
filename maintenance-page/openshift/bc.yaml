@@ -56,7 +56,7 @@ parameters:
   - name: CONTEXT_DIR
     description: The relative path to your project if not root
     required: true
-    value: "maintenance-page/html"
+    value: "maintenance-page"
   - name: NGINX_VERSION
     description: Version of the NGINX image to be used
     required: true
