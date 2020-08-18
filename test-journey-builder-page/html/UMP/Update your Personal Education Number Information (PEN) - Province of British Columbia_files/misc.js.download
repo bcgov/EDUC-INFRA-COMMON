@@ -1,0 +1,872 @@
+/********************************
+* Collapse Menu 
+********************************/
+
+$(document).ready(function(event) {   	
+	
+	$(".back-to-top").on("focus mousedown", function(e) {
+		e.preventDefault();
+	    $('html,body').animate({ scrollTop: 0 }, 'slow', function(){
+//			var bottomPx = 10;
+//			if ( $("#highlightKeywordFloatingBar").is(":visible")) {
+//				bottomPx += $("#highlightKeywordFloatingBar").outerHeight();
+//			}
+//			$("#shareContainer").css("bottom",bottomPx+"px");
+	    });
+	});
+
+	//var touchenabled = !!('ontouchstart' in window) || !!('ontouchstart' in document.documentElement) || !!window.ontouchstart || !!window.Touch || !!window.onmsgesturechange || (window.DocumentTouch && window.document instanceof window.DocumentTouch);
+	var touchenabled = (('ontouchstart' in window) || (navigator.MaxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0));
+    
+    // Expand "Explore Within" menu when it has focus (clicked or tabbed into)
+	$(".explore").on("focusin", function(e) {		
+	    var list = $(this).find("ul");
+		if(!list.is(':visible')){
+		    list.slideDown(200, 'linear', function () { });	
+		}
+	});
+    // When the last item of an "Explore Within" menu is tabbed past, close the menu	
+	$(".explore ul li:last-child a").on("focusout", function(e) {
+		$(this).closest("ul").slideUp(200, 'linear', function () { });
+	});
+	
+	// Submit the search query when the search icon is clicked
+	// Applies to the global search and burger menu theme search
+    $(".search-trigger").on("click", function(e) {
+    	var currentForm = $(e.currentTarget).closest("form");
+    	if(currentForm.find(".searchbox").val() == ''){
+    		alert("Please enter one or more search terms");
+    		return false;
+    	} else {
+    		$(currentForm).submit();
+    	}
+    })
+ 
+    $(".tile-sort-button").on("click", function(e) {
+    	if($(this).hasClass("sortedByOrderWeight")) {
+    		sortTiles("div.homepage-theme-tiles", "alphabetical");  		  		
+    		$(this).removeClass("sortedByOrderWeight").addClass("sortedByAlphabetical");
+    		$(this).attr("src", "/StaticWebResources/static/gov3/images/az-sort-button-on.png");
+    		$(this).attr("alt", "Sort by popularity");
+    		$(this).attr("title", "Sort by popularity");      		    	    		
+    	}
+    	else if($(this).hasClass("sortedByAlphabetical")) {
+    		sortTiles("div.homepage-theme-tiles", "orderWeight");     		
+    		$(this).removeClass("sortedByAlphabetical").addClass("sortedByOrderWeight");
+    		$(this).attr("src", "/StaticWebResources/static/gov3/images/az-sort-button-off.png");    
+    		$(this).attr("alt", "Sort alphabetically");
+    		$(this).attr("title", "Sort alphabetically");     		
+    	}
+		// Reset the first/last classes so the arrow styling is updated
+		$(".homepage-theme-tiles .homepage-tile").removeClass("first last");
+		$(".homepage-theme-tiles .homepage-tile").first().addClass("first");
+		$(".homepage-theme-tiles .homepage-tile").last().addClass("last");  
+    });
+    
+    
+    // cleanup for Facebook RSS feed entries
+    cleanFacebookFeedEntries();  
+  
+	//Fix z-index youtube video embedding
+	//youtube fix is moved to '/shared/scripts.misc.js'
+	
+	//mental health search detail page, iframe map
+    var div = $('.mhDetailIframeMap');
+    var width = div.width();
+    
+    div.css('height', width);
+	
+	// Clear cached query suggestions when focus goes into a search field
+	$("input.searchbox, input.tile-searchbox, input.menu-searchbox").focus(function() {
+//		console.log("clearing query suggestions");
+		ss_cached = [];
+		ss_qshown = null;		
+	});	
+	
+	// [CLD-1454] RL - js for accordion expand/collapse
+	//Initialize Arrows
+	initAccordionArrows();
+
+    //OPEN / CLOSE All
+    $(".show-btn").click(function(){
+    	$('img[usemap]').rwdImageMaps();
+		$(this).parent().siblings().children().children('.panel-collapse:not(".in")').collapse('show');
+  		$(this).parent().siblings().children().children(".panel-heading").children(".collapseArrow").addClass("open");
+  		return false;
+    });
+
+   $(".hide-btn").click(function(){
+ 		$(this).parent().siblings().children().children('.panel-collapse.in').collapse('hide');
+ 		$(this).parent().siblings().children().children(".panel-heading").children(".collapseArrow").removeClass("open");
+ 		return false;
+    });
+ 
+   //HANDEL Panel Heading Click functions
+   $(".panel-heading").click(function(){
+
+		//IF - This Panel is already open
+	   if( $(this).children().hasClass("collapseArrow")){
+	   
+			if( $(this).children(".collapseArrow").hasClass("open") ){
+				//Open Close handled by Bootstrap Collapse, we handle arrow here
+				$(this).children(".collapseArrow").removeClass("open");
+			} else{
+				$('img[usemap]').rwdImageMaps();
+				//Enforce accordion on other panes
+				$(this).parent().siblings().children(".panel-collapse.in").collapse('hide');
+				//Handle arrows for this element
+				$(this).children(".collapseArrow").addClass("open");
+	
+				//Enforce accordion behaviour for other arrows
+				$(this).parent().siblings().children(".panel-collapse").each( function(){
+					if( !($(this).hasClass("in")) ){
+						$(this).siblings().children(".collapseArrow").removeClass("open");
+					}
+				});
+			}
+	   }
+		
+   });
+   // END [CLD-1454]
+   // RA-389: Anchor Links not working properly
+
+   // RA-551: Javascript console error on Theme/Subtheme pages
+   // selector is changed for more specific...
+   $("#themeTemplate a, #subthemeTemplate a, #topicTemplate a, area").on("mouseup", function(){
+	   if($(this).attr('href').charAt(0) == "#") {
+			var href = $(this).attr('href');
+			
+			// Update the current URL hash value
+			window.location.hash = href;
+			
+			var anchorTimer;
+			// fix the position if needed
+			if(anchorTimer) {
+				clearTimeout(anchorTimer);
+			}
+			// adjust the anchor position because of the header
+			anchorTimer = setTimeout(function() { 			
+			   // fix the position if needed
+			   scroll_if_anchor(href)
+			}, 300);
+	   }
+   });
+   
+   //RA-492 - Link Share Button Expand/Collapse action
+   $(document).on('click', function(event) {
+           //click outside the sharebubble will collapse it
+           if ($(event.target).closest('#shareBubble').length <=0 && $("#shareBubble").hasClass("open")) {
+        	   $("#shareBubble").toggle("slide", { direction: "right" }, 250);
+               $("#shareBubble").removeClass("open");
+               return false;
+           }
+           //click share button when share bubble is open will close it
+           else if ($(event.target).closest('#shareButton').length >0 && $("#shareBubble").hasClass("open")) {
+        	   $("#shareBubble").toggle("slide", { direction: "right" }, 250);
+               $("#shareBubble").removeClass("open");
+               return false;
+           }
+           //click 'cancel' button when share bubble is open will close it
+           else if ($(event.target).closest('#closeShare').length >0 && $("#shareBubble").hasClass("open")) {
+        	   $("#shareBubble").toggle("slide", { direction: "right" }, 250);
+               $("#shareBubble").removeClass("open");
+               return false;
+           }
+           //else open
+           else if ($(event.target).closest('#shareButton').length >0 && !($("#shareBubble").hasClass("open"))){
+        	   $("#shareBubble").toggle("slide", { direction: "right" }, 250);
+               $("#shareBubble").addClass("open");
+               return false;
+           }
+  
+   });
+     
+   //RA-492 R.Lowe - Clipboard init
+   var clipboard = new Clipboard('.clipboardButton');
+   clipboard.on('success', function(e) {
+//       console.log(e);
+   });
+   clipboard.on('error', function(e) {
+       console.log(e);
+   });
+ 
+  try {
+	  // Display the appropriate tables as datatables
+	  $("table[sortabletablestyle='true'][paginationtablestyle='true']").dataTable({
+		  pageLength: 25,
+		  searching: true, 
+		  ordering: true, 
+		  lengthChange: true,
+		  paging: true,
+		  info: true,
+		  responsive: false
+	  });
+  }
+  catch(err) {
+	  console.error('One or more tables with Sort/Search enabled and Pagination elements failed to render correctly. ' + (err ? err.message : ''));
+  }
+
+  try {
+	  $("table[sortabletablestyle='true'][paginationtablestyle='false']").dataTable({
+		  pageLength: 25,
+		  searching: true, 
+		  ordering: true, 
+		  lengthChange: false,
+		  paging: false,
+		  info: false,
+		  responsive: false
+	  });
+  }
+  catch(err) {
+	  console.error('One or more tables with Sort/Search enabled failed to render correctly. ' + (err ? err.message : ''));
+  }
+
+  try {
+	  $("table[sortabletablestyle='false'][paginationtablestyle='true']").dataTable({
+		  pageLength: 25,
+		  searching: false, 
+		  ordering: false, 
+		  lengthChange: true,
+		  paging: true,
+		  info: true,
+		  responsive: false
+	  });
+  }
+  catch(err) {
+	  console.error('One or more tables with Pagination elements failed to render correctly. ' + (err ? err.message : ''));
+  }
+
+  $("table[sortabletablestyle][paginationtablestyle]").each(function(){
+	  // Default table to be striped and hover
+	 $(this).addClass("bootstrapTable table table-hover");
+	 
+	 // Make the tables bootstrap responsive
+	 $(this).wrap( "<div class='dataTable-table-responsive'></div>" );
+  });
+	
+  // 2017.07.13 - RL - RA-748
+  $("table[bootstrapstyle]").each(function(){
+	 var additionStyles = $(this).attr("bootstrapstyle");
+	 $(this).addClass(additionStyles);
+  });
+  
+  
+  
+  
+  /**
+   * 
+   * Feedback Form submission
+   * RA-867
+   * Temporary
+   * 
+   * @param e
+   * @returns
+   */
+
+  $("#feedback-form").submit(function(e){
+
+   	var form = $(this);
+   	var url = form.attr("action");
+   	var formId = form.attr('id');
+   	
+   	var json = form2js(formId, '.', false);
+   	var data = JSON.stringify(json);
+  	var email = $('#return-contact-email').val();
+  	var message = $('#feedback-message').val();
+  	var skipConsent = false;
+  	
+   	e.preventDefault();
+   	$("textarea#feedback-message").removeClass("highligh-required");
+   	$("input#return-contact-email").removeClass("highligh-required");
+   	
+   	if(message==null || message==''){
+   		alert("Please provide feedback.");
+   		$("textarea#feedback-message").addClass("highligh-required");
+   		skipConsent = true;
+   	}
+   	
+   	if (email != '' && email != null){
+   		if( !validateEmail(email)){
+   			alert("Please enter valid email address.");
+   			$("input#return-contact-email").addClass("highligh-required");
+   			skipConsent = true;
+   		}
+   	}
+   	
+   	if(!skipConsent){
+  	 	if($('#consent-checkbox').is(":checked")){
+  		 	
+  				$.ajax({
+  					type: "POST",
+  					url: url,
+  					data: data,
+  					contentType: 'application/json; charset=UTF-8',
+  					mimeType: 'application/json',
+  					success: function(data){
+  						$('div#contact-form-container').html(function(){
+  							return '<div class="alert alert-success" role="alert">Thank you for your submission.</div>';
+  						});
+  						// Fade out the feedback element after 5 seconds
+						$("#highlightKeywordFloatingBar").fadeTo(5000, 0, function(){
+						   $("#highlightKeywordFloatingBar").css("visibility", "hidden");   
+						});
+  					},
+  					error: function(data){
+  						$('div#contact-form-container').html(function(){
+  							return '<div class="alert alert-danger" role="alert">There was an error in the submission. Please contact gdx.servicedesk@gov.bc.ca</div>';
+  						});
+  					}
+  				});
+  		 }else{
+  		 	alert("Please consent to the FOIPPA statement to submit your comment.");
+  		 }
+  	}
+
+
+  });
+  
+  // AFter page load, iF chatbot icon is present, the positions of the share and back-to-top icons need to change
+  if($("df-messenger").length > 0) {
+	  scrollHandler();
+  }else{
+	  initializeNoChatbot();
+  }
+  
+});
+
+
+function initializeNoChatbot(){
+	$(".back-to-top").hide();
+	$(".back-to-top").css({"bottom":"10px","z-index":"-103" });
+		
+}
+
+
+/**
+ * 
+ * Feedback Form submission
+ * RA-867
+ * Temporary
+ * 
+ * @param e
+ * @returns
+ */
+function validateEmail(emailAddress){
+  	var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(emailAddress).toLowerCase());
+}
+
+
+function scrollHandler() {
+	/* 
+	 * Re-position the "Back to top" button if it is touching the footer
+	*/				
+
+//	console.log("$('#footer').offset().top: " + $("#footer").offset().top);
+//	console.log("$('#footer').height(): " + $("#footer").height());
+//	console.log("$(window).scrollTop(): " + $(window).scrollTop());
+//	console.log("$(window).height(): " + $(window).height());
+//	console.log("$(window).scrollTop() + $(window).height(): " + ($(window).scrollTop() + $(window).height()));
+	
+	if($(window).scrollTop() > 0) {
+		$(".back-to-top").show();
+		var bottomPx = 70;
+		// Adjust if chatbot icon is present		
+		if($("df-messenger").length > 0) {
+			bottomPx = 150;
+		}
+//		if ( $("#highlightKeywordFloatingBar").is(":visible")) {
+//			bottomPx += $("#highlightKeywordFloatingBar").outerHeight();
+//		}
+//		$("#shareContainer").css("bottom",bottomPx+"px");
+		$("#shareContainer").delay(0).animate({"bottom":bottomPx+"px"},250);
+	} else {
+		$(".back-to-top").hide();
+		var bottomPx = 10;
+		// Adjust if chatbot icon is present
+		if($("df-messenger").length > 0) {
+			bottomPx = 90;
+		}		
+//		if ( $("#highlightKeywordFloatingBar").is(":visible")) {
+//			bottomPx += $("#highlightKeywordFloatingBar").outerHeight();
+//		}
+//		$("#shareContainer").css("bottom",bottomPx+"px");
+		$("#shareContainer").delay(0).animate({"bottom":bottomPx+"px"},250);
+		$(".back-to-top").delay(0).animate({"bottom":bottomPx+"px"},250);		
+	}
+	
+	// Check if the footer is within the viewport and switch the position of the button accordingly
+	var windowBottomCoordinate = $(window).scrollTop() + $(window).height();	
+	if(windowBottomCoordinate > $("#footer").offset().top) {
+		$(".back-to-top").addClass("footer-overlap");
+		$("#shareContainer").addClass("footer-overlap");
+	} else {
+		$(".back-to-top").removeClass("footer-overlap");
+		$("#shareContainer").removeClass("footer-overlap");
+	}
+//	if ( $("#highlightKeywordFloatingBar").is(":visible") && (windowBottomCoordinate > $("#highlightKeywordFloatingBar").offset().top) ) {
+//		$(".back-to-top").addClass("highlightKeyword-overlap");
+//		$("#shareContainer").addClass("highlightKeyword-overlap");
+//	} else {
+//		$(".back-to-top").removeClass("highlightKeyword-overlap");
+//		$("#shareContainer").removeClass("highlightKeyword-overlap");
+//	}
+
+	addScrollableBurgerMenu();	
+}
+
+var scrollTimer;
+$(window).on("scroll", function() {
+	
+	// Clear timeout if one is pending
+	if(scrollTimer) {
+		clearTimeout(scrollTimer);
+	}
+	// Set timeout
+	scrollTimer = setTimeout(function() { 			
+		scrollHandler();
+	}, 100); // Timeout in msec
+});
+
+// When page is resized
+$(window).on("resize", function() {
+	adjustContentPadding();
+	addScrollableBurgerMenu();
+});
+
+// When form content is loaded within iframe
+$('.orbeon').ready(function() {
+	adjustContentPadding();
+});
+
+
+// When page is loaded or window is resized 
+$(window).on("load", function() {
+		
+	// workaround for left nav collapsing on page load
+	// Bootstrap known issue - https://github.com/twbs/bootstrap/issues/14282
+	$('#leftNav').collapse({'toggle': false})
+	
+	//hide mobile topic menu
+	 if ($(this).width() < 767) {
+			$("#leftNav").removeClass('in')
+	 }else{
+			$("#leftNav").addClass('in').attr('style','')
+	 }
+
+	$('#leftNav').collapse({'toggle': true})
+  
+	// When our page loads, check to see if it contains and anchor
+	scroll_if_anchor(window.location.hash);
+
+	// Intercept all anchor clicks in the accessibility section and page content
+	//$("#access").on("click", "a", scroll_if_anchor);		
+	//$("#main-content").on("click", "a", scroll_if_anchor);	
+	
+});
+
+function ieVersion() {
+    var ua = window.navigator.userAgent;
+    if (ua.indexOf("Trident/7.0") > 0)
+        return 11;
+    else if (ua.indexOf("Trident/6.0") > 0)
+        return 10;
+    else if (ua.indexOf("Trident/5.0") > 0)
+        return 9;
+    else
+        return 0;  // not IE9, 10 or 11
+}
+
+function sortTiles(selector, sortType) {
+    $(selector).children("div.homepage-tile").sort(function(a, b) {
+        // Sort based on the Tile title
+    	if(sortType == "alphabetical") {    	
+        	var stringA = $(a).find(".tile-text > .title > a").text().toUpperCase();
+            var stringB = $(b).find(".tile-text > .title > a").text().toUpperCase();
+            return (stringA < stringB) ? -1 : (stringA > stringB) ? 1 : 0;
+        }
+    	// Sort based on the Tile order weight
+        else if(sortType == "orderWeight") {
+        	var intA = parseInt($(a).attr("data-order"));
+            var intB = parseInt($(b).attr("data-order"));
+            return (intA < intB) ? -1 : (intA > intB) ? 1 : 0;
+        }
+    }).appendTo(selector);
+}
+
+/**
+ * Check an href for an anchor. If exists, and in document, scroll to it.
+ * If href argument omitted, assumes context (this) is HTML Element,
+ * which will be the case when invoked by jQuery after an event
+ */
+function scroll_if_anchor(href) {
+	
+   href = typeof(href) == "string" ? href : $(this).attr("href");
+
+   // If href missing, ignore
+   if(!href) return;
+  
+   var fromTop = $("#header-main").height() + 20;	   
+   
+   // Case #1 - href points to a valid anchor on the same page in the format "#foo"
+   if(href.charAt(0) == "#") {
+	   
+	   var $target = $(href);
+
+	   // If no element with the specified id is found, check for name instead (some of the GOV2 content is like this)
+	   if(!$target.length)  {
+		   $target = $("a[name='" + href.substring(1) + "']");
+	   }
+      
+	   // Target anchor was found on the page
+      if($target.length) {
+      	
+      	// If there are open accordion panels on the page, do some additional work.
+      	if($('.panel-collapse.in').length) {
+      		
+      		// If the target anchor is within an accordion panel, and the panel is already expanded, simply scroll to it.
+				var panel = $target.closest('div.panel');
+			   if(panel.length && panel.find('.panel-collapse.in').length) {
+			      $('html, body').animate({ scrollTop: $target.offset().top - fromTop });	      					   		
+			   }
+			   // Otherwise, collapse all panels, then scroll to the target anchor when the animation is complete (or it will scroll to the wrong place).
+			   else {	      		
+			   	$('.panel-collapse.in').collapse('hide');
+			 		$(".panel-heading").children(".collapseArrow").removeClass("open");
+	      		setTimeout(function () {
+			      	$('html, body').animate({ scrollTop: $target.offset().top - fromTop }); 			
+	      		}, 300);	
+			   }
+      	}
+			
+      	// If there are no open accordion panels, simply scroll to the target anchor.     	
+      	else {
+	      	$('html, body').animate({ scrollTop: $target.offset().top - fromTop });	      		
+      	}	      	
+      	
+      	// If the target anchor is within an accordion panel and the panel isn't open already, expand the panel.	 
+			var panel = $target.closest('div.panel');
+		   if(panel.length) {
+		   	var panelArrow = panel.find('.collapseArrow');
+		   	var panelContent = panel.find('.panel-collapse');
+		   	var panelHeading = panel.find('.panel-heading');			   	
+		   	// If the panel isn't already open, expand it.
+		   	if(!panelContent.hasClass("in") && !panelContent.hasClass("collapsing")) {
+			   	panelContent.collapse("show");
+			   	panelArrow.addClass("open"); 			   		
+		   	}			   
+		   }		
+      }             
+   } 
+   // Case #2 - href points to a valid anchor on the same page in the format "/gov/current/page#foo"
+   else if(href.indexOf("#") > -1) {
+
+	   var targetHrefPath = href.split("#")[0];
+	   var targetHrefHash = href.split("#")[1];
+	   		   
+	   if(href.indexOf(location.pathname) > -1) {
+		   var $target = $("#" + targetHrefHash);
+
+		   if(!$target.length)  {
+			   $target = $("a[name='" + targetHrefHash + "']");
+		   }
+
+	      if($target.length) {
+	      	$('html, body').animate({ scrollTop: $target.offset().top - fromTop });    
+	      }			   
+	   }	 
+   }
+}
+
+/**
+ * Clean up links and image references coming from the Facebook Graph JSON feed.
+ */
+function cleanFacebookFeedEntries() {
+	
+	try { 
+		
+	    // Process all feed entries and perform all cleanup required for Facebook feed items
+	    $(".feedEntry").each(function() {
+	    	var feedEntry = $(this);
+	    	var feedEntryWidth = feedEntry.width();
+	    	var videoId;
+	    	var fbUrl = feedEntry.find("a:first").attr("href");
+	    	
+	    	// [RA-570] CS - If the feed entry isn't part of a Facebook feed, skip processing it and continue to the next entry
+	    	// TODO: in the JSP, add a class that identifies the feed as being sourced from Facebook
+	    	var feedLink = feedEntry.parent().find("a.arrow-link");
+	    	if(feedLink !== "undefined" && feedLink.attr("href").indexOf("www.facebook.com") < 0) {
+	    		return;
+	    	}
+	    	
+    		/* If the feed's a Facebook video? Thumbnail need to be processed differently
+    		 * for videos
+    		 */
+    		if (fbUrl.indexOf("videos") > -1) {
+    			// video ID is needed to get more infor about the video from Facebook
+    			var urlRegex = /\/videos\/(?:t\.\d+\/)?(\d+)/;
+    			videoId = fbUrl.match(urlRegex)[1];
+    			// console.log("Video ID: " + videoId);
+    		}
+    		
+	    	// Change image references so that a larger image is retrieved
+		    feedEntry.find("img").each(function() {
+		    	var imgTag = $(this);
+		    	if (videoId !== null && typeof videoId !== "undefined") {
+		    		var cleanImgSrc;
+		    		
+		    		// URL used to get more infor about the video
+		    		var videoInfoUrl = "https://graph.facebook.com/" + videoId;
+		    		$.getJSON( videoInfoUrl, {format: "json"})
+		    		.done(function( data ) {
+		    			if (data && data.format) {
+			    			$.each( data.format, function(i, item) {
+			    				// find the format that is the right size
+			    				if (item.width > feedEntryWidth) {
+			    					// use the image source
+			    					cleanImgSrc = item.picture;
+			    					return false;
+			    				}
+			    			});
+		    			}
+
+		    			// set the image source to the new image source
+			    		if (cleanImgSrc !== null && typeof cleanImgSrc !== "undefined") {
+			    			imgTag.attr("src", cleanImgSrc);
+			    		}
+		    		}).fail(function() { console.log('JSon call to Facebook failed'); });
+		    		
+		    	} else {
+			    	// https://fbexternal-a.akamaihd.net/safe_image.php?d=AQBJxwDdy74cYCcs&w=158&h=158&url=http%3A%2F%2Froyalbcmuseum.bc.ca%2Fassets%2Faboriginal-festival-770-360.jpg    	
+			    	if($(this).attr("src").indexOf("https://fbexternal-a.akamaihd.net/safe_image.php") > -1) {
+			    		// Images hosted on facebook
+			    		if($(this).attr("src").indexOf("graph.facebook.com") > -1) {
+				    		// if w=XXX and h=XXX parameters are specified, remove them so a large image is retrieved
+				    		var cleanImgSrc = $(this).attr("src").replace(/w=[0-9]{3}&h=[0-9]{3}/gi, "");	    		
+				    		$(this).attr("src", cleanImgSrc); 		    		    			
+			    		}
+			    		// Images hosted externally
+			    		else {	    		
+			    			var cleanImgSrc = $(this).attr("src").split("&url=")[1];
+			    			
+			    			// remove any additional parameters
+			    			cleanImgSrc = cleanImgSrc.split("&")[0];    			
+				    		cleanImgSrc = unescape(cleanImgSrc);
+				    		$(this).attr("src", cleanImgSrc);	 
+			    		}
+			    	}
+
+			    	// [RA-722] - Removed code that attempted to convert image references in the format "https://scontent.xx.fbcdn.net/*" to Facebook Graph API calls (to retrieve a larger image). 
+			    	// The method no longer works consistently and is causing broken images to be displayed.			    				    				    	
+		    	}
+		    	
+		    	// [RA-722] - Hide the current image if it did not load successfully
+		    	$(this).error(function() { 
+			        $(this).hide();
+			    });			    	
+		    	
+		    });	    	
+	    	
+		    // Replace plain text URLs with a hyperlink
+	    	feedEntry.find("p").each(function() {
+		    	var inputText = $(this).text();
+		        var replacedText = "";
+		    	
+		    	// Replace Links beginning with http://, https://, or www.
+		    	var replacePattern1 = /(\b(https?:\/\/|www\.)[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+		        replacedText = inputText.replace(replacePattern1, '<a href="$1">$1</a>');      
+		        
+		        // Add the protocol to any links that omit it 
+		        replacedText = replacedText.replace("<a href=\"www.", "<a href=\"http://www.");	  
+		        
+		        // Facebook hashtag links
+		        var replacePattern2 = /(^|\s)#([a-z\d-]+)/gi;
+		        replacedText = replacedText.replace(replacePattern2, "$1<a href='http://www.facebook.com/hashtag/$2'>#$2</a>");
+		        
+		    	$(this).html(replacedText);	
+		    });	 	    		    	
+	    	
+	    	// Link up any message_tags found in the facebook post message
+	    	feedEntry.find("span.messageTag").each(function() {
+	    		var messageTag = $(this);
+		    	//console.log(messageTag.text());
+		    	var tag = messageTag.text();
+		    	var tagName = tag.split("::")[0];	    	
+		    	var tagId = tag.split("::")[1];
+		    	
+		    	//console.log("Tag Name: " + tagName);
+		    	//console.log("Tag ID: " + tagId);
+		    	
+		    	// Replace each tag found in the message body with a link
+		    	feedEntry.find("p").each(function() {
+		    		var pElement = $(this);
+		    		var html = pElement.html();
+		    		html = html.replace(tagName, "<a href='http://www.facebook.com/" + tagId + "'>" + tagName + "</a>");
+		    		$(this).html(html);	
+		    		//console.log("New HTML: " + html);
+		    	})  	
+		    });	
+	    	
+			// Open all feed entry links in a new window
+		    feedEntry.find("a").each(function() {
+		        $(this).attr("target", "_blank");
+		    });	
+		    
+	    });    
+	}
+	
+	catch(err) {
+		console.log("Error when attempting to clean Facebook RSS feed data");
+		return;
+	}
+}
+
+/**
+ * Search box typing event. Configure the query suggestion variables based on which search box is active
+ */
+
+var timeoutId = 0;
+function searchBoxKeypress(event, numDelay, searchBoxIndex) {
+	// Remove placeholder text when the user starts typing in the search field	
+	var $textInputField = $(event.target);
+    if($textInputField.val() == '') {
+    	$textInputField.addClass('placeholder');
+	} else {
+		$textInputField.removeClass('placeholder');			
+	}   
+    
+    // Burger menu search boxes
+    if($textInputField.hasClass("menu-searchbox")) {
+		window.ss_form_element = 'menu_suggestion_form_' + searchBoxIndex; // search form
+		window.ss_popup_element = 'menu_search_suggest_' + searchBoxIndex; // search suggestion drop-down			   	
+    }
+    // Tile flyout search boxes
+    else if($textInputField.hasClass("tile-searchbox")) {
+    	window.ss_form_element = 'tile_suggestion_form_' + searchBoxIndex; // search form
+    	window.ss_popup_element = 'tile_search_suggest_' + searchBoxIndex; // search suggestion drop-down	    	
+    }
+    // Mobile menu search boxes
+    else if($textInputField.hasClass("mobile-menu-searchbox")) {
+    	window.ss_form_element = 'mobile_menu_search_form_' + searchBoxIndex; // search form
+    	window.ss_popup_element = 'mobile_menu_search_suggest_' + searchBoxIndex; // search suggestion drop-down	    	
+    } 
+    else if($textInputField.hasClass("header-searchbox")) {
+    	window.ss_form_element = 'header_suggestion_form'; 
+    	window.ss_popup_element = 'header_search_suggest'; 	    	    
+    } else {
+    	window.ss_form_element = 'suggestion_form'; // search form
+    	window.ss_popup_element = 'search_suggest'; // search suggestion drop-down	    	
+    }
+    
+	// If the keypress is an arrow (up/down/left/right), call the ss_handleKey function without using a timeout.
+	// Otherwise, the user is typing the search query. Use the timeout so the search app is not flooded with requests.
+    if(event.which == 37 || event.which == 38 || event.which == 39 || event.which == 40) {
+    	ss_handleKey(event);
+    } else {
+    	clearTimeout(timeoutId); 
+    	timeoutId = setTimeout(function () {
+    		ss_handleKey(event);
+    	}, numDelay);   	
+    }
+	
+}
+
+function searchBoxOnChange(event, numDelay, searchBoxIndex) {
+	/*
+	// Remove placeholder text when the user starts typing in the search field					
+	var $textInputField = $(event.target);
+    if($textInputField.val() == '') {
+    	$textInputField.addClass('placeholder');
+	} else {
+		$textInputField.removeClass('placeholder');			
+	}   
+    
+    // Burger menu search boxes
+    if($textInputField.hasClass("menu-searchbox")) {
+		window.ss_form_element = 'menu_suggestion_form_' + searchBoxIndex; // search form
+		window.ss_popup_element = 'menu_search_suggest_' + searchBoxIndex; // search suggestion drop-down			   	
+    }
+    // Tile flyout search boxes
+    else if($textInputField.hasClass("tile-searchbox")) {
+    	window.ss_form_element = 'tile_suggestion_form_' + searchBoxIndex; // search form
+    	window.ss_popup_element = 'tile_search_suggest_' + searchBoxIndex; // search suggestion drop-down	    	
+    }
+    // Mobile menu search boxes
+    else if($textInputField.hasClass("mobile-menu-searchbox")) {
+    	window.ss_form_element = 'mobile_menu_search_form_' + searchBoxIndex; // search form
+    	window.ss_popup_element = 'mobile_menu_search_suggest_' + searchBoxIndex; // search suggestion drop-down	    	
+    } 
+    else {
+    	window.ss_form_element = 'suggestion_form'; // search form
+    	window.ss_popup_element = 'search_suggest'; // search suggestion drop-down	    	
+    }
+    
+	// Clear the cache of suggested queries
+//	ss_cached = [];
+//	ss_clear();
+//	console.log(window.ss_form_element);
+//	console.log(window.ss_popup_element);   
+	
+	// If the keypress is an arrow (up/down/left/right), call the ss_handleKey function without using a timeout.
+	// Otherwise, the user is typing the search query. Use the timeout so the search app is not flooded with requests.
+	clearTimeout(timeoutId); 
+	timeoutId = setTimeout(function () {
+		ss_handleOnChange(event);
+	}, numDelay);   	
+	*/
+}
+
+/**
+ * Reset the top padding on the content (to compensate for the fixed header)
+ */	
+function adjustContentPadding() {
+	
+	var headerHeight = $("#header-main").height();
+	var topOffset = headerHeight + 5;
+	$("#themeTemplate, #subthemeTemplate, #topicTemplate").css("padding-top", topOffset).css("background-position", "right " + topOffset + "px");	
+
+	// GOV homepage-specific adjustments (desktop view)
+	if($(window).width() >= 768) {	
+		
+		// The top padding should be at least 200px
+		var homeTemplatePaddingTop = topOffset + 90;
+		if(homeTemplatePaddingTop < 200) {
+			homeTemplatePaddingTop = 200;
+		}
+		
+		$("#homeTemplate").css("padding-top", homeTemplatePaddingTop);	
+		
+		// Adjustments for the homepage carousel based on the QA and notification header banners
+		var bannerHeightTotal = 0;
+		if($(".qa-banner").length > 0) {
+			bannerHeightTotal = bannerHeightTotal + $(".qa-banner").outerHeight();
+		}
+		if($("#notificationMessageBar").length > 0 && $("#notificationMessageBar").is(':visible')) {
+			bannerHeightTotal = bannerHeightTotal + $("#notificationMessageBar").outerHeight();	   
+		}				
+		$("#homeTemplate #carousel .page").css("top", bannerHeightTotal + "px");
+	}
+
+}
+
+/**
+ * [CLD-1454] RL - js for accordion expand/collapse
+ * 	Initialize expand collapse. Class .in defaults to open (currently unsupported
+ */
+function initAccordionArrows(){
+
+	$(".panel-collapse").each(function(){
+		if( $(this).hasClass("in")){
+			$(this).siblings().children(".collapseArrow").addClass("open");
+		} else{
+			$(this).siblings().children(".collapseArrow").removeClass("open");
+		}
+	});
+	//IAC-43 - RL Accordion Multilangauge Support
+	if(typeof accordionExpandAll !== 'undefined' && typeof accordionCollapseAll !== 'undefined'){
+		$(".accordion-btn-container .show-btn").text(accordionExpandAll);
+		$(".accordion-btn-container .hide-btn").text(accordionCollapseAll);
+	}
+}
+
+

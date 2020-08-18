@@ -1,0 +1,248 @@
+
+$(document).ready(function(event) {
+
+	// If current page is part of the dashboard or foodsafe app, do the following.
+	// TODO: These are temporary hacks that work because dashboard and foodsafe reference this JS file.
+    if((window.location.href.indexOf("/core/home") > -1) 
+    		|| (window.location.href.indexOf("/foodsafe/") > -1)
+    		|| (window.location.href.indexOf("/mcfdsp/") > -1)) {
+        
+    	// Add active class to the header myGov link
+    	$('#myGovButton').addClass('active');
+        
+        // Remove this CSS reference for now - it is causing display issues
+        $("link[href*='/mygovbcSWR/static/mygovbc/css/essentials.css']").remove();  
+    }	
+		
+ 	// When a chapter menu item gains focus (either by mouse click or keyboard navigation), scroll the page to that chapter.
+ 	// These elements have class "section-scroll-link", along with attribute "data-section-link" that specifies the id of the section to scroll to.
+ 	$('.section-scroll-link').focus(function() {
+ 		scrollToChapter(this);		
+ 	}).click(function() {
+ 		scrollToChapter(this);		
+ 	});	
+
+ 	// Event handlers for the banner action button
+ 	$("#banner-action").click(function(event) {
+ 	    scrollToChapter(this);
+ 	}); 
+ 	$("#banner-action").keyup(function(event) {
+ 	    if (event.keyCode === 13) {
+ 	    	scrollToChapter(this);
+ 	    }
+ 	}); 	
+ 	
+	$('.feedback-form #feedbackHelpful, .feedback-form #feedbackNotHelpful').click(function(event){	
+		var clickedId = event.target.id;
+		var otherButtonId = 'feedbackNotHelpful';
+		
+		if (clickedId === 'feedbackNotHelpful') {
+			otherButtonId = 'feedbackHelpful';
+		}
+		
+		$("#" + clickedId).removeClass('selected');
+		$("#" + clickedId).addClass('selected');		
+		$("#" + otherButtonId).removeClass('selected');
+	});
+
+	// On form submit, show "thank you" text
+	$('.feedback-form #submitFeedback').click(function(){	
+		$("#feedback-form-header").hide();	
+		$("#feedback-form-body").hide();	
+		$(".thank-input").fadeIn("fast");
+	});
+	
+	// Toggle arrow on feedback form based on expand/collapse state
+	$('#feedback-form-header').click(function() {
+		var arrow = $(this).find('.arrow');
+		if(arrow.hasClass("fa-caret-up")) {
+			arrow.removeClass("fa-caret-up").addClass("fa-caret-down");
+			// Feedback form is expanded - scroll to bottom of the page automatically
+			$('html, body').animate({scrollTop:$(document).height()}, 'slow');
+		} else {
+			arrow.removeClass("fa-caret-down").addClass("fa-caret-up");
+		}
+	});
+	
+	// Make the first section active/visible by default if there isn't already an active/visible section (tablet view and above only)
+	if($(window).width() >= 750) {
+		if($('.sections-nav > .nav li.active').length == 0) {	
+			$('.sections-nav > .nav li a').first().parent().addClass('active');
+		}
+	}
+
+	// List-style service bundle - show bundle contents
+	$('.show-list-bundle').click(function() {
+		var bundle = $(this).closest('.service-bundle');
+		bundle.find('.show-list-bundle').addClass("hidden");
+		bundle.find('.hide-list-bundle').removeClass("hidden");			
+		bundle.find('.bundle-contents').removeClass("hidden");
+	});	
+	// List-style service bundle - hide bundle contents
+	$('.hide-list-bundle').click(function() {
+		var bundle = $(this).closest('.service-bundle');
+		bundle.find('.show-list-bundle').removeClass("hidden");	
+		bundle.find('.hide-list-bundle').addClass("hidden");						
+		bundle.find('.bundle-contents').addClass("hidden");
+	});		
+	
+	// Tile-style service bundle - show bundle contents
+	$('.show-tile-bundle').click(function() {
+		// Hide the service action section, clone the bundle items and insert them into the container for display
+		var bundle = $(this).closest('.service-bundle');
+		var bundleContentsHtml = bundle.find('.bundle-contents').first().clone();
+		$('#bundle-container').html(bundleContentsHtml);	
+		$('#bundle-container').show();	
+		bundleContentsHtml.removeClass('hidden');			
+		$('.section > .services-container').hide();	
+		scrollToChapter($('#nav-action'));
+		
+		$('.back-to-top').hide();
+	});	
+	// Tile-style service bundle - hide bundle contents
+	$("#bundle-container").on("click", ".hide-tile-bundle", function(event) {
+		// Empty the bundle item container and display the normal service action section
+		$('#bundle-container').empty();	
+		$('#bundle-container').hide();
+		$('.section > .services-container').show();	
+		scrollToChapter($('#nav-action'));	
+		
+		$('.back-to-top').show();
+	});
+	
+});
+
+$(window).load(function(event) {
+
+	// Reset the scroll position to the top before doing any further animations
+	$('html, body').scrollTop(0);		
+	
+	// Need to adjust the nav height after all images are loaded, because the content height may have changed
+	adjustSectionNavHeight();			
+
+	// Click handler for "Submit" button on Orbeon forms
+	$('.fr-email-button > button').click(function(){					
+		updateFormStatus("Submitted");		
+	});
+
+	// Click handler for "Save" button on Orbeon forms
+	$('.fr-save-button > button').click(function(){					
+		updateFormStatus("Draft");		
+	});	
+
+	// Send an AJAX request	to update the status of a user form interaction
+	function updateFormStatus(status) {		
+		var url = window.location.href;
+		// Only perform the request on "external" forms in mcfdsp app
+		if(url.indexOf("/mcfdsp/") > -1) {		
+			var queryString = url.split("?");
+			var params = queryString[1].split("&");
+			var formParam = params[0];
+			var formName = formParam.split("=")[1];
+			var userId = "E5841D17AB50494C82C184F8C5C3E3D6";
+			
+			var updateStatusUrl = "/mcfdsp/udpateFormStatus?userid=" + userId + "&status=" + status + "&serviceitemId=" + formName;				
+			$.get(updateStatusUrl, function(data) {
+				console.log(data);
+			});		
+		}		
+	}
+		
+});
+
+$(window).on("resize", function() {
+	
+	adjustSectionNavHeight();
+	
+	if(($(window).width() < 750)) {
+		$('.sections-nav > .nav').removeClass('sticky');
+		$('.sections-nav > .nav').css('top', '0');
+	}		
+});
+
+$(window).scroll(function() {
+
+	// Scroll behaviour on service/bundle pages in tablet view and larger
+	if($(window).width() >= 750 && $('#sections').length > 0) {	
+				
+		var currentScrollPosition = $(this).scrollTop();
+		var sectionsTopPosition = $('#sections').offset().top;
+		var	headerHeight = $('#header-main').outerHeight();
+
+		// Switch to the sticky nav when the user scrolls past a certain point 
+		if((currentScrollPosition + headerHeight) > sectionsTopPosition) {
+			$('.sections-nav > .nav').addClass('sticky');
+			$('.sections-nav > .nav').css('top', headerHeight);
+		} else {
+			$('.sections-nav > .nav').removeClass('sticky');
+			$('.sections-nav > .nav').css('top', '0');
+		}
+
+		// If a section is scrolled into view, add a class		
+		$('#sections .sections-content > .section').each(function( index ) {
+			var sectionTopPosition = $(this).offset().top;
+			var extraOffset = 120;
+			var sectionId = $(this).attr('id');
+			
+			// If the element is currently above a certain screen position, add the active class
+			if((currentScrollPosition + headerHeight + extraOffset) > sectionTopPosition) {
+				$(this).addClass('scrolled');
+			} else {
+				$(this).removeClass('scrolled');
+			}
+		});
+		
+		// If no sections have been scrolled into view, add the class to the first section
+		if($('.section.scrolled').length == 0) {
+			$('.section').first().addClass('scrolled');
+		}
+		
+		// The last section with 'scrolled' class is considered to be the active section.
+		// Update the nav so that the corresponding chapter link has the active class.
+		var sectionId = $('#sections .sections-content > .section.scrolled').last().attr('id');
+		
+		$('.sections-nav > .nav > li > a').blur();
+		$('.sections-nav > .nav > li.active').removeClass('active');
+		$('#nav-' + sectionId).parent().addClass('active');						
+		
+	}
+		
+});
+
+/*
+ * On service/service bundle pages, ensure that the section nav is always at least as tall as the section content
+ */ 	
+function adjustSectionNavHeight() {
+	
+	if($('.sections-content').length && $('.sections-nav > .nav').length) {			
+		// Only adjust the height when in tablet view or larger
+		if($(window).width() >= 750) {	
+			if($('.sections-content').height() > $('.sections-nav > .nav').height()) {
+				$('.sections-nav > .nav').css("height", $('.sections-content').height() + 30);
+			}	
+		} 		
+		else {
+			$('.sections-nav > .nav').css("height", "");
+		}
+	}	
+}
+
+function scrollToChapter(selectedChapter) {
+	
+	// The first section may have a different min-height than the others.
+	// Before doing any scrolling, set the first section to have the same min-height as the second one, or the page will scroll to the wrong spot.
+//	$('.section').eq(0).css('min-height', $('.section').eq(1).css('min-height'));				
+	
+	// If tablet mode or larger, need to compensate for the height of the fixed header (plus a bit extra)
+	var topPositionAdjustment = 0;
+	if($(window).width() >= 750) {
+		var headerHeight = $('#header-main').outerHeight();
+		topPositionAdjustment = headerHeight + 20;
+	}
+	
+	// Scroll to the corresponding section
+	$('html, body').animate({
+		scrollTop: $("#" + $(selectedChapter).attr('data-section-link')).offset().top - topPositionAdjustment
+   }, 500);		
+}
+

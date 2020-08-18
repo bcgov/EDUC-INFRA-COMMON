@@ -1,0 +1,350 @@
+@font-face {
+	font-family: 'BC Sans';
+	src: url('/StaticWebResources/static/shared/fonts/BCSans/BCSans-Regular.woff');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'BC Sans';
+	src: url('/StaticWebResources/static/shared/fonts/BCSans/BCSans-Bold.woff');
+	font-weight: bold;
+	font-style: normal;	
+}
+
+@font-face {
+	font-family: 'BC Sans';
+	src: url('/StaticWebResources/static/shared/fonts/BCSans/BCSans-Italic.woff');
+	font-weight: normal;
+	font-style: italic;	
+}
+
+@font-face {
+	font-family: 'BC Sans';
+	src: url('/StaticWebResources/static/shared/fonts/BCSans/BCSans-BoldItalic.woff');
+	font-weight: bold;
+	font-style: italic;	
+}
+
+/* header nav styles */
+
+/* RA-450 */
+#header-main-row2.navbar-collapse{
+	margin-left:0;
+	margin-right:0;
+	padding-left:0;
+	padding-right:0;
+}
+
+/* alert styles */
+.alert-success:before {
+  position: relative;
+  top: 1px;
+  margin-right: 10px;
+  display: inline-block;
+  font-family: 'FontAwesome';
+  -webkit-font-smoothing: antialiased;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -moz-osx-font-smoothing: grayscale;
+  content: "\f058";
+  font-size: larger;
+}
+
+.alert-info:before {
+  position: relative;
+  top: 1px;
+  margin-right: 10px;
+  display: inline-block;
+  font-family: 'Glyphicons Halflings';
+  -webkit-font-smoothing: antialiased;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -moz-osx-font-smoothing: grayscale;
+  content: "\e086";
+}
+
+.alert-warning:before {
+  position: relative;
+  top: 1px;
+  margin-right: 10px;
+  display: inline-block;
+  font-family: 'FontAwesome';
+  -webkit-font-smoothing: antialiased;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -moz-osx-font-smoothing: grayscale;
+  content: "\f071";
+  font-size: larger;
+}
+
+.alert-danger:before {
+  position: relative;
+  top: 1px;
+  margin-right: 10px;
+  display: inline-block;
+  font-family: 'FontAwesome';
+  -webkit-font-smoothing: antialiased;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -moz-osx-font-smoothing: grayscale;
+  content: "\f06a";
+  font-size: larger;
+}
+
+
+/* CLD-2667 : Create a blue info alert box */
+.alert-information:before {
+  position: relative;
+  top: 1px;
+  margin-right: 10px;
+  display: inline-block;
+  font-family: 'FontAwesome';
+  -webkit-font-smoothing: antialiased;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -moz-osx-font-smoothing: grayscale;
+  content: "\f05a";
+  font-size: larger;
+}
+
+.homePageMainColumn a.btn,
+.homePageRightColumn a.btn,
+.contentPageMainColumn a.btn,
+.contentPageRightColumn a.btn {
+  margin: 5px;
+  text-decoration: none;
+  color: #fff;
+  font-size: 16px;
+  white-space: normal;
+}
+
+.homePageMainColumn a.btn:hover,
+.homePageRightColumn a.btn:hover,
+.contentPageMainColumn a.btn:hover,
+.contentPageRightColumn a.btn:hover {
+  color: #fff;
+}
+
+
+.btn-primary {
+	background-color: #38598a;
+}
+
+.btn-primary:hover,
+.btn-primary:active {
+	background-color: #428bca;
+}
+
+.btn-primary.btn-primary-active {
+	background-color: #428bca;
+}
+
+.homePageRightColumn .rightColumnBox a.btn,
+.contentPageRightColumn .rightColumnBox a.btn {
+    display: table;
+}
+
+@media (min-width : 992px) {
+	.homePageRightColumn .rightColumnBox a.btn,
+	.contentPageRightColumn .rightColumnBox a.btn {
+		margin: 0 auto;
+	}
+}
+
+/* Start of styles for [RA-640] - Bootstrap template layout widget */
+#main-content .row > [class*='col-'] {
+	padding-right: 15px;
+}
+
+#main-content .row > :first-child[class*='col-'] {
+	padding-left: 0;
+}
+
+@media (max-width: 992px) {
+	#main-content .row > [class*='col-'] {
+		padding-left: 0;
+	}
+}	
+/* End of styles for [RA-640] */
+
+/* Start of styles for [RA-699] - Centering in a table with less than 100% */
+table {
+	margin: 10px auto;
+}
+/* End of styles for [RA-699] */
+
+/* [RA-691] - fix for IE11 Lync add-on issue where the icon is stretched) */
+.tile.col-sm-6 span.baec5a81-e4d6-4674-97f3-e9220f0136c1 img {
+   width: auto !important;
+}
+
+#header .notification-banner-danger {
+	background-color: #AD0000 !important;
+}
+
+#header .notification-banner-info {
+	background-color: #355992 !important;
+}
+
+#header .notification-banner-success {
+	background-color: #146126 !important;
+}
+
+#header .notification-banner-black {
+	background-color: black !important;
+}
+
+.alert-notification {
+	background-color: inherit !important;
+	border-radius: 0;
+	border-style: none;
+	margin-bottom: 0;
+}
+
+.alert-notification:before {
+	color: #fff;
+  	font-size: xx-large !important;
+}
+
+.alert-notification > div {
+	font-size: x-large; 
+	color: #fff; 
+}
+
+.alert-notification-close {
+	color: #fff !important;
+	opacity: 0.9 !important;
+	top: -4px !important;
+	font-size: xx-large !important;
+}
+
+#notificationMessageButtonNoSearchCollapsed {
+	right: 80px !important;
+}
+
+.alert-notification-icon {
+	top: 0;
+	cursor: pointer;
+	float: left;	
+	width: 93px;
+    height: 66px;
+    color: #fff;
+    cursor: pointer;
+}
+
+.alert-notification-icon:before {
+  	top: 10px !important;
+  	left: 25px !important;
+}  	
+
+@media (max-width: 767px) {
+	.alert-notification-icon {	
+		width: 64px;
+	    height: 59px;
+	    position: absolute;
+	    right: 128px;
+	}
+	
+	.alert-notification-icon:before {
+	  	top: 5px !important;
+	  	left: 9px !important;
+	}  
+}
+
+.alert-danger-notification-icon {
+	font-size: x-large; 
+	padding: 10px; 
+	margin: 0; 
+	border-radius: 0;
+	border-style: none;
+	background-color: #AD0000 !important;
+}
+
+.alert-info-notification-icon {
+	font-size: x-large; 
+	padding: 10px; 
+	margin: 0; 
+	border-radius: 0;
+	border-style: none;
+	background-color: #355992 !important;
+}
+
+.alert-success-notification-icon {
+	font-size: x-large; 
+	padding: 10px; 
+	margin: 0; 
+	border-radius: 0;
+	border-style: none;
+	background-color: #146126 !important;
+}
+
+.alert-black-notification-icon {
+	font-size: x-large; 
+	padding: 10px; 
+	margin: 0; 
+	border-radius: 0;
+	border-style: none;
+	background-color: black !important;
+}
+
+.alert-danger-notification-icon:before {
+	background-color: #AD0000;
+  	margin-right: 0 !important;
+  	color: #fff !important;
+}
+
+.alert-info-notification-icon:before {
+	background-color: #355992;
+  	margin-right: 0 !important;
+  	color: #fff !important;
+}
+
+.alert-success-notification-icon:before {
+	background-color: #146126;
+  	margin-right: 0 !important;
+  	color: #fff !important;
+}	
+
+.alert-black-notification-icon:before {
+	background-color: black;
+  	margin-right: 0 !important;
+  	color: #fff !important;
+}
+
+a.alert-notification-link {
+	color: inherit !important;
+	text-decoration: underline;
+	font-weight: 700;
+}
+
+a.alert-notification-link:hover,
+a.alert-notification-link:focus {
+	color: #B1BFD3 !important;	
+}
+
+div.callout {
+  border-left: 10px solid #385a8a;
+  background-color: #e3e5eb;
+  padding: 15px;
+  margin: 16px 0;
+}
+
+div.callout p:first-of-type {
+  margin-top: 0;
+}
+
+div.callout p:last-of-type {
+  margin-bottom: 0;
+}
+
+.iframe-video-embed > h2 {
+	font-size: 18px;
+	text-align: left;
+}
+
