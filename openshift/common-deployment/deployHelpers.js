@@ -218,7 +218,7 @@ def configMapChesSetup(String appName,String appNameUpper, String namespace, Str
         echo 'Config map already exists. Moving to next stage...'
       } catch(e){
           configProperties = input(
-          id: 'configProperties', message: "Please enter the required credentials to allow ${appName} to run:",
+          id: 'configProperties', message: "Please enter the required CHES credentials to allow ${appName} to run. Credentials will be required from both CHES & ${appName}:",
           parameters: [
               string(defaultValue: "",
                       description: 'JDBC connect string for database',
