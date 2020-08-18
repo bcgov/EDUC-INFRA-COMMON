@@ -113,6 +113,16 @@ pipeline {
 
               openshift.patch("route/penvanityfrontendwww", '\'{"spec":{"to":{"name":"maintenance-page"}}}\'')
               openshift.patch("route/penvanityfrontendwww", '\'{"spec":{"port":{"targetPort":"8080-tcp"}}}\'')
+
+              def penvanityfrontend = openshift.selector( 'route/penvanityfrontend' ).object()
+              penvanityfrontend.metadata.labels['app']='student-profile-frontend-master'
+              penvanityfrontend.metadata.labels['template']='educ-student-profile-template'
+              openshift.apply(penvanityfrontend)
+
+              def penvanityfrontendwww = openshift.selector( 'route/penvanityfrontendwww' ).object()
+              penvanityfrontendwww.metadata.labels['app']='student-profile-frontend-master'
+              penvanityfrontendwww.metadata.labels['template']='educ-student-profile-template'
+              openshift.apply(penvanityfrontendwww)
             }
           }
         }

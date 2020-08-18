@@ -107,9 +107,11 @@ pipeline {
               echo 'Pointing GetMyPen route to maintenance page'
               openshift.patch("route/student-profile-frontend-master", '\'{"spec":{"to":{"name":"maintenance-page"}}}\'')
               openshift.patch("route/student-profile-frontend-master", '\'{"spec":{"port":{"targetPort":"8080-tcp"}}}\'')
-              def p = openshift.selector( 'route/student-profile-frontend-master' ).object()
-              p.metadata.labels['app']='student-profile-frontend-master-2'
-              openshift.apply(p)
+
+              def penvanityfrontend = openshift.selector( 'route/student-profile-frontend-master' ).object()
+              penvanityfrontend.metadata.labels['app']='student-profile-frontend-master-test'
+              penvanityfrontend.metadata.labels['template']='educ-student-profile-template-test'
+              openshift.apply(penvanityfrontend)
             }
           }
         }
