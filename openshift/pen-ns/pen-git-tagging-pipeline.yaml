@@ -16,7 +16,7 @@ objects:
         jenkinsfile: | 
             def GIT_USER = 'NONE'
             def GIT_TOKEN = 'NONE'
-            def PEN_REQUEST_EMAIL_API_VERSION = '<Not Required>'
+            def PEN_REQUEST_BATCH_API_VERSION = '<Not Required>'
             def STUDENT_PROFILE_EMAIL_API = '<Not Required>'
             def STUDENT_PROFILE_VERSION = '<Not Required>'
             def PEN_REQUEST_VERSION = '<Not Required>'
@@ -63,8 +63,8 @@ objects:
                                         id: 'tagInput', message: 'Please enter the release version number for each component to be tagged out of master in GIT.',
                                         parameters: [
                                                 string(defaultValue: "",
-                                                        description: 'Enter PEN Request Email API Version, leave the tag blank if this service is not to be tagged',
-                                                        name: 'PEN_REQUEST_EMAIL_API_VERSION'),
+                                                        description: 'Enter PEN Request Batch API Version, leave the tag blank if this service is not to be tagged',
+                                                        name: 'PEN_REQUEST_BATCH_API_VERSION'),
                                                 string(defaultValue: "",
                                                         description: 'Enter Student Profile Email API Version, leave the tag blank if this service is not to be tagged',
                                                         name: 'STUDENT_PROFILE_EMAIL_API'),
@@ -79,7 +79,7 @@ objects:
                                                         name: 'STAFF_ADMIN_VERSION'),
                                         ])
             					// Save to variables. Default to empty string if not found.
-            					PEN_REQUEST_EMAIL_API_VERSION = tagInput.PEN_REQUEST_EMAIL_API_VERSION?:''
+            					PEN_REQUEST_BATCH_API_VERSION = tagInput.PEN_REQUEST_BATCH_API_VERSION?:''
             					STUDENT_PROFILE_EMAIL_API = tagInput.STUDENT_PROFILE_EMAIL_API?:''
             					STUDENT_PROFILE_VERSION = tagInput.STUDENT_PROFILE_VERSION?:''
             					PEN_REQUEST_VERSION = tagInput.PEN_REQUEST_VERSION?:''
@@ -95,14 +95,14 @@ objects:
                             }
                         }
                     }
-            		stage('Tag PEN Request Email API In Git'){
+            		stage('Tag PEN Request Batch API In Git'){
             		    when {
             				expression {
-            					return "${PEN_REQUEST_EMAIL_API_VERSION}" != "<Not Required>" && "${PEN_REQUEST_EMAIL_API_VERSION}" != "";
+            					return "${PEN_REQUEST_BATCH_API_VERSION}" != "<Not Required>" && "${PEN_REQUEST_BATCH_API_VERSION}" != "";
             				}
             			}
             			steps {
-            		       createGitTag("${PEN_REQUEST_EMAIL_API_VERSION}", "${PEN_REQUEST_EMAIL_API_VERSION}", 'EDUC-PEN-REQUEST-EMAIL-API')
+            		       createGitTag("${PEN_REQUEST_BATCH_API_VERSION}", "${PEN_REQUEST_BATCH_API_VERSION}", 'EDUC-PEN-REQUEST-BATCH-API')
             			}
             		}
             		stage('Tag Student Profile Email API In Git'){
