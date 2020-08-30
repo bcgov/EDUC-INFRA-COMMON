@@ -259,7 +259,7 @@ def deployStage(String stageEnv, String projectEnv, String repoName, String appN
   openshift.withCluster() {
    openshift.withProject(projectEnv) {
      echo "Tagging ${appName} image with version ${tag}"
-     openshift.tag("${sourceEnv}/${repoName}-${jobName}:latest", "${repoName}-${jobName}:${tag}")
+     openshift.tag("${sourceEnv}/${repoName}-${jobName}:${tag}", "${repoName}-${jobName}:${tag}")
      def dcTemplate = openshift.process('-f',
        "${rawApiDcURL}",
        "REPO_NAME=${repoName}",
@@ -287,7 +287,7 @@ def deployStageNoEnv(String stageEnv, String projectEnv, String repoName, String
   openshift.withCluster() {
    openshift.withProject(projectEnv) {
      echo "Tagging ${appName} image with version ${tag}"
-     openshift.tag("${sourceEnv}/${repoName}-${jobName}:latest", "${repoName}-${jobName}:${tag}")
+     openshift.tag("${sourceEnv}/${repoName}-${jobName}:${tag}", "${repoName}-${jobName}:${tag}")
      def dcTemplate = openshift.process('-f',
        "${rawApiDcURL}",
        "REPO_NAME=${repoName}",
@@ -314,10 +314,10 @@ def deployUIStage(String stageEnv, String projectEnv, String repoName, String ap
   openshift.withCluster() {
    openshift.withProject(projectEnv) {
      echo "Tagging Image ${repoName}-backend:${jobName} with version ${tag}"
-     openshift.tag("${sourceEnv}/${repoName}-backend:latest", "${repoName}-backend:${tag}")
+     openshift.tag("${sourceEnv}/${repoName}-backend:${tag}", "${repoName}-backend:${tag}")
 
      echo "Tagging Image ${repoName}-frontend-static:${jobName} with version ${tag}"
-     openshift.tag("${sourceEnv}/${repoName}-frontend-static:latest", "${repoName}-frontend-static:${tag}")
+     openshift.tag("${sourceEnv}/${repoName}-frontend-static:${tag}", "${repoName}-frontend-static:${tag}")
 
      echo "Processing DeploymentConfig ${appName}-backend..."
      def dcBackendTemplate = openshift.process('-f',
