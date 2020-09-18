@@ -20,6 +20,7 @@ objects:
        def STAFF_ADMIN_VERSION = '<Not Required>'
        def STUDENT_PROFILE_VERSION = '<Not Required>'
        def STUDENT_PROFILE_EMAIL_API_VERSION = '<Not Required>'
+       def PEN_MATCH_API_VERSION = '<Not Required>'
 
        def DEV = 'c2mvws-dev'
        def TARGET_ENVIRONMENT = 'c2mvws-test'
@@ -59,6 +60,9 @@ objects:
                                         string(defaultValue: "",
                                                 description: 'Enter Pen Reg Batch API version, leave the tag blank if this service is not to be deployed',
                                                 name: 'PEN_REG_BATCH_API_VERSION'),
+                                        string(defaultValue: "",
+                                                description: 'Enter PEN Match API version, leave the tag blank if this service is not to be deployed',
+                                                name: 'PEN_MATCH_API_VERSION'),
        							])
        					// Save to variables. Default to empty string if not found.
                           STUDENT_PROFILE_SAGA_API_VERSION = tagInput.STUDENT_PROFILE_SAGA_API_VERSION?:''
@@ -66,6 +70,7 @@ objects:
        					STUDENT_PROFILE_VERSION = tagInput.STUDENT_PROFILE_VERSION?:''
        					STUDENT_PROFILE_EMAIL_API_VERSION = tagInput.STUDENT_PROFILE_EMAIL_API_VERSION?:''
                         PEN_REG_BATCH_API_VERSION = tagInput.PEN_REG_BATCH_API_VERSION?:''
+                        PEN_MATCH_API_VERSION = tagInput.PEN_MATCH_API_VERSION?:''
        				}
        			}
        		}
@@ -77,7 +82,7 @@ objects:
        			  }
        		  }
        		}
-            stage('Pen Reg Batch API'){
+            stage('PEN Reg Batch API'){
                 when {
                     expression {
                         return "${PEN_REG_BATCH_API_VERSION}" != "<Not Required>" && "${PEN_REG_BATCH_API_VERSION}" != "";
@@ -96,7 +101,30 @@ objects:
                   }
                 steps {
                     script{
-                       extJSHelper.performPenRegBatchApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${PEN_REG_BATCH_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "${MIN_REPLICAS}", "${MAX_REPLICAS}", "${MIN_CPU}", "${MAX_CPU}", "${MIN_MEM}", "${MAX_MEM}", "${TARGET_ENV}", "${NAMESPACE}", "${COMMON_NAMESPACE}")
+                       extJSHelper.performPenRegApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${PEN_REG_BATCH_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "${MIN_REPLICAS}", "${MAX_REPLICAS}", "${MIN_CPU}", "${MAX_CPU}", "${MIN_MEM}", "${MAX_MEM}", "${TARGET_ENV}", "${NAMESPACE}", "${COMMON_NAMESPACE}")
+                    }
+                 }
+            }
+            stage('PEN Match API'){
+                when {
+                    expression {
+                        return "${PEN_MATCH_API_VERSION}" != "<Not Required>" && "${PEN_MATCH_API_VERSION}" != "";
+                    }
+                }
+                environment {
+                   APP_NAME = "pen-match-api"
+                   REPO_NAME = "educ-pen-match-api"
+                   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-MATCH-API/master/tools/openshift/api.dc.yaml"
+                   MIN_REPLICAS = "2"
+                   MAX_REPLICAS = "3"
+                   MIN_CPU = "50m"
+                   MAX_CPU = "300m"
+                   MIN_MEM = "750Mi"
+                   MAX_MEM = "1500Mi"
+                  }
+                steps {
+                    script{
+                       extJSHelper.performPenRegApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${PEN_REG_BATCH_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "${MIN_REPLICAS}", "${MAX_REPLICAS}", "${MIN_CPU}", "${MAX_CPU}", "${MIN_MEM}", "${MAX_MEM}", "${TARGET_ENV}", "${NAMESPACE}", "${COMMON_NAMESPACE}")
                     }
                  }
             }
