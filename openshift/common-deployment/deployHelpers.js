@@ -365,7 +365,7 @@ def deployUIStage(String hostRoute, String stageEnv, String projectEnv, String r
   }
 }
 
-def deployUIStageWithCerts(String hostRoute, String hostRoute, String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURLFrontend, String rawApiDcURLBackend, String minReplicasFE, String maxReplicasFE, String minCPUFE, String maxCPUFE, String minMemFE, String maxMemFE, String minReplicasBE, String maxReplicasBE, String minCPUBE, String maxCPUBE, String minMemBE, String maxMemBE, String caCert, String cert, String privateKey) {
+def deployUIStageWithCerts(String hostRoute, String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURLFrontend, String rawApiDcURLBackend, String minReplicasFE, String maxReplicasFE, String minCPUFE, String maxCPUFE, String minMemFE, String maxMemFE, String minReplicasBE, String maxReplicasBE, String minCPUBE, String maxCPUBE, String minMemBE, String maxMemBE, String caCert, String cert, String privateKey) {
   openshift.withCluster() {
    openshift.withProject(projectEnv) {
      echo "Tagging Image ${repoName}-backend:${jobName} with version ${tag}"
