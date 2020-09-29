@@ -65,7 +65,7 @@ objects:
                                                 name: 'PEN_MATCH_API_VERSION'),
        							])
        					// Save to variables. Default to empty string if not found.
-                          STUDENT_PROFILE_SAGA_API_VERSION = tagInput.STUDENT_PROFILE_SAGA_API_VERSION?:''
+                        STUDENT_PROFILE_SAGA_API_VERSION = tagInput.STUDENT_PROFILE_SAGA_API_VERSION?:''
        					STAFF_ADMIN_VERSION = tagInput.STAFF_ADMIN_VERSION?:''
        					STUDENT_PROFILE_VERSION = tagInput.STUDENT_PROFILE_VERSION?:''
        					STUDENT_PROFILE_EMAIL_API_VERSION = tagInput.STUDENT_PROFILE_EMAIL_API_VERSION?:''
@@ -174,10 +174,11 @@ objects:
                      MAX_CPU_BE = "100m"
                      MIN_MEM_BE = "200Mi"
                      MAX_MEM_BE = "250Mi"
+                     TEST_HOST_ROUTE = "student-admin-c2mvws-test.pathfinder.gov.bc.ca"
                    }
        			steps {
                      script{
-                        extJSHelper.performUIDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${STAFF_ADMIN_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}", "${MIN_REPLICAS_FE}", "${MAX_REPLICAS_FE}", "${MIN_CPU_FE}", "${MAX_CPU_FE}", "${MIN_MEM_FE}", "${MAX_MEM_FE}", "${MIN_REPLICAS_BE}", "${MAX_REPLICAS_BE}", "${MIN_CPU_BE}", "${MAX_CPU_BE}", "${MIN_MEM_BE}", "${MAX_MEM_BE}", TARGET_ENV, NAMESPACE, COMMON_NAMESPACE)
+                        extJSHelper.performUIDeploy(TEST_HOST_ROUTE, STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${STAFF_ADMIN_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}", "${MIN_REPLICAS_FE}", "${MAX_REPLICAS_FE}", "${MIN_CPU_FE}", "${MAX_CPU_FE}", "${MIN_MEM_FE}", "${MAX_MEM_FE}", "${MIN_REPLICAS_BE}", "${MAX_REPLICAS_BE}", "${MIN_CPU_BE}", "${MAX_CPU_BE}", "${MIN_MEM_BE}", "${MAX_MEM_BE}", TARGET_ENV, NAMESPACE, COMMON_NAMESPACE, "", "", "")
                      }
                   }
        		}
@@ -227,10 +228,18 @@ objects:
                      MAX_CPU_BE = "100m"
                      MIN_MEM_BE = "200Mi"
                      MAX_MEM_BE = "250Mi"
+                     TEST_HOST_ROUTE = "test.getmypen.gov.bc.ca"
+                     CA_CERT = "";
+                     CERT = "";
+                     PRIV_KEY = "";
                    }
        			steps {
                      script{
-                        extJSHelper.performUIDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${STUDENT_PROFILE_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}", "${MIN_REPLICAS_FE}", "${MAX_REPLICAS_FE}", "${MIN_CPU_FE}", "${MAX_CPU_FE}", "${MIN_MEM_FE}", "${MAX_MEM_FE}", "${MIN_REPLICAS_BE}", "${MAX_REPLICAS_BE}", "${MIN_CPU_BE}", "${MAX_CPU_BE}", "${MIN_MEM_BE}", "${MAX_MEM_BE}", TARGET_ENV, NAMESPACE, COMMON_NAMESPACE)
+                        CA_CERT = sh( script: "oc -n ${TARGET_ENVIRONMENT} -o json get secret test-certs-ssl.2020 | sed -n 's/.*\"ca-certificate-l1k\": \"\\(.*\\)\",/\\1/p' | base64 --decode", returnStdout: true);
+                        CERT = sh( script: "oc -n ${TARGET_ENVIRONMENT} -o json get secret test-certs-ssl.2020 | sed -n 's/.*\"certificate\": \"\\(.*\\)\",/\\1/p' | base64 --decode", returnStdout: true);
+                        PRIV_KEY = sh( script: "oc -n ${TARGET_ENVIRONMENT} -o json get secret test-certs-ssl.2020 | sed -n 's/.*\"private-key\": \"\\(.*\\)\"/\\1/p' | base64 --decode", returnStdout: true);
+
+                        extJSHelper.performUIDeploy(TEST_HOST_ROUTE, STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${STUDENT_PROFILE_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}", "${MIN_REPLICAS_FE}", "${MAX_REPLICAS_FE}", "${MIN_CPU_FE}", "${MAX_CPU_FE}", "${MIN_MEM_FE}", "${MAX_MEM_FE}", "${MIN_REPLICAS_BE}", "${MAX_REPLICAS_BE}", "${MIN_CPU_BE}", "${MAX_CPU_BE}", "${MIN_MEM_BE}", "${MAX_MEM_BE}", TARGET_ENV, NAMESPACE, COMMON_NAMESPACE, CA_CERT, CERT, PRIV_KEY)
                      }
                    }
        		}

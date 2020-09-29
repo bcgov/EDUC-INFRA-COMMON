@@ -89,9 +89,13 @@ def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, St
     }
 }
 
-def performUIDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String frontendDCRaw, String backendDCRaw, String minReplicasFE, String maxReplicasFE, String minCPUFE, String maxCPUFE, String minMemFE, String maxMemFE, String minReplicasBE, String maxReplicasBE, String minCPUBE, String maxCPUBE, String minMemBE, String maxMemBE, String targetEnv, String NAMESPACE, String commonNamespace){
+def performUIDeploy(String hostRoute, String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String frontendDCRaw, String backendDCRaw, String minReplicasFE, String maxReplicasFE, String minCPUFE, String maxCPUFE, String minMemFE, String maxMemFE, String minReplicasBE, String maxReplicasBE, String minCPUBE, String maxCPUBE, String minMemBE, String maxMemBE, String targetEnv, String NAMESPACE, String commonNamespace, String caCert, String cert, String privateKey){
     script {
-        deployUIStage(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, frontendDCRaw, backendDCRaw, minReplicasFE, maxReplicasFE, minCPUFE, maxCPUFE, minMemFE, maxMemFE, minReplicasBE, maxReplicasBE, minCPUBE, maxCPUBE, minMemBE, maxMemBE)
+        if(caCert == ""){
+            deployUIStage(hostRoute, stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, frontendDCRaw, backendDCRaw, minReplicasFE, maxReplicasFE, minCPUFE, maxCPUFE, minMemFE, maxMemFE, minReplicasBE, maxReplicasBE, minCPUBE, maxCPUBE, minMemBE, maxMemBE)
+        }else{
+            deployUIStageWithCerts(hostRoute, stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, frontendDCRaw, backendDCRaw, minReplicasFE, maxReplicasFE, minCPUFE, maxCPUFE, minMemFE, maxMemFE, minReplicasBE, maxReplicasBE, minCPUBE, maxCPUBE, minMemBE, maxMemBE, caCert, cert, privateKey)
+        }
         dir('tools/jenkins'){
             sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
         }
@@ -310,7 +314,7 @@ def deployStageNoEnv(String stageEnv, String projectEnv, String repoName, String
   }
 }
 
-def deployUIStage(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURLFrontend, String rawApiDcURLBackend, String minReplicasFE, String maxReplicasFE, String minCPUFE, String maxCPUFE, String minMemFE, String maxMemFE, String minReplicasBE, String maxReplicasBE, String minCPUBE, String maxCPUBE, String minMemBE, String maxMemBE) {
+def deployUIStage(String hostRoute, String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURLFrontend, String rawApiDcURLBackend, String minReplicasFE, String maxReplicasFE, String minCPUFE, String maxCPUFE, String minMemFE, String maxMemFE, String minReplicasBE, String maxReplicasBE, String minCPUBE, String maxCPUBE, String minMemBE, String maxMemBE) {
   openshift.withCluster() {
    openshift.withProject(projectEnv) {
      echo "Tagging Image ${repoName}-backend:${jobName} with version ${tag}"
@@ -326,7 +330,7 @@ def deployUIStage(String stageEnv, String projectEnv, String repoName, String ap
        "JOB_NAME=${jobName}",
        "NAMESPACE=${projectEnv}",
        "APP_NAME=${appName}",
-       "HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain}",
+       "HOST_ROUTE=${hostRoute}",
        "TAG=${tag}",
        "MIN_REPLICAS=${minReplicasBE}",
        "MAX_REPLICAS=${maxReplicasBE}",
@@ -345,7 +349,7 @@ def deployUIStage(String stageEnv, String projectEnv, String repoName, String ap
        "JOB_NAME=${jobName}",
        "NAMESPACE=${projectEnv}",
        "APP_NAME=${appName}",
-       "HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain}",
+       "HOST_ROUTE=${hostRoute}",
        "TAG=${tag}",
        "MIN_REPLICAS=${minReplicasFE}",
        "MAX_REPLICAS=${maxReplicasFE}",
@@ -353,6 +357,60 @@ def deployUIStage(String stageEnv, String projectEnv, String repoName, String ap
        "MAX_CPU=${maxCPUFE}",
        "MIN_MEM=${minMemFE}",
        "MAX_MEM=${maxMemFE}"
+     )
+
+     echo "Applying Deployment ${appName}-frontend-static..."
+     def dcFrontendStatic = openshift.apply(dcFrontendStaticTemplate).narrow('dc')
+   }
+  }
+}
+
+def deployUIStageWithCerts(String hostRoute, String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURLFrontend, String rawApiDcURLBackend, String minReplicasFE, String maxReplicasFE, String minCPUFE, String maxCPUFE, String minMemFE, String maxMemFE, String minReplicasBE, String maxReplicasBE, String minCPUBE, String maxCPUBE, String minMemBE, String maxMemBE, String caCert, String cert, String privateKey) {
+  openshift.withCluster() {
+   openshift.withProject(projectEnv) {
+     echo "Tagging Image ${repoName}-backend:${jobName} with version ${tag}"
+     openshift.tag("${sourceEnv}/${repoName}-backend:${tag}", "${repoName}-backend:${tag}")
+
+     echo "Tagging Image ${repoName}-frontend-static:${jobName} with version ${tag}"
+     openshift.tag("${sourceEnv}/${repoName}-frontend-static:${tag}", "${repoName}-frontend-static:${tag}")
+
+     echo "Processing DeploymentConfig ${appName}-backend..."
+     def dcBackendTemplate = openshift.process('-f',
+       "${rawApiDcURLBackend}",
+       "REPO_NAME=${repoName}",
+       "JOB_NAME=${jobName}",
+       "NAMESPACE=${projectEnv}",
+       "APP_NAME=${appName}",
+       "HOST_ROUTE=${hostRoute}",
+       "TAG=${tag}",
+       "MIN_REPLICAS=${minReplicasBE}",
+       "MAX_REPLICAS=${maxReplicasBE}",
+       "MIN_CPU=${minCPUBE}",
+       "MAX_CPU=${maxCPUBE}",
+       "MIN_MEM=${minMemBE}",
+       "MAX_MEM=${maxMemBE}"
+     )
+
+     def dcBackend = openshift.apply(dcBackendTemplate).narrow('dc')
+
+     echo "Processing DeploymentConfig ${appName}-frontend-static..."
+     def dcFrontendStaticTemplate = openshift.process('-f',
+       "${rawApiDcURLFrontend}",
+       "REPO_NAME=${repoName}",
+       "JOB_NAME=${jobName}",
+       "NAMESPACE=${projectEnv}",
+       "APP_NAME=${appName}",
+       "HOST_ROUTE=${hostRoute}",
+       "TAG=${tag}",
+       "MIN_REPLICAS=${minReplicasFE}",
+       "MAX_REPLICAS=${maxReplicasFE}",
+       "MIN_CPU=${minCPUFE}",
+       "MAX_CPU=${maxCPUFE}",
+       "MIN_MEM=${minMemFE}",
+       "MAX_MEM=${maxMemFE}",
+       "CA_CERT=\"${caCert}\"",
+       "CERTIFICATE=\"${cert}\"",
+       "PRIVATE_KEY=\"${privateKey}\""
      )
 
      echo "Applying Deployment ${appName}-frontend-static..."
