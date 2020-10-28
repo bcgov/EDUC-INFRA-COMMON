@@ -100,7 +100,7 @@ objects:
                    DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REG-BATCH-API/master/tools/openshift/api.dc.yaml"
                    MIN_REPLICAS = "2"
                    MAX_REPLICAS = "3"
-                   MIN_CPU = "50m"
+                   MIN_CPU = "100m"
                    MAX_CPU = "300m"
                    MIN_MEM = "800Mi"
                    MAX_MEM = "1600Mi"
@@ -124,13 +124,13 @@ objects:
                    MIN_REPLICAS = "2"
                    MAX_REPLICAS = "3"
                    MIN_CPU = "50m"
-                   MAX_CPU = "300m"
-                   MIN_MEM = "750Mi"
-                   MAX_MEM = "1500Mi"
+                   MAX_CPU = "150m"
+                   MIN_MEM = "500Mi"
+                   MAX_MEM = "1000Mi"
                   }
                 steps {
                     script{
-                       extJSHelper.performPenRegApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${PEN_SERVICES_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "${MIN_REPLICAS}", "${MAX_REPLICAS}", "${MIN_CPU}", "${MAX_CPU}", "${MIN_MEM}", "${MAX_MEM}", "${TARGET_ENV}", "${NAMESPACE}", "${COMMON_NAMESPACE}")
+                       extJSHelper.performPenServicesApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${PEN_SERVICES_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "${MIN_REPLICAS}", "${MAX_REPLICAS}", "${MIN_CPU}", "${MAX_CPU}", "${MIN_MEM}", "${MAX_MEM}", "${TARGET_ENV}", "${NAMESPACE}", "${COMMON_NAMESPACE}")
                     }
                  }
             }
@@ -148,8 +148,8 @@ objects:
                    MAX_REPLICAS = "3"
                    MIN_CPU = "50m"
                    MAX_CPU = "300m"
-                   MIN_MEM = "750Mi"
-                   MAX_MEM = "1500Mi"
+                   MIN_MEM = "500Mi"
+                   MAX_MEM = "1000Mi"
                   }
                 steps {
                     script{
@@ -170,7 +170,7 @@ objects:
                      MIN_REPLICAS = "2"
                      MAX_REPLICAS = "3"
                      MIN_CPU = "30m"
-                     MAX_CPU = "300m"
+                     MAX_CPU = "150m"
                      MIN_MEM = "650Mi"
                      MAX_MEM = "750Mi"
                    }
