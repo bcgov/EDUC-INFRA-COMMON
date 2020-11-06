@@ -91,7 +91,7 @@ objects:
         terminationGracePeriodSeconds: 60
         containers:
           - name: nats
-            image: nats:2.1.6-alpine3.11
+            image: nats:2.1.9-alpine3.12
             resources:
               requests:
                 cpu: "50m"
