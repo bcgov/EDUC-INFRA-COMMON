@@ -420,57 +420,48 @@ def deployUIStageWithCerts(String hostRoute, String stageEnv, String projectEnv,
 }
 
 def deployPatroniSecrets(String stageEnv, String projectEnv, String appName) {
- openshift.withCluster() {
-   openshift.withProject("${projectEnv}") {
-     def patroni = openshift.selector('statefulset', "${appName}-pgsql-${stageEnv}")
-     if(!patroni.exists()){
-       def dcTemplate = openshift.process('-f',
-         'https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/patroni/patroni-postgresql-secrets.yaml',
-         "NAME=${appName}-pgsql",
-         "SUFFIX=-${stageEnv}",
-         "APP_DB_NAME=student_profile_saga",
-         "APP_DB_USERNAME=student_profile_saga"
-       )
+ def patroni = openshift.selector('statefulset', "${appName}-pgsql-${stageEnv}")
+ if(!patroni.exists()){
+   def dcTemplate = openshift.process('-f',
+     'https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/patroni/patroni-postgresql-secrets.yaml',
+     "NAME=${appName}-pgsql",
+     "SUFFIX=-${stageEnv}",
+     "APP_DB_NAME=student_profile_saga",
+     "APP_DB_USERNAME=student_profile_saga"
+   )
 
-       echo "Applying Deployment Patroni secrets"
-       def template = openshift.apply(dcTemplate).narrow('dc')
-        // Wait for deployments to roll out
-       timeout(5) {
-         template.rollout().status('--watch=true')
-       }
-     }
-     else {
-         echo "Deployment of patroni secrets already exists, so skipping to next step"
-     }
-
+   echo "Applying Deployment Patroni secrets"
+   def template = openshift.apply(dcTemplate).narrow('dc')
+    // Wait for deployments to roll out
+   timeout(5) {
+     template.rollout().status('--watch=true')
    }
-  }
+ }
+ else {
+     echo "Deployment of patroni secrets already exists, so skipping to next step"
+ }
 }
 
 def deployPatroni(String stageEnv, String projectEnv, String appName, String sourceEnv) {
- openshift.withCluster() {
-   openshift.withProject("${projectEnv}") {
-     def patroni = openshift.selector('statefulset', "${appName}-pgsql-${stageEnv}")
-     if(!patroni.exists()){
-       def dcTemplate = openshift.process('-f',
-         'https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/patroni/patroni-postgresql.yaml',
-         "NAME=${appName}-pgsql",
-         "SUFFIX=-${stageEnv}",
-         "IMAGE_STREAM_NAMESPACE=${sourceEnv}",
-         "IMAGE_STREAM_TAG=patroni:v11-stable",
-         "IMAGE_REGISTRY=image-registry.openshift-image-registry.svc:5000",
-         "INSTANCE=${appName}-pgsql-${stageEnv}"
-       )
+ def patroni = openshift.selector('statefulset', "${appName}-pgsql-${stageEnv}")
+ if(!patroni.exists()){
+   def dcTemplate = openshift.process('-f',
+     'https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/patroni/patroni-postgresql.yaml',
+     "NAME=${appName}-pgsql",
+     "SUFFIX=-${stageEnv}",
+     "IMAGE_STREAM_NAMESPACE=${sourceEnv}",
+     "IMAGE_STREAM_TAG=patroni:v11-stable",
+     "IMAGE_REGISTRY=image-registry.openshift-image-registry.svc:5000",
+     "INSTANCE=${appName}-pgsql-${stageEnv}"
+   )
 
-       echo "Applying Deployment patroni"
-       def template = openshift.apply(dcTemplate).narrow('statefulset')
-       timeout(5) {
-         template.rollout().status('--watch=true')
-       }
-     } else {
-       echo "Deployment of patroni already exists, so skipping to next step"
-     }
+   echo "Applying Deployment patroni"
+   def template = openshift.apply(dcTemplate).narrow('statefulset')
+   timeout(5) {
+     template.rollout().status('--watch=true')
    }
+ } else {
+   echo "Deployment of patroni already exists, so skipping to next step"
  }
 }
 
