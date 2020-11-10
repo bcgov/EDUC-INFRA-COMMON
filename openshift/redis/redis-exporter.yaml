@@ -43,7 +43,7 @@ objects:
         spec:
           containers:
             - name: redis-exporter
-              image: oliver006/redis_exporter:latest
+              image: oliver006/redis_exporter:v1.13.1-alpine
               resources:
                 requests:
                   cpu: "${CPU_REQUEST}"
