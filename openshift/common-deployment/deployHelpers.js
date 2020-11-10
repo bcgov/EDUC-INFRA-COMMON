@@ -39,7 +39,7 @@ def performSagaApiDeploy(String stageEnv, String projectEnv, String repoName, St
           def patroni = openshift.selector('statefulset', "${appName}-pgsql-${targetEnv}")
           if(!patroni.exists()){
             deployPatroniSecrets("${targetEnv}", "${projectEnv}", "${appName}")
-            deployPatroni("${targetEnv}", "${projectEnv}", "${appName}")
+            deployPatroni("${targetEnv}", "${projectEnv}", "${appName}", "${sourceEnv}")
           }else {
             echo "Deployment of patroni secrets already exists, so skipping to next step"
           }
@@ -447,7 +447,7 @@ def deployPatroniSecrets(String stageEnv, String projectEnv, String appName) {
   }
 }
 
-def deployPatroni(String stageEnv, String projectEnv, String appName) {
+def deployPatroni(String stageEnv, String projectEnv, String appName, String sourceEnv) {
  openshift.withCluster() {
    openshift.withProject("${projectEnv}") {
      def patroni = openshift.selector('statefulset', "${appName}-pgsql-${stageEnv}")
@@ -456,6 +456,9 @@ def deployPatroni(String stageEnv, String projectEnv, String appName) {
          'https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/patroni/patroni-postgresql.yaml',
          "NAME=${appName}-pgsql",
          "SUFFIX=-${stageEnv}",
+         "IMAGE_STREAM_NAMESPACE=${sourceEnv}",
+         "IMAGE_STREAM_TAG=patroni:v11-stable",
+         "IMAGE_REGISTRY=image-registry.openshift-image-registry.svc:5000",
          "INSTANCE=${appName}-pgsql-${stageEnv}"
        )
 
