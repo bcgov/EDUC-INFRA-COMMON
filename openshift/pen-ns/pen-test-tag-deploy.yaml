@@ -203,7 +203,7 @@ objects:
                      MAX_CPU_BE = "100m"
                      MIN_MEM_BE = "200Mi"
                      MAX_MEM_BE = "250Mi"
-                     TEST_HOST_ROUTE = "student-admin-c2mvws-test.pathfinder.gov.bc.ca"
+                     TEST_HOST_ROUTE = "student-admin-8878b4-test.apps.silver.devops.gov.bc.ca"
                    }
        			steps {
                      script{
