@@ -34,8 +34,8 @@ objects:
        pipeline {
            environment {
             extJSHelper = '';
-       	  NAMESPACE='c2mvws'
-       	  COMMON_NAMESPACE='mvubjx'
+       	  NAMESPACE='8878b4'
+       	  COMMON_NAMESPACE='75e61b'
            }
            agent any
        	stages {
