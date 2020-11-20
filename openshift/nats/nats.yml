@@ -20,14 +20,14 @@ objects:
     nats.conf: |-
         pid_file: "/var/run/nats/nats.pid"
         http: 8222
-
+        max_payload: 100Mb
         cluster {
             port: 6222
             routes [
             nats://nats.${POD_NAMESPACE}.svc.cluster.local:6222
             ]
             cluster_advertise: $CLUSTER_ADVERTISE
-            connect_retries: 30
+            connect_retries: 50
         }
 
 - apiVersion: v1
@@ -64,7 +64,7 @@ objects:
     selector:
       matchLabels:
         app: nats
-    replicas: 3
+    replicas: 5
     serviceName: "nats"
     template:
       metadata:
@@ -94,11 +94,11 @@ objects:
             image: nats:2.1.9-alpine3.12
             resources:
               requests:
-                cpu: "50m"
+                cpu: "40m"
                 memory: "128Mi"
               limits:
-                cpu: "200m"
-                memory: "256Mi"
+                cpu: "80m"
+                memory: "512Mi"
             ports:
               - containerPort: 4222
                 name: client
