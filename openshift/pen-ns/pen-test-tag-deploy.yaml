@@ -24,12 +24,12 @@ objects:
        def PEN_SERVICES_API_VERSION = '<Not Required>'
        def PEN_REG_BATCH_API_VERSION = '<Not Required>'
 
-       def DEV = 'c2mvws-dev'
-       def TARGET_ENVIRONMENT = 'c2mvws-test'
+       def DEV = '8878b4-tools'
+       def TARGET_ENVIRONMENT = '8878b4-dev'
        def JOB_NAME = 'master'
-       def STAGING_ENV = 'Test'
-       def TARGET_ENV = 'test'
-       def APP_DOMAIN = 'pathfinder.gov.bc.ca'
+       def STAGING_ENV = 'Dev'
+       def TARGET_ENV = 'dev'
+       def APP_DOMAIN = 'apps.silver.devops.gov.bc.ca'
 
        pipeline {
            environment {
@@ -97,11 +97,11 @@ objects:
                 environment {
                    APP_NAME = "pen-reg-batch-api"
                    REPO_NAME = "educ-pen-reg-batch-api"
-                   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REG-BATCH-API/master/tools/openshift/api.dc.yaml"
+                   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REG-BATCH-API/master/tools/openshift/api.dc.ocp4.yaml"
                    MIN_REPLICAS = "2"
                    MAX_REPLICAS = "3"
                    MIN_CPU = "100m"
-                   MAX_CPU = "300m"
+                   MAX_CPU = "150m"
                    MIN_MEM = "800Mi"
                    MAX_MEM = "1600Mi"
                   }
@@ -120,7 +120,7 @@ objects:
                 environment {
                    APP_NAME = "pen-services-api"
                    REPO_NAME = "educ-pen-services-api"
-                   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-SERVICES-API/master/tools/openshift/api.dc.yaml"
+                   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-SERVICES-API/master/tools/openshift/api.dc.ocp4.yaml"
                    MIN_REPLICAS = "2"
                    MAX_REPLICAS = "3"
                    MIN_CPU = "50m"
@@ -143,11 +143,11 @@ objects:
                 environment {
                    APP_NAME = "pen-match-api"
                    REPO_NAME = "educ-pen-match-api"
-                   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-MATCH-API/master/tools/openshift/api.dc.yaml"
+                   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-MATCH-API/master/tools/openshift/api.dc.ocp4.yaml"
                    MIN_REPLICAS = "2"
                    MAX_REPLICAS = "3"
                    MIN_CPU = "50m"
-                   MAX_CPU = "300m"
+                   MAX_CPU = "150m"
                    MIN_MEM = "500Mi"
                    MAX_MEM = "1000Mi"
                   }
@@ -166,7 +166,7 @@ objects:
        			environment {
        			   APP_NAME = "student-profile-saga-api"
                      REPO_NAME = "educ-student-profile-saga-api"
-       			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-SAGA-API/master/tools/openshift/api.dc.yaml"
+       			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-SAGA-API/master/tools/openshift/api.dc.ocp4.yaml"
                      MIN_REPLICAS = "2"
                      MAX_REPLICAS = "3"
                      MIN_CPU = "30m"
@@ -189,8 +189,8 @@ objects:
        			environment {
        			   APP_NAME = "student-admin"
                      REPO_NAME = "educ-student-admin"
-       			   DC_URL_FRONTEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/openshift/frontend-static.dc.yaml"
-       			   DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/openshift/backend.dc.yaml"
+       			   DC_URL_FRONTEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/openshift/frontend-static.dc.ocp4.yaml"
+       			   DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/openshift/backend.dc.ocp4.yaml"
                      MIN_REPLICAS_FE = "2"
                      MAX_REPLICAS_FE = "3"
                      MIN_CPU_FE = "25m"
@@ -220,11 +220,11 @@ objects:
        			environment {
        			   APP_NAME = "student-profile-email-api"
                      REPO_NAME = "educ-student-profile-email-api"
-       			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-EMAIL-API/master/tools/openshift/api.dc.yaml"
+       			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-EMAIL-API/master/tools/openshift/api.dc.ocp4.yaml"
                      MIN_REPLICAS = "2"
                      MAX_REPLICAS = "3"
                      MIN_CPU = "50m"
-                     MAX_CPU = "300m"
+                     MAX_CPU = "150m"
                      MIN_MEM = "650Mi"
                      MAX_MEM = "750Mi"
                    }
@@ -243,8 +243,8 @@ objects:
        			environment {
        			   APP_NAME = "student-profile"
                      REPO_NAME = "educ-student-profile"
-       			   DC_URL_FRONTEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE/master/tools/openshift/frontend-static.dc.yaml"
-       			   DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE/master/tools/openshift/backend.dc.yaml"
+       			   DC_URL_FRONTEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE/master/tools/openshift/frontend-static.dc.ocp4.yaml"
+       			   DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE/master/tools/openshift/backend.dc.ocp4.yaml"
                      MIN_REPLICAS_FE = "2"
                      MAX_REPLICAS_FE = "3"
                      MIN_CPU_FE = "25m"
