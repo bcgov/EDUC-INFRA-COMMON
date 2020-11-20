@@ -9,4 +9,3 @@ Network Security Policies can be deployed for the PEN namespace by performing th
 ```
  oc process -f pen-ocp-policies.yaml -p ENVIRONMENT=<env e.g. dev> -p COMMON_NAMESPACE=<common NS e.g.74a62a> NAMESPACE=<common NS e.g.85b41d> | oc create -f -
 ```
-

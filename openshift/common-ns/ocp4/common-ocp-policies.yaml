@@ -2,7 +2,7 @@ apiVersion: template.openshift.io/v1
 kind: Template
 parameters:
   - name: NAMESPACE
-  - name: COMMON_NAMESPACE
+  - name: PEN_NAMESPACE
   - name: ENVIRONMENT
 objects:
   - apiVersion: security.devops.gov.bc.ca/v1alpha1
@@ -50,9 +50,9 @@ objects:
     spec:
       description: "allow ${NAMESPACE}-${ENVIRONMENT} pods to talk to ${COMMON_NAMESPACE}-${ENVIRONMENT} pods"
       destination:
-        - - $namespace=${COMMON_NAMESPACE}-${ENVIRONMENT}
-      source:
         - - $namespace=${NAMESPACE}-${ENVIRONMENT}
+      source:
+        - - $namespace=${PEN_NAMESPACE}-${ENVIRONMENT}
   - apiVersion: security.devops.gov.bc.ca/v1alpha1
     kind: NetworkSecurityPolicy
     metadata:
