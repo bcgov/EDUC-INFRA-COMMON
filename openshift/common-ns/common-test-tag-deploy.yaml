@@ -24,22 +24,22 @@ objects:
        def STUDENT_API_VERSION = '<Not Required>'
        def STUDENT_PROFILE_API_VERSION = '<Not Required>'
 
-       def DEV = 'mvubjx-dev'
-       def TARGET_ENVIRONMENT = 'mvubjx-test'
-       def TARGET_ENV = 'test'
+       def DEV = '75e61b-tools'
+       def TARGET_ENVIRONMENT = '75e61b-dev'
+       def TARGET_ENV = 'dev'
        def JOB_NAME = 'master'
-       def STAGING_ENV = 'Test'
-       def APP_DOMAIN = 'pathfinder.gov.bc.ca'
+       def STAGING_ENV = 'Dev'
+       def APP_DOMAIN = 'apps.silver.devops.gov.bc.ca'
 
        pipeline {
            environment {
             extJSHelper = '';
-       	  NAMESPACE='mvubjx'
+       	  NAMESPACE='75e61b'
        	  DEV_EXCHANGE_REALM='v45fd2kb'
             MIN_REPLICAS = "2"
             MAX_REPLICAS = "3"
             MIN_CPU = "50m"
-            MAX_CPU = "300m"
+            MAX_CPU = "150m"
             MIN_MEM = "650Mi"
             MAX_MEM = "750Mi"
            }
@@ -112,7 +112,7 @@ objects:
        			environment {
        			   APP_NAME = "digitalid-api"
                      REPO_NAME = "educ-digitalid-api"
-       			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-DIGITALID-API/master/tools/openshift/api.dc.yaml"
+       			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-DIGITALID-API/master/tools/openshift/api.dc.ocp4.yaml"
                    }
        			steps {
                     script{
@@ -129,7 +129,7 @@ objects:
        			environment {
        			   APP_NAME = "pen-demographics-api"
                      REPO_NAME = "educ-pen-demog-api"
-       			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-DEMOG-API/master/tools/openshift/api.dc.yaml"
+       			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-DEMOG-API/master/tools/openshift/api.dc.ocp4.yaml"
                    }
        			steps {
                     script{
@@ -146,7 +146,7 @@ objects:
        			environment {
        			   APP_NAME = "pen-request-api"
                      REPO_NAME = "educ-pen-request-api"
-       			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST-API/master/tools/openshift/api.dc.yaml"
+       			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST-API/master/tools/openshift/api.dc.ocp4.yaml"
                    }
        			steps {
                     script{
@@ -163,7 +163,7 @@ objects:
        			environment {
        			   APP_NAME = "services-card-api"
                      REPO_NAME = "educ-services-card-api"
-       			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-SERVICES-CARD-API/master/tools/openshift/api.dc.yaml"
+       			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-SERVICES-CARD-API/master/tools/openshift/api.dc.ocp4.yaml"
                    }
        			steps {
                     script{
@@ -180,7 +180,7 @@ objects:
        			environment {
        			   APP_NAME = "student-api"
                      REPO_NAME = "educ-student-api"
-       			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-API/master/tools/openshift/api.dc.yaml"
+       			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-API/master/tools/openshift/api.dc.ocp4.yaml"
                    }
        			steps {
                     script{
@@ -197,7 +197,7 @@ objects:
        			environment {
        			   APP_NAME = "student-profile-api"
                      REPO_NAME = "educ-student-profile-api"
-       			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-API/master/tools/openshift/api.dc.yaml"
+       			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-API/master/tools/openshift/api.dc.ocp4.yaml"
                    }
        			steps {
                     script{
@@ -214,7 +214,7 @@ objects:
        			environment {
        			   APP_NAME = "soam-api"
                      REPO_NAME = "educ-soam-api"
-       			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-SOAM-API/master/tools/openshift/api.dc.yaml"
+       			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-SOAM-API/master/tools/openshift/api.dc.ocp4.yaml"
                    }
        			steps {
                     script{
