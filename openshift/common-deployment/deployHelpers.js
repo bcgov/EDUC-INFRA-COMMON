@@ -408,9 +408,9 @@ def deployUIStageWithCerts(String hostRoute, String stageEnv, String projectEnv,
        "MAX_CPU=${maxCPUFE}",
        "MIN_MEM=${minMemFE}",
        "MAX_MEM=${maxMemFE}",
-       "CA_CERT=\"${caCert}\"",
-       "CERTIFICATE=\"${cert}\"",
-       "PRIVATE_KEY=\"${privateKey}\""
+       "CA_CERT=${caCert}",
+       "CERTIFICATE=${cert}",
+       "PRIVATE_KEY=${privateKey}"
      )
 
      echo "Applying Deployment ${appName}-frontend-static..."
