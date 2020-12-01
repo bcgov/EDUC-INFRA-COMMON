@@ -23,6 +23,7 @@ objects:
        def SOAM_API_VERSION = '<Not Required>'
        def STUDENT_API_VERSION = '<Not Required>'
        def STUDENT_PROFILE_API_VERSION = '<Not Required>'
+       def SCHOOL_API_VERSION = '<Not Required>'
 
        def DEV = '75e61b-tools'
        def TARGET_ENVIRONMENT = '75e61b-dev'
@@ -74,6 +75,9 @@ objects:
        									string(defaultValue: "",
        											description: 'Enter Staff Admin Version, leave the tag blank if this service is not to be deployed',
        											name: 'STUDENT_PROFILE_API_VERSION'),
+       									string(defaultValue: "",
+       											description: 'Enter School API Version, leave the tag blank if this service is not to be deployed',
+       											name: 'SCHOOL_API_VERSION'),
        							])
        					// Save to variables. Default to empty string if not found.
        					DIGITAL_ID_API_VERSION = tagInput.DIGITAL_ID_API_VERSION?:''
@@ -83,6 +87,7 @@ objects:
        					SOAM_API_VERSION = tagInput.SOAM_API_VERSION?:''
        					STUDENT_API_VERSION = tagInput.STUDENT_API_VERSION?:''
        					STUDENT_PROFILE_API_VERSION = tagInput.STUDENT_PROFILE_API_VERSION?:''
+                SCHOOL_API_VERSION = tagInput.SCHOOL_API_VERSION?:''
        				}
        			}
        		}
@@ -219,6 +224,23 @@ objects:
        			steps {
                     script{
                       extJSHelper.performSoamApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, REPO_NAME, "${APP_NAME}", JOB_NAME, "${SOAM_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, DC_URL, MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE, DEV_EXCHANGE_REALM)
+                    }
+                   }
+       		}
+          stage('School API'){
+       			when {
+       				expression {
+       					return "${SCHOOL_API_VERSION}" != "<Not Required>" && "${SCHOOL_API_VERSION}" != "";
+       				}
+       			}
+       			environment {
+       			   APP_NAME = "school-api"
+                     REPO_NAME = "educ-school-api"
+       			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-SCHOOL-API/master/tools/openshift/api.dc.ocp4.yaml"
+                   }
+       			steps {
+                    script{
+                      extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${SCHOOL_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
                     }
                    }
        		}
