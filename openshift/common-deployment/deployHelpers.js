@@ -477,7 +477,7 @@ def triggerWorkflow(String token, String eventType = 'smoke-test-test-admin') {
 }
 
 def getLatestWorkflowRun(String token) {
-  def response = httpRequest customHeaders: [[name: 'Authorization', value: "token ${token}"], [name: 'Accept', value: "application/vnd.github.ant-man-preview+json"]], url: "https://api.github.com/repos/${OWNER}/${TESTS_REPO_NAME}/actions/runs?branch=master&event=repository_dispatch"
+  def response = httpRequest customHeaders: [[name: 'Authorization', value: "token ${token}"], [name: 'Accept', value: "application/vnd.github.ant-man-preview+json"]], url: "https://api.github.com/repos/${OWNER}/${TESTS_REPO_NAME}/actions/runs?branch=main&event=repository_dispatch"
   echo "getLatestWorkflowRun Status: ${response.status}"
   //echo "Content: ${response.content}"
   def jsonObj = readJSON text: response.content
