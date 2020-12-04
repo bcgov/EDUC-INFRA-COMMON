@@ -495,7 +495,7 @@ def getWorkflowRunById(String token, long runId) {
 }
 
 def waitForWorkflowRunComplete(String token) {
-  sleep(5)
+  sleep(15)
   def latestRunId = getLatestWorkflowRun(token)
   if(!latestRunId) {
     error('No workflow run in Github Actions. Aborting the build!')
