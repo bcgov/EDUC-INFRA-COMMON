@@ -21,6 +21,9 @@ objects:
         pid_file: "/var/run/nats/nats.pid"
         http: 8222
         max_payload: 100Mb
+        debug: true
+        trace: true
+        trace_verbose: true
         cluster {
             port: 6222
             routes [
