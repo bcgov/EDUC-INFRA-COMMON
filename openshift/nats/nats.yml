@@ -143,7 +143,6 @@ objects:
                 name: pid
 
       # Liveness/Readiness probes against the monitoring .
-      #
       livenessProbe:
         httpGet:
           path: /
