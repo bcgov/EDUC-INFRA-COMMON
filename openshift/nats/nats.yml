@@ -158,7 +158,7 @@ objects:
         timeoutSeconds: 5
 
       # Gracefully stop NATS Server on pod deletion or image upgrade.
-      #
+      # 
       lifecycle:
         preStop:
           exec:
