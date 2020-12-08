@@ -31,7 +31,7 @@ objects:
             cluster_advertise: $CLUSTER_ADVERTISE
             connect_retries: 50
         }
-	      leafnodes {
+        leafnodes {
           port: 7422
         }
 - apiVersion: v1
