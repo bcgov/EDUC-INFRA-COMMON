@@ -24,12 +24,16 @@ objects:
         cluster {
             port: 6222
             routes [
-            nats://nats.${POD_NAMESPACE}.svc.cluster.local:6222
+              nats://nats-0.nats.default.svc:6222
+              nats://nats-1.nats.default.svc:6222
+              nats://nats-2.nats.default.svc:6222
             ]
             cluster_advertise: $CLUSTER_ADVERTISE
             connect_retries: 50
         }
-
+	      leafnodes {
+          port: 7422
+        }
 - apiVersion: v1
   kind: Service
   metadata:
