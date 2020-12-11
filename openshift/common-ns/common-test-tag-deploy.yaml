@@ -24,6 +24,8 @@ objects:
        def STUDENT_API_VERSION = '<Not Required>'
        def STUDENT_PROFILE_API_VERSION = '<Not Required>'
        def SCHOOL_API_VERSION = '<Not Required>'
+       def SLD_API_VERSION = '<Not Required>'
+       def PEN_TRAX_API_VERSION = '<Not Required>'
 
        def DEV = '75e61b-tools'
        def TARGET_ENVIRONMENT = '75e61b-dev'
@@ -78,6 +80,12 @@ objects:
        									string(defaultValue: "",
        											description: 'Enter School API Version, leave the tag blank if this service is not to be deployed',
        											name: 'SCHOOL_API_VERSION'),
+       									string(defaultValue: "",
+       											description: 'Enter SLD API Version, leave the tag blank if this service is not to be deployed',
+       											name: 'SLD_API_VERSION'),
+       									string(defaultValue: "",
+       											description: 'Enter PEN TRAX API Version, leave the tag blank if this service is not to be deployed',
+       											name: 'PEN_TRAX_API_VERSION'),
        							])
        					// Save to variables. Default to empty string if not found.
        					DIGITAL_ID_API_VERSION = tagInput.DIGITAL_ID_API_VERSION?:''
@@ -87,7 +95,9 @@ objects:
        					SOAM_API_VERSION = tagInput.SOAM_API_VERSION?:''
        					STUDENT_API_VERSION = tagInput.STUDENT_API_VERSION?:''
        					STUDENT_PROFILE_API_VERSION = tagInput.STUDENT_PROFILE_API_VERSION?:''
-                SCHOOL_API_VERSION = tagInput.SCHOOL_API_VERSION?:''
+                        SCHOOL_API_VERSION = tagInput.SCHOOL_API_VERSION?:''
+                        SLD_API_VERSION = tagInput.SLD_API_VERSION?:''
+                        PEN_TRAX_API_VERSION = tagInput.SLD_API_VERSION?:''
        				}
        			}
        		}
@@ -241,6 +251,40 @@ objects:
        			steps {
                     script{
                       extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${SCHOOL_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
+                    }
+                   }
+       		}
+          stage('SLD API'){
+       			when {
+       				expression {
+       					return "${SLD_API_VERSION}" != "<Not Required>" && "${SLD_API_VERSION}" != "";
+       				}
+       			}
+       			environment {
+       			   APP_NAME = "sld-api"
+                   REPO_NAME = "educ-sld-api"
+       			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-SLD-API/master/tools/openshift/api.dc.ocp4.yaml"
+                   }
+       			steps {
+                    script{
+                      extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${SLD_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
+                    }
+                   }
+       		}
+          stage('PEN TRAX API'){
+       			when {
+       				expression {
+       					return "${PEN_TRAX_API_VERSION}" != "<Not Required>" && "${PEN_TRAX_API_VERSION}" != "";
+       				}
+       			}
+       			environment {
+       			   APP_NAME = "pen-trax-api"
+                   REPO_NAME = "educ-pen-trax-api"
+       			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-TRAX-API/master/tools/openshift/api.dc.ocp4.yaml"
+                   }
+       			steps {
+                    script{
+                      extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${PEN_TRAX_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
                     }
                    }
        		}
