@@ -41,9 +41,11 @@ objects:
           labels:
             name: "redis-exporter"
         spec:
+          imagePullSecrets:
+            - name: artifactory-creds
           containers:
             - name: redis-exporter
-              image: oliver006/redis_exporter:v1.13.1-alpine
+              image: docker-remote.artifacts.developer.gov.bc.ca/oliver006/redis_exporter:v1.13.1-alpine
               resources:
                 requests:
                   cpu: "${CPU_REQUEST}"
