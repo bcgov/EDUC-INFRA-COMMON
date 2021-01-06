@@ -93,11 +93,11 @@ parameters:
   - name: CPU_LIMIT
     value: 30m
   - name: MEMORY_LIMIT
-    value: 32Mi
+    value: 64Mi
   - name: CPU_REQUEST
     value: 10m
   - name: MEMORY_REQUEST
-    value: 16Mi
+    value: 32Mi
   - name: NAME
     displayName: Object names
     description: The name of the OpenShift objects.
