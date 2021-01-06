@@ -104,7 +104,7 @@ parameters:
     value: redis
     required: true
   - name: NAMESPACE
-    description: The name of the OpenShift Service exposed for the database.
+    description: The name of the Open Shift Service exposed for the database.
     required: true
   - name: ENVIRONMENT
     description: The Environment it is applied to.
