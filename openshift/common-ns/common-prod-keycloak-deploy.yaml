@@ -32,7 +32,7 @@ objects:
          		  steps{
          			  script{
          				  dir('.pipeline'){
-         					  sh "curl -sSL 'https://raw.githubusercontent.com/BCDevOps/pipeline-cli/v1.0/cli.sh' | bash -s deploy -- --pr=235 --env=prod"
+         					  sh "curl -sSL 'https://raw.githubusercontent.com/BCDevOps/pipeline-cli/v1.0/cli.sh' | bash -s deploy -- --pr=253 --env=prod"
                           }
                      }
          	      }
