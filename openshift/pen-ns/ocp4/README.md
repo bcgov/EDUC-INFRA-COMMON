@@ -2,8 +2,6 @@
 
 ## NSP Deployment
 Network Security Policies can be deployed for the PEN namespace by performing the following
-* Switch to the correct project/namespace you're targetting
-* Navigate to the `./openshift/pen-ns/ocp4` folder
 * Run the following command:
 
 ```
