@@ -19,8 +19,10 @@ objects:
             def PEN_REQUEST_BATCH_API_VERSION = '<Not Required>'
             def STUDENT_PROFILE_EMAIL_API = '<Not Required>'
             def STUDENT_PROFILE_VERSION = '<Not Required>'
-            def PEN_REQUEST_VERSION = '<Not Required>'
+            def PEN_MATCH_VERSION = '<Not Required>'
             def STAFF_ADMIN_VERSION = '<Not Required>'
+            def PEN_SERVICES_VERSION = '<Not Required>'
+            def STUDENT_PROFILE_SAGA_API_VERSION = '<Not Required>'
             
             def TOOLS = 'c2mvws-tools'
             def TARGET_ENVIRONMENT = 'c2mvws-dev'
@@ -72,18 +74,26 @@ objects:
                                                         description: 'Enter Student Profile Version, leave the tag blank if this service is not to be tagged',
                                                         name: 'STUDENT_PROFILE_VERSION'),
                                                 string(defaultValue: "",
-                                                        description: 'Enter PEN Request Version, leave the tag blank if this service is not to be tagged',
-                                                        name: 'PEN_REQUEST_VERSION'),
+                                                        description: 'Enter PEN Match Request Version, leave the tag blank if this service is not to be tagged',
+                                                        name: 'PEN_MATCH_VERSION'),
                                                 string(defaultValue: "",
                                                         description: 'Enter Staff Admin Version, leave the tag blank if this service is not to be tagged',
                                                         name: 'STAFF_ADMIN_VERSION'),
+                                                string(defaultValue: "",
+                                                        description: 'Enter PEN services Version, leave the tag blank if this service is not to be tagged',
+                                                        name: 'PEN_SERVICES_VERSION'),
+                                                string(defaultValue: "",
+                                                        description: 'Enter student profile saga Version, leave the tag blank if this service is not to be tagged',
+                                                        name: 'STUDENT_PROFILE_SAGA_API_VERSION'),
                                         ])
             					// Save to variables. Default to empty string if not found.
             					PEN_REQUEST_BATCH_API_VERSION = tagInput.PEN_REQUEST_BATCH_API_VERSION?:''
             					STUDENT_PROFILE_EMAIL_API = tagInput.STUDENT_PROFILE_EMAIL_API?:''
             					STUDENT_PROFILE_VERSION = tagInput.STUDENT_PROFILE_VERSION?:''
-            					PEN_REQUEST_VERSION = tagInput.PEN_REQUEST_VERSION?:''
+            					PEN_MATCH_VERSION = tagInput.PEN_MATCH_VERSION?:''
             					STAFF_ADMIN_VERSION = tagInput.STAFF_ADMIN_VERSION?:''
+            					PEN_SERVICES_VERSION = tagInput.PEN_SERVICES_VERSION?:''
+            					STUDENT_PROFILE_SAGA_API_VERSION = tagInput.STUDENT_PROFILE_SAGA_API_VERSION?:''
             				}
                         }
                     }
@@ -125,16 +135,6 @@ objects:
             		       createGitTag("${STUDENT_PROFILE_VERSION}", "${STUDENT_PROFILE_VERSION}", 'EDUC-STUDENT-PROFILE')
             			}
             		}
-            		stage('Tag PEN Request Frontend and Backend In Git'){
-            		    when {
-            				expression {
-            					return "${PEN_REQUEST_VERSION}" != "<Not Required>" && "${PEN_REQUEST_VERSION}" != "";
-            				}
-            			}
-            			steps {
-            		       createGitTag("${PEN_REQUEST_VERSION}", "${PEN_REQUEST_VERSION}", 'EDUC-PEN-REQUEST')
-            			}
-            		}
             		stage('Tag Student Admin Frontend and Backend In Git'){
             		    when {
             				expression {
@@ -143,6 +143,36 @@ objects:
             			}
             			steps {
             		       createGitTag("${STAFF_ADMIN_VERSION}", "${STAFF_ADMIN_VERSION}", 'EDUC-STUDENT-ADMIN')
+            			}
+            		}
+            		stage('Tag PEN Match In Git'){
+            		    when {
+            				expression {
+            					return "${PEN_MATCH_VERSION}" != "<Not Required>" && "${PEN_MATCH_VERSION}" != "";
+            				}
+            			}
+            			steps {
+            		       createGitTag("${PEN_MATCH_VERSION}", "${PEN_MATCH_VERSION}", 'EDUC-PEN-MATCH-API')
+            			}
+            		}
+            		stage('Tag PEN Services In Git'){
+            		    when {
+            				expression {
+            					return "${PEN_SERVICES_VERSION}" != "<Not Required>" && "${PEN_SERVICES_VERSION}" != "";
+            				}
+            			}
+            			steps {
+            		       createGitTag("${PEN_SERVICES_VERSION}", "${PEN_SERVICES_VERSION}", 'EDUC-PEN-SERVICES-API')
+            			}
+            		}
+            		stage('Tag Student Profile SAGA In Git'){
+            		    when {
+            				expression {
+            					return "${STUDENT_PROFILE_SAGA_API_VERSION}" != "<Not Required>" && "${STUDENT_PROFILE_SAGA_API_VERSION}" != "";
+            				}
+            			}
+            			steps {
+            		       createGitTag("${STUDENT_PROFILE_SAGA_API_VERSION}", "${STUDENT_PROFILE_SAGA_API_VERSION}", 'EDUC-STUDENT-PROFILE-SAGA-API')
             			}
             		}
                 }
