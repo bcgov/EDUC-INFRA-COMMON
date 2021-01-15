@@ -97,7 +97,7 @@ objects:
        					STUDENT_PROFILE_API_VERSION = tagInput.STUDENT_PROFILE_API_VERSION?:''
                         SCHOOL_API_VERSION = tagInput.SCHOOL_API_VERSION?:''
                         SLD_API_VERSION = tagInput.SLD_API_VERSION?:''
-                        PEN_TRAX_API_VERSION = tagInput.SLD_API_VERSION?:''
+                        PEN_TRAX_API_VERSION = tagInput.PEN_TRAX_API_VERSION?:''
        				}
        			}
        		}
