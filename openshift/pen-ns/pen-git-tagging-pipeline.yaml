@@ -112,7 +112,7 @@ objects:
             				}
             			}
             			steps {
-            		       createGitTag("${PEN_REQUEST_BATCH_API_VERSION}", "${PEN_REQUEST_BATCH_API_VERSION}", 'EDUC-PEN-REQUEST-BATCH-API')
+            		       createGitTag("${PEN_REQUEST_BATCH_API_VERSION}", "${PEN_REQUEST_BATCH_API_VERSION}", 'EDUC-PEN-REG-BATCH-API')
             			}
             		}
             		stage('Tag Student Profile Email API In Git'){
