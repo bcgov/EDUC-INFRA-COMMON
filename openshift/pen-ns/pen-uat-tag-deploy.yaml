@@ -25,7 +25,7 @@ objects:
        def PEN_REG_BATCH_API_VERSION = '<Not Required>'
 
        def DEV = '8878b4-tools'
-       def TARGET_ENVIRONMENT = '8878b4-dev'
+       def TARGET_ENVIRONMENT = '8878b4-test'
        def JOB_NAME = 'master'
        def STAGING_ENV = 'Dev'
        def TARGET_ENV = 'dev'
