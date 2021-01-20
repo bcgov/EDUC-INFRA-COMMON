@@ -180,6 +180,29 @@ objects:
                      }
                   }
        		}
+       		stage('Student Profile Email API'){
+       			when {
+       				expression {
+       					return "${STUDENT_PROFILE_EMAIL_API_VERSION}" != "<Not Required>" && "${STUDENT_PROFILE_EMAIL_API_VERSION}" != "";
+       				}
+       			}
+       			environment {
+       			   APP_NAME = "student-profile-email-api"
+                     REPO_NAME = "educ-student-profile-email-api"
+       			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-EMAIL-API/master/tools/openshift/api.dc.ocp4.yaml"
+                     MIN_REPLICAS = "2"
+                     MAX_REPLICAS = "3"
+                     MIN_CPU = "50m"
+                     MAX_CPU = "150m"
+                     MIN_MEM = "650Mi"
+                     MAX_MEM = "750Mi"
+                   }
+       			steps {
+                     script{
+                        extJSHelper.performEmailApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${STUDENT_PROFILE_EMAIL_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "${MIN_REPLICAS}", "${MAX_REPLICAS}", "${MIN_CPU}", "${MAX_CPU}", "${MIN_MEM}", "${MAX_MEM}", TARGET_ENV, NAMESPACE, COMMON_NAMESPACE)
+                     }
+                   }
+       		}
        		stage('Student Admin Frontend and Backend'){
        			when {
        				expression {
@@ -210,29 +233,6 @@ objects:
                         extJSHelper.performUIDeploy(TEST_HOST_ROUTE, STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${STAFF_ADMIN_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}", "${MIN_REPLICAS_FE}", "${MAX_REPLICAS_FE}", "${MIN_CPU_FE}", "${MAX_CPU_FE}", "${MIN_MEM_FE}", "${MAX_MEM_FE}", "${MIN_REPLICAS_BE}", "${MAX_REPLICAS_BE}", "${MIN_CPU_BE}", "${MAX_CPU_BE}", "${MIN_MEM_BE}", "${MAX_MEM_BE}", TARGET_ENV, NAMESPACE, COMMON_NAMESPACE, "", "", "")
                      }
                   }
-       		}
-       		stage('Student Profile Email API'){
-       			when {
-       				expression {
-       					return "${STUDENT_PROFILE_EMAIL_API_VERSION}" != "<Not Required>" && "${STUDENT_PROFILE_EMAIL_API_VERSION}" != "";
-       				}
-       			}
-       			environment {
-       			   APP_NAME = "student-profile-email-api"
-                     REPO_NAME = "educ-student-profile-email-api"
-       			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-EMAIL-API/master/tools/openshift/api.dc.ocp4.yaml"
-                     MIN_REPLICAS = "2"
-                     MAX_REPLICAS = "3"
-                     MIN_CPU = "50m"
-                     MAX_CPU = "150m"
-                     MIN_MEM = "650Mi"
-                     MAX_MEM = "750Mi"
-                   }
-       			steps {
-                     script{
-                        extJSHelper.performEmailApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${STUDENT_PROFILE_EMAIL_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "${MIN_REPLICAS}", "${MAX_REPLICAS}", "${MIN_CPU}", "${MAX_CPU}", "${MIN_MEM}", "${MAX_MEM}", TARGET_ENV, NAMESPACE, COMMON_NAMESPACE)
-                     }
-                   }
        		}
        		stage('Student Profile Frontend and Backend'){
        			when {
