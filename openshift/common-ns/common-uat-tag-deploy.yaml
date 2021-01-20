@@ -220,24 +220,7 @@ objects:
                     }
                    }
        		}
-       		stage('SOAM API'){
-       			when {
-       				expression {
-       					return "${SOAM_API_VERSION}" != "<Not Required>" && "${SOAM_API_VERSION}" != "";
-       				}
-       			}
-       			environment {
-       			   APP_NAME = "soam-api"
-                     REPO_NAME = "educ-soam-api"
-       			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-SOAM-API/master/tools/openshift/api.dc.ocp4.yaml"
-                   }
-       			steps {
-                    script{
-                      extJSHelper.performSoamApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, REPO_NAME, "${APP_NAME}", JOB_NAME, "${SOAM_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, DC_URL, MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE, DEV_EXCHANGE_REALM)
-                    }
-                   }
-       		}
-          stage('School API'){
+            stage('School API'){
        			when {
        				expression {
        					return "${SCHOOL_API_VERSION}" != "<Not Required>" && "${SCHOOL_API_VERSION}" != "";
@@ -254,7 +237,7 @@ objects:
                     }
                    }
        		}
-          stage('SLD API'){
+            stage('SLD API'){
        			when {
        				expression {
        					return "${SLD_API_VERSION}" != "<Not Required>" && "${SLD_API_VERSION}" != "";
@@ -271,7 +254,7 @@ objects:
                     }
                    }
        		}
-          stage('PEN TRAX API'){
+            stage('PEN TRAX API'){
        			when {
        				expression {
        					return "${PEN_TRAX_API_VERSION}" != "<Not Required>" && "${PEN_TRAX_API_VERSION}" != "";
@@ -285,6 +268,23 @@ objects:
        			steps {
                     script{
                       extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${PEN_TRAX_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
+                    }
+                   }
+       		}
+       		stage('SOAM API'){
+       			when {
+       				expression {
+       					return "${SOAM_API_VERSION}" != "<Not Required>" && "${SOAM_API_VERSION}" != "";
+       				}
+       			}
+       			environment {
+       			   APP_NAME = "soam-api"
+                     REPO_NAME = "educ-soam-api"
+       			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-SOAM-API/master/tools/openshift/api.dc.ocp4.yaml"
+                   }
+       			steps {
+                    script{
+                      extJSHelper.performSoamApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, REPO_NAME, "${APP_NAME}", JOB_NAME, "${SOAM_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, DC_URL, MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE, DEV_EXCHANGE_REALM)
                     }
                    }
        		}

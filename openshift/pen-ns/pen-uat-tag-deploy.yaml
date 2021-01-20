@@ -27,8 +27,8 @@ objects:
        def DEV = '8878b4-tools'
        def TARGET_ENVIRONMENT = '8878b4-test'
        def JOB_NAME = 'master'
-       def STAGING_ENV = 'Dev'
-       def TARGET_ENV = 'dev'
+       def STAGING_ENV = 'Test'
+       def TARGET_ENV = 'test'
        def APP_DOMAIN = 'apps.silver.devops.gov.bc.ca'
 
        pipeline {
