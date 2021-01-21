@@ -61,7 +61,7 @@ spec:
     matchLabels:
       app: stan
   serviceName: stan
-  replicas: 3
+  replicas: 2
   volumeClaimTemplates:
     - metadata:
         name: stan-educ-vol
