@@ -92,7 +92,7 @@ spec:
       # STAN Server
       containers:
         - name: stan
-          image: nats-streaming:alpine
+          image: "docker-remote.artifacts.developer.gov.bc.ca/nats-streaming:alpine"
           resources:
             requests:
               cpu: "100m"
