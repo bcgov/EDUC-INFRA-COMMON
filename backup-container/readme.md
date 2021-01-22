@@ -12,7 +12,7 @@ oc create -n <NAMESPACE> configmap backup-conf --from-literal=backup.conf="postg
  0 4 * * * default ./backup.sh -s -v all"
 ```
 6. Process the deployment template 
-`oc -n <namespace> process -f https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/backup-container/openshift/templates/backup/backup-deploy.json -p IMAGE_NAMESPACE=<namespace> -p TAG_NAME=<tag-name> -p DATABASE_DEPLOYMENT_NAME=<database-service-name> -p WEBHOOK_URL=<webhook-url> -p DAILY_BACKUPS=<daily-backups> -p WEEKLY_BACKUPS=<weekly-backups> -p MONTHLY_BACKUPS=<monthy-backups> -p BACKUP_VOLUME_SIZE=<backup-volume-size> -o yaml |oc create -f -`
+`oc -n <namespace> process -f https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/backup-container/openshift/templates/backup/backup-deploy.json -p IMAGE_NAMESPACE=<namespace> -p TAG_NAME=<tag-name> -p DATABASE_DEPLOYMENT_NAME=<database-service-name> -p WEBHOOK_URL=<webhook-url> -p DAILY_BACKUPS=<daily-backups> -p WEEKLY_BACKUPS=<weekly-backups> -p MONTHLY_BACKUPS=<monthy-backups> -p BACKUP_VOLUME_SIZE=<backup-volume-size> -o yaml | oc -n <NAMESPACE> create -f -`
 
 ## Clean up
 To remove the backup container resources, run the following commands. 
