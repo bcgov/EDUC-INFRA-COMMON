@@ -4,7 +4,7 @@ The backup containers are built following the [BCDevOps guide](https://github.co
 ## Steps for initial deployment
 1. Create web-hook for rocket chat alerts. The [BCDevOps guide](https://github.com/BCDevOps/backup-container) has the complete steps. Use the url you generate as the parameter in the deployment template `WEBHOOK_URL`.
 2. Process the build template
-`oc -n <NAMESPACE> process -f https://raw.githubusercontent.com/BCDevOps/backup-container/master/openshift/templates/backup/backup-build.json -o yaml | oc create -f -`.
+`oc -n <NAMESPACE> process -f https://raw.githubusercontent.com/BCDevOps/backup-container/master/openshift/templates/backup/backup-build.json -o yaml | oc -n <NAMESPACE> create -f -`.
 3. Create config map.  *Make sure the spacing is correct*
 ```
 oc create -n <NAMESPACE> configmap backup-conf --from-literal=backup.conf="postgres=<TARGET_DATABASE>/<TARGET_DATABASE_USER>
