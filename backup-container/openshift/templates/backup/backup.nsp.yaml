@@ -1,0 +1,41 @@
+---
+apiVersion: v1
+kind: Template
+labels:
+  template: backup-nsp-template
+objects:
+  - apiVersion: security.devops.gov.bc.ca/v1alpha1
+    kind: NetworkSecurityPolicy
+    metadata:
+      name: sa-builder-egress-internet
+    spec:
+      description: Allow service account builders to talk to the internet.
+      source:
+        - - "$namespace=${NAMESPACE}"
+          - "@app:k8s:serviceaccountname=builder"
+      destination:
+        - - ext:network=any
+  - apiVersion: security.devops.gov.bc.ca/v1alpha1
+    kind: NetworkSecurityPolicy
+    metadata:
+      name: "backup-${INSTANCE}-cluster-comms"
+    spec:
+      description: |
+        Allow backup pods to open connections to patroni cluster pods
+      source:
+        - - "$namespace=${NAMESPACE}"
+          - "cronjob=backup-postgres"
+          - "template=backup-postgres-job"
+      destination:
+        - - "$namespace=${NAMESPACE}"
+          - "cluster-name=${INSTANCE}"
+          - "statefulset=${INSTANCE}"
+parameters:
+  - name: INSTANCE
+    description: The name of this instance of the application
+    displayName: Application Instance Name
+    required: true
+  - name: NAMESPACE
+    description: Target namespace reference (i.e. 'k8vopl-dev')
+    displayName: Target Namespace
+    required: true
