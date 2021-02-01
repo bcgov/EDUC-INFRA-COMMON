@@ -25,7 +25,7 @@ def performEmailApiDeploy(String stageEnv, String projectEnv, String repoName, S
     }
     configMapChesSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
     script{
-      dir('tools/jenkins'){Please enter the required credentials
+      dir('tools/jenkins'){
         sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${commonNamespace}\""
       }
     }
