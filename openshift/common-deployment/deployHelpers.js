@@ -25,13 +25,7 @@ def performEmailApiDeploy(String stageEnv, String projectEnv, String repoName, S
     }
     configMapChesSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
     script{
-      dir('tools/jenkins'){
-        echo "We made it to here"
-        echo "We made it to targ ${targetEnv}"
-        echo "We made it to appname ${appName}"
-        echo "We made it to NS ${NAMESPACE}"
-        echo "We made it to CNS ${commonNamespace}"
-
+      dir('tools/jenkins'){Please enter the required credentials
         sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${commonNamespace}\""
       }
     }
@@ -553,6 +547,59 @@ def performPenRegApiDeploy(String stageEnv, String projectEnv, String repoName, 
      }
    }
    performStandardRollout(appName, projectEnv, jobName)
+ }
+
+ def performReportGenerationApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String commonNamespace){
+   script{
+     deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
+     dir('tools/jenkins'){
+       sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
+     }
+   }
+   configMapCDOGSSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
+   script{
+     dir('tools/jenkins'){
+       sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${commonNamespace}\""
+     }
+   }
+   performStandardRollout(appName, projectEnv, jobName)
+ }
+
+ def configMapCDOGSSetup(String appName,String appNameUpper, String namespace, String targetEnv, String sourceEnv){
+   script {
+     try{
+       sh( script: "oc project ${namespace}-${targetEnv}", returnStdout: true)
+       sh( script: "oc describe configmaps ${appName}-${targetEnv}-setup-config", returnStdout: true)
+       sh( script: "oc project ${sourceEnv}", returnStdout: true)
+       echo 'Config map already exists. Moving to next stage...'
+     } catch(e){
+       configProperties = input(
+         id: 'configProperties', message: "Please enter the required CDOGS credentials to allow ${appName} to run. Credentials will be required from both CDOGS & ${appName}:",
+         parameters: [
+         string(defaultValue: "",
+         description: 'Client ID to obtain token for calling CDOGS API',
+         name: 'CDOGS_CLIENT_ID'),
+       string(defaultValue: "",
+         description: "Client secret to obtain token for calling CDOGS API",
+         name: 'CDOGS_CLIENT_SECRET'),
+       string(defaultValue: "",
+         description: "URL from where token will be obtained",
+         name: 'CDOGS_TOKEN_ENDPOINT'),
+       string(defaultValue: "",
+         description: "base url to call cdogs api",
+         name: 'CDOGS_BASE_URL'),
+       string(defaultValue: "",
+         description: "Token for ${appName} FluentBit sidecar to connect to the Splunk",
+         name: 'SPLUNK_TOKEN'),
+     ])
+       sh """
+       set +x
+       echo Running curl command...
+       oc create -n ${namespace}-${targetEnv} configmap ${appName}-${targetEnv}-setup-config --from-literal=SPLUNK_TOKEN_${appNameUpper}=${configProperties.SPLUNK_TOKEN} --from-literal=CDOGS_CLIENT_ID=${configProperties.CDOGS_CLIENT_ID} --from-literal=CDOGS_CLIENT_SECRET=${configProperties.CDOGS_CLIENT_SECRET} --from-literal=CDOGS_TOKEN_ENDPOINT=${configProperties.CDOGS_TOKEN_ENDPOINT} --from-literal=CDOGS_BASE_URL=${configProperties.CDOGS_BASE_URL} --dry-run -o yaml | oc apply -f -
+       oc project ${namespace}-tools
+       """
+     }
+   }
  }
 
 return this;

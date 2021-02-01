@@ -13,19 +13,21 @@ data:
     streaming {
      ns: "nats://nats:4222"
      sv: false
+     sd: true
      id: educ_nats_cluster
      store: file
      dir: /data/educ-nats-cluster/store
-     cluster {
-       node_id: $POD_NAME
-       log_path: /data/educ-nats-cluster/log
-       # Explicit names of resulting peers
-       peers: ["stan-0","stan-1","stan-2"]
+     ft_group_name: "educ_nats_cluster"
+     file_options {
+          buffer_size: 100mb
+          sync_on_flush: true
+          slice_max_bytes: 512mb
+          parallel_recovery: 64
      }
      store_limits: {
        # Override some global limits
        max_channels: 0
-       max_msgs: 10000
+       max_msgs: 0
        max_bytes: 0
        max_age: "48h"
        max_inactivity: "12h"
@@ -59,7 +61,7 @@ spec:
     matchLabels:
       app: stan
   serviceName: stan
-  replicas: 3
+  replicas: 2
   volumeClaimTemplates:
     - metadata:
         name: stan-educ-vol
@@ -90,14 +92,14 @@ spec:
       # STAN Server
       containers:
         - name: stan
-          image: nats-streaming:0.19.0-alpine3.12
+          image: "docker-remote.artifacts.developer.gov.bc.ca/nats-streaming:alpine"
           resources:
             requests:
-              cpu: "50m"
-              memory: "128Mi"
+              cpu: "100m"
+              memory: "256Mi"
             limits:
               cpu: "200m"
-              memory: "256Mi"
+              memory: "1024Mi"
           ports:
             - containerPort: 8222
               name: monitor

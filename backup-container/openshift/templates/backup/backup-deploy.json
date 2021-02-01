@@ -57,19 +57,6 @@
       }
     },
     {
-      "kind": "Secret",
-      "apiVersion": "v1",
-      "metadata": {
-        "name": "${FTP_SECRET_KEY}"
-      },
-      "type": "Opaque",
-      "stringData": {
-        "ftp-url": "${FTP_URL}",
-        "ftp-user": "${FTP_USER}",
-        "ftp-password": "${FTP_PASSWORD}"
-      }
-    },
-    {
       "kind": "DeploymentConfig",
       "apiVersion": "v1",
       "metadata": {
@@ -205,33 +192,6 @@
                       "secretKeyRef": {
                         "name": "${DATABASE_DEPLOYMENT_NAME}",
                         "key": "${DATABASE_PASSWORD_KEY_NAME}"
-                      }
-                    }
-                  },
-                  {
-                    "name": "FTP_URL",
-                    "valueFrom": {
-                      "secretKeyRef": {
-                        "name": "${FTP_SECRET_KEY}",
-                        "key": "ftp-url"
-                      }
-                    }
-                  },
-                  {
-                    "name": "FTP_USER",
-                    "valueFrom": {
-                      "secretKeyRef": {
-                        "name": "${FTP_SECRET_KEY}",
-                        "key": "ftp-user"
-                      }
-                    }
-                  },
-                  {
-                    "name": "FTP_PASSWORD",
-                    "valueFrom": {
-                      "secretKeyRef": {
-                        "name": "${FTP_SECRET_KEY}",
-                        "key": "ftp-password"
                       }
                     }
                   },
@@ -501,7 +461,7 @@
       "displayName": "Backup Volume Class",
       "description": "The class of the persistent volume used to store the backups; netapp-block-standard, netapp-file-standard, nfs-backup.  Please note, nfs-backup storage is the recommended storage type for backups.  It MUST be provisioned manually through the OCP catalog via the 'BC Gov NFS Storage' template.  nfs-backup storage CANNOT be automatically provisioned by this template.",
       "required": true,
-      "value": "nfs-backup"
+      "value": "netapp-file-backup"
     },
     {
       "name": "VERIFICATION_VOLUME_NAME",
@@ -543,7 +503,7 @@
       "displayName": "Resources CPU Limit",
       "description": "The resources CPU limit (in cores) for this build.",
       "required": true,
-      "value": "0"
+      "value": "1"
     },
     {
       "name": "MEMORY_REQUEST",
@@ -557,7 +517,7 @@
       "displayName": "Resources Memory Limit",
       "description": "The resources Memory limit (in Mi, Gi, etc) for this build.",
       "required": true,
-      "value": "0Mi"
+      "value": "512Mi"
     }
   ]
 }
