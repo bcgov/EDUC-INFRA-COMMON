@@ -84,7 +84,7 @@
               "from": {
                 "kind": "ImageStreamTag",
                 "namespace": "${IMAGE_NAMESPACE}",
-                "name": "${SOURCE_IMAGE_NAME}:${TAG_NAME}"
+                "name": "docker-remote.artifacts.developer.gov.bc.ca/${SOURCE_IMAGE_NAME}:${TAG_NAME}"
               }
             }
           }
