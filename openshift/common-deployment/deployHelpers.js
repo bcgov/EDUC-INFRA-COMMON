@@ -26,6 +26,12 @@ def performEmailApiDeploy(String stageEnv, String projectEnv, String repoName, S
     configMapChesSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
     script{
       dir('tools/jenkins'){
+        echo "We made it to here"
+        echo "We made it to targ ${targetEnv}"
+        echo "We made it to appname ${appName}"
+        echo "We made it to NS ${NAMESPACE}"
+        echo "We made it to CNS ${commonNamespace}"
+
         sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${commonNamespace}\""
       }
     }
