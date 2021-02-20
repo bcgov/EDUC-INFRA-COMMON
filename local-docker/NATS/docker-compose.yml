@@ -1,0 +1,32 @@
+version: "3.5"
+services:
+  nats:
+    image: nats:alpine
+    container_name: nats-main
+    restart: always
+    command:
+      - "nats-server"
+      - "--config"
+      - "/etc/nats-config/nats.conf"
+    ports:
+      - "8222:8222"
+      - "4222:4222"
+    volumes:
+      - ./nats.conf:/etc/nats-config/nats.conf
+  stan:
+    image: nats-streaming:alpine
+    depends_on:
+     - nats
+    restart: always
+    command:
+      - "-SD"
+      - "-SV"
+      - "-SDV"
+      - "--hb_interval=2S"
+      - "-hbf=1"
+      - "--ns=nats://nats-main:4222"
+    links:
+      - nats
+    ports:
+      - "8223:8223"
+
