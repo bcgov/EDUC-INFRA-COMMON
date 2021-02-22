@@ -3,7 +3,7 @@ pipeline {
 
   environment {
 
-    TOOLS = '8878b4-tools'
+    DEV = '8878b4-dev'
   }
 
   stages {
@@ -11,7 +11,7 @@ pipeline {
       steps {
         script {
           openshift.withCluster() {
-            openshift.withProject(TOOLS) {
+            openshift.withProject(DEV) {
               echo 'Pointing GetMyPen route back to GetMyPEN'
               openshift.patch("route/student-profile-frontend-master", '\'{"spec":{"to":{"name":"student-profile-frontend-master"}}}\'')
               openshift.patch("route/student-profile-frontend-master", '\'{"spec":{"port":{"targetPort":"2015-tcp"}}}\'')
@@ -50,7 +50,7 @@ pipeline {
       steps {
         script {
           openshift.withCluster() {
-            openshift.withProject(TOOLS) {
+            openshift.withProject(DEV) {
               echo "Deleting maintenance page..."
               openshift.selector( 'all', [ app:'maintenance-page' ] ).delete()
             }

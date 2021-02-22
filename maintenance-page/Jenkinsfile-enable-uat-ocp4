@@ -46,7 +46,7 @@ pipeline {
       steps {
         script {
           openshift.withCluster() {
-            openshift.withProject(TOOLS) {
+            openshift.withProject(TEST) {
               Backend: {
                 try {
                   echo "Building maintenance page..."
@@ -66,7 +66,7 @@ pipeline {
           echo 'Cleanup BuildConfigs...'
           script {
             openshift.withCluster() {
-              openshift.withProject(TOOLS) {
+              openshift.withProject(TEST) {
                 if (DEBUG_OUTPUT.equalsIgnoreCase('true')) {
                   echo "DEBUG - Using project: ${openshift.project()}"
                 } else {
@@ -86,16 +86,16 @@ pipeline {
         }
       }
     }
-    stage('Deploy to DEV') {
+    stage('Deploy to UAT') {
       steps {
-        deployStage(TOOLS)
+        deployStage(TEST)
       }
       post {
         success {
-          echo 'Deployment to DEV was successful'
+          echo 'Deployment to UAT was successful'
         }
         failure {
-          echo 'Deployment to DEV failed'
+          echo 'Deployment to UAT failed'
         }
       }
     }
@@ -103,7 +103,7 @@ pipeline {
       steps {
         script {
           openshift.withCluster() {
-            openshift.withProject(TOOLS) {
+            openshift.withProject(TEST) {
               echo 'Pointing GetMyPen route to maintenance page'
               openshift.patch("route/student-profile-frontend-master", '\'{"spec":{"to":{"name":"maintenance-page"}}}\'')
               openshift.patch("route/student-profile-frontend-master", '\'{"spec":{"port":{"targetPort":"8080-tcp"}}}\'')

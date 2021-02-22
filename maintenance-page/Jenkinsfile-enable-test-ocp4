@@ -46,7 +46,7 @@ pipeline {
       steps {
         script {
           openshift.withCluster() {
-            openshift.withProject(TOOLS) {
+            openshift.withProject(DEV) {
               Backend: {
                 try {
                   echo "Building maintenance page..."
@@ -66,7 +66,7 @@ pipeline {
           echo 'Cleanup BuildConfigs...'
           script {
             openshift.withCluster() {
-              openshift.withProject(TOOLS) {
+              openshift.withProject(DEV) {
                 if (DEBUG_OUTPUT.equalsIgnoreCase('true')) {
                   echo "DEBUG - Using project: ${openshift.project()}"
                 } else {
@@ -86,16 +86,16 @@ pipeline {
         }
       }
     }
-    stage('Deploy to DEV') {
+    stage('Deploy to TEST') {
       steps {
         deployStage(TOOLS)
       }
       post {
         success {
-          echo 'Deployment to DEV was successful'
+          echo 'Deployment to TEST was successful'
         }
         failure {
-          echo 'Deployment to DEV failed'
+          echo 'Deployment to TEST failed'
         }
       }
     }
