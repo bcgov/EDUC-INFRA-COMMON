@@ -108,6 +108,9 @@ pipeline {
               openshift.patch("route/student-profile-frontend-master", '\'{"spec":{"to":{"name":"maintenance-page"}}}\'')
               openshift.patch("route/student-profile-frontend-master", '\'{"spec":{"port":{"targetPort":"8080-tcp"}}}\'')
 
+              openshift.patch("route/www.student-profile-frontend-master", '\'{"spec":{"to":{"name":"maintenance-page"}}}\'')
+              openshift.patch("route/www.student-profile-frontend-master", '\'{"spec":{"port":{"targetPort":"8080-tcp"}}}\'')
+
               openshift.patch("route/student-profile-frontend-master", '\'{"metadata":{"labels":{"app":"student-profile-master-test"}}}\'')
               openshift.patch("route/student-profile-frontend-master", '\'{"metadata":{"labels":{"template":"educ-student-profile-template-test"}}}\'')
             }

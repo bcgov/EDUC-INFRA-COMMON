@@ -15,6 +15,8 @@ pipeline {
               echo 'Pointing GetMyPen route back to GetMyPEN'
               openshift.patch("route/student-profile-frontend-master", '\'{"spec":{"to":{"name":"student-profile-frontend-master"}}}\'')
               openshift.patch("route/student-profile-frontend-master", '\'{"spec":{"port":{"targetPort":"2015-tcp"}}}\'')
+              openshift.patch("route/www.student-profile-frontend-master", '\'{"spec":{"to":{"name":"student-profile-frontend-master"}}}\'')
+              openshift.patch("route/www.student-profile-frontend-master", '\'{"spec":{"port":{"targetPort":"2015-tcp"}}}\'')
             }
           }
         }
