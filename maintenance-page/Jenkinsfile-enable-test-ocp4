@@ -88,7 +88,7 @@ pipeline {
     }
     stage('Deploy to TEST') {
       steps {
-        deployStage(TOOLS)
+        deployStage(DEV)
       }
       post {
         success {
@@ -103,7 +103,7 @@ pipeline {
       steps {
         script {
           openshift.withCluster() {
-            openshift.withProject(TOOLS) {
+            openshift.withProject(DEV) {
               echo 'Pointing GetMyPen route to maintenance page'
               openshift.patch("route/student-profile-frontend-master", '\'{"spec":{"to":{"name":"maintenance-page"}}}\'')
               openshift.patch("route/student-profile-frontend-master", '\'{"spec":{"port":{"targetPort":"8080-tcp"}}}\'')
