@@ -1,0 +1,70 @@
+pipeline {
+  agent any
+
+  environment {
+
+    TEST = '8878b4-test'
+  }
+
+  stages {
+    stage('Update route') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.withProject(TEST) {
+              echo 'Pointing GetMyPen route back to GetMyPEN'
+              openshift.patch("route/student-profile-frontend-master", '\'{"spec":{"to":{"name":"student-profile-frontend-master"}}}\'')
+              openshift.patch("route/student-profile-frontend-master", '\'{"spec":{"port":{"targetPort":"2015-tcp"}}}\'')
+            }
+          }
+        }
+      }
+      post {
+        success {
+          echo 'Route successfully changed'
+        }
+        failure {
+          echo 'Failed to change route'
+        }
+      }
+    }
+    /*stage('e2e tests') {
+  agent {
+    node {
+      label 'nodejs10'
+    }
+  }
+  steps {
+    script {
+      timeout(10) {
+        dir('frontend') {
+          echo 'Running e2e tests'
+          sh 'npm install'
+          sh 'npm run test:e2e'
+        }
+      }
+    }
+  }
+}*/
+    stage('Delete maintenance page') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.withProject(TEST) {
+              echo "Deleting maintenance page..."
+              openshift.selector( 'all', [ app:'maintenance-page' ] ).delete()
+            }
+          }
+        }
+      }
+      post {
+        success {
+          echo 'Maintenance page deleted'
+        }
+        failure {
+          echo 'Failed to delete maintenance page'
+        }
+      }
+    }
+  }
+}
