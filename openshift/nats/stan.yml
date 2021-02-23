@@ -59,7 +59,7 @@ objects:
         port: 7777
       - name: monitor
         port: 8222
-  -apiVersion: apps/v1
+-  apiVersion: apps/v1
    kind: StatefulSet
    metadata:
     name: stan
