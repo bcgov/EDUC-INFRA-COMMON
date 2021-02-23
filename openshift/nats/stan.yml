@@ -11,7 +11,7 @@ data:
     http: 8222
 
     streaming {
-     ns: "nats://nats:4222"
+     ns: nats://nats.${POD_NAMESPACE}.svc.cluster.local:4222
      sv: false
      sd: true
      id: educ_nats_cluster
