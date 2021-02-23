@@ -1,11 +1,22 @@
 ---
 apiVersion: v1
-kind: ConfigMap
+kind: Template
 metadata:
+  name: nats
+  annotations:
+    "openshift.io/display-name": nats
+parameters:
+  - description: The pod namespace
+    name: POD_NAMESPACE
+    value: $(POD_NAMESPACE)
+objects:
+-apiVersion: v1
+ kind: ConfigMap
+ metadata:
   name: stan-config
   labels:
     app: stan
-data:
+ data:
   stan.conf: |
     port: 4222
     http: 8222
@@ -33,14 +44,13 @@ data:
        max_inactivity: "12h"
      }
     }
----
-apiVersion: v1
-kind: Service
-metadata:
+-apiVersion: v1
+ kind: Service
+ metadata:
   name: stan
   labels:
     app: stan
-spec:
+ spec:
   selector:
     app: stan
   clusterIP: None
@@ -49,14 +59,13 @@ spec:
       port: 7777
     - name: monitor
       port: 8222
----
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
+-apiVersion: apps/v1
+ kind: StatefulSet
+ metadata:
   name: stan
   labels:
     app: stan
-spec:
+ spec:
   selector:
     matchLabels:
       app: stan
