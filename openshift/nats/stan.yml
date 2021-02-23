@@ -10,140 +10,140 @@ parameters:
     name: POD_NAMESPACE
     value: $(POD_NAMESPACE)
 objects:
--apiVersion: v1
- kind: ConfigMap
- metadata:
-  name: stan-config
-  labels:
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: stan-config
+    labels:
     app: stan
- data:
-  stan.conf: |
-    port: 4222
-    http: 8222
+  data:
+    stan.conf: |
+      port: 4222
+      http: 8222
 
-    streaming {
-     ns: nats://nats.${POD_NAMESPACE}.svc.cluster.local:4222
-     sv: false
-     sd: true
-     id: educ_nats_cluster
-     store: file
-     dir: /data/educ-nats-cluster/store
-     ft_group_name: "educ_nats_cluster"
-     file_options {
-          buffer_size: 100mb
-          sync_on_flush: true
-          slice_max_bytes: 512mb
-          parallel_recovery: 64
-     }
-     store_limits: {
-       # Override some global limits
-       max_channels: 0
-       max_msgs: 0
-       max_bytes: 0
-       max_age: "48h"
-       max_inactivity: "12h"
-     }
-    }
--apiVersion: v1
- kind: Service
- metadata:
-  name: stan
-  labels:
-    app: stan
- spec:
-  selector:
-    app: stan
-  clusterIP: None
-  ports:
-    - name: metrics
-      port: 7777
-    - name: monitor
-      port: 8222
--apiVersion: apps/v1
- kind: StatefulSet
- metadata:
-  name: stan
-  labels:
-    app: stan
- spec:
-  selector:
-    matchLabels:
+      streaming {
+       ns: nats://nats.${POD_NAMESPACE}.svc.cluster.local:4222
+       sv: false
+       sd: true
+       id: educ_nats_cluster
+       store: file
+       dir: /data/educ-nats-cluster/store
+       ft_group_name: "educ_nats_cluster"
+       file_options {
+            buffer_size: 100mb
+            sync_on_flush: true
+            slice_max_bytes: 512mb
+            parallel_recovery: 64
+       }
+       store_limits: {
+         # Override some global limits
+         max_channels: 0
+         max_msgs: 0
+         max_bytes: 0
+         max_age: "48h"
+         max_inactivity: "12h"
+       }
+      }
+-  apiVersion: v1
+   kind: Service
+   metadata:
+    name: stan
+    labels:
       app: stan
-  serviceName: stan
-  replicas: 2
-  volumeClaimTemplates:
-    - metadata:
-        name: stan-educ-vol
-      spec:
-        accessModes:
-          - ReadWriteMany
-        volumeMode: "Filesystem"
-        persistentVolumeReclaimPolicy: Delete
-        resources:
-          requests:
-            storage: 1Gi
-  template:
-    metadata:
-      labels:
+   spec:
+    selector:
+      app: stan
+    clusterIP: None
+    ports:
+      - name: metrics
+        port: 7777
+      - name: monitor
+        port: 8222
+  -apiVersion: apps/v1
+   kind: StatefulSet
+   metadata:
+    name: stan
+    labels:
+      app: stan
+   spec:
+    selector:
+      matchLabels:
         app: stan
-    spec:
-      # Prevent NATS Streaming pods running in same host.
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - topologyKey: "kubernetes.io/hostname"
-              labelSelector:
-                matchExpressions:
-                  - key: app
-                    operator: In
-                    values:
-                      - stan
-      # STAN Server
-      containers:
-        - name: stan
-          image: "docker-remote.artifacts.developer.gov.bc.ca/nats-streaming:alpine"
+    serviceName: stan
+    replicas: 2
+    volumeClaimTemplates:
+      - metadata:
+          name: stan-educ-vol
+        spec:
+          accessModes:
+            - ReadWriteMany
+          volumeMode: "Filesystem"
+          persistentVolumeReclaimPolicy: Delete
           resources:
             requests:
-              cpu: "100m"
-              memory: "256Mi"
-            limits:
-              cpu: "200m"
-              memory: "1024Mi"
-          ports:
-            - containerPort: 8222
-              name: monitor
-            - containerPort: 7777
-              name: metrics
-          args:
-            - "-sc"
-            - "/etc/stan-config/stan.conf"
+              storage: 1Gi
+    template:
+      metadata:
+        labels:
+          app: stan
+      spec:
+        # Prevent NATS Streaming pods running in same host.
+        affinity:
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              - topologyKey: "kubernetes.io/hostname"
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - stan
+        # STAN Server
+        containers:
+          - name: stan
+            image: "docker-remote.artifacts.developer.gov.bc.ca/nats-streaming:alpine"
+            resources:
+              requests:
+                cpu: "100m"
+                memory: "256Mi"
+              limits:
+                cpu: "200m"
+                memory: "1024Mi"
+            ports:
+              - containerPort: 8222
+                name: monitor
+              - containerPort: 7777
+                name: metrics
+            args:
+              - "-sc"
+              - "/etc/stan-config/stan.conf"
 
-          # Required to be able to define an environment variable
-          # that refers to other environment variables.  This env var
-          # is later used as part of the configuration file.
-          env:
-            - name: POD_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
-            - name: POD_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
-            - name: TZ
-              value: America/Vancouver
-          volumeMounts:
-            - name: config-volume
-              mountPath: /etc/stan-config
-            - name: stan-educ-vol
-              mountPath: /data/educ-nats-cluster
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 8222
-            initialDelaySeconds: 10
-            timeoutSeconds: 5
-      volumes:
-        - name: config-volume
-          configMap:
-            name: stan-config
+            # Required to be able to define an environment variable
+            # that refers to other environment variables.  This env var
+            # is later used as part of the configuration file.
+            env:
+              - name: POD_NAME
+                valueFrom:
+                  fieldRef:
+                    fieldPath: metadata.name
+              - name: POD_NAMESPACE
+                valueFrom:
+                  fieldRef:
+                    fieldPath: metadata.namespace
+              - name: TZ
+                value: America/Vancouver
+            volumeMounts:
+              - name: config-volume
+                mountPath: /etc/stan-config
+              - name: stan-educ-vol
+                mountPath: /data/educ-nats-cluster
+            livenessProbe:
+              httpGet:
+                path: /
+                port: 8222
+              initialDelaySeconds: 10
+              timeoutSeconds: 5
+        volumes:
+          - name: config-volume
+            configMap:
+              name: stan-config
