@@ -23,7 +23,7 @@ objects:
 
       streaming {
        ns: nats://nats.${POD_NAMESPACE}.svc.cluster.local:4222
-       sv: false
+       sv: true
        sd: true
        id: educ_nats_cluster
        store: file
