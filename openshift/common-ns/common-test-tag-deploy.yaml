@@ -86,6 +86,9 @@ objects:
        									string(defaultValue: "",
        											description: 'Enter PEN TRAX API Version, leave the tag blank if this service is not to be deployed',
        											name: 'PEN_TRAX_API_VERSION'),
+                                        string(defaultValue: "",
+                 											description: 'Enter PEN TRAX API Version, leave the tag blank if this service is not to be deployed',
+                 											name: 'TRAX_NOTIFICATION_API_VERSION'),
        							])
        					// Save to variables. Default to empty string if not found.
        					DIGITAL_ID_API_VERSION = tagInput.DIGITAL_ID_API_VERSION?:''
@@ -98,6 +101,7 @@ objects:
                         SCHOOL_API_VERSION = tagInput.SCHOOL_API_VERSION?:''
                         SLD_API_VERSION = tagInput.SLD_API_VERSION?:''
                         PEN_TRAX_API_VERSION = tagInput.PEN_TRAX_API_VERSION?:''
+                        TRAX_NOTIFICATION_API_VERSION = tagInput.TRAX_NOTIFICATION_API_VERSION?:''
        				}
        			}
        		}
@@ -288,5 +292,22 @@ objects:
                     }
                    }
        		}
-       	}
+            stage('TRAX NOTIFICATION API'){
+                 when {
+                     expression {
+                         return "${TRAX_NOTIFICATION_API_VERSION}" != "<Not Required>" && "${TRAX_NOTIFICATION_API_VERSION}" != "";
+                     }
+                 }
+                 environment {
+                    APP_NAME = "trax-notification-api"
+                    REPO_NAME = "educ-trax-notification-api"
+                    DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-TRAX-NOTIFICATION-API/main/tools/openshift/api.dc.yaml"
+                 }
+                 steps {
+                   script{
+                     extJSHelper.performTraxNotificationApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, REPO_NAME, "${APP_NAME}", "main", "${TRAX_NOTIFICATION_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, DC_URL, MIN_REPLICAS, MAX_REPLICAS, "40m", "80m", "400Mi", "750Mi", TARGET_ENV, NAMESPACE, DEV_EXCHANGE_REALM)
+                   }
+                 }
+            }
+         }
        }
