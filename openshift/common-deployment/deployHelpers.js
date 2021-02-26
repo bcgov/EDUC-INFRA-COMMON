@@ -601,5 +601,20 @@ def performPenRegApiDeploy(String stageEnv, String projectEnv, String repoName, 
      }
    }
  }
+ def performTraxNotificationApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE){
+   script {
+     deployStageNoEnv(sourceEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
+     dir('tools/jenkins'){
+       sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
+     }
+   }
+   configMapChesSetup("${appName}","${appName}".toUpperCase(), "${NAMESPACE}", "${targetEnv}", "${sourceEnv}");
+   script{
+     dir('tools/jenkins'){
+       sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/${jobName}/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\""
+     }
+   }
+   performStandardRollout(appName, projectEnv, jobName)
+ }
 
 return this;
