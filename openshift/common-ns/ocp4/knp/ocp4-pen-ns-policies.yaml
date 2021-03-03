@@ -66,9 +66,26 @@ objects:
         - - "$namespace=${NAMESPACE_PREFIX}-${ENVIRONMENT}"
       destination:
         - - "$namespace=*"
+  - apiVersion: security.devops.gov.bc.ca/v1alpha1
+    kind: NetworkSecurityPolicy
+    metadata:
+      name: intra-namespace-comms-pen-to-common
+      labels:
+        type: NetworkSecurityPolicy
+    spec:
+      description: "allow ${NAMESPACE_PREFIX}-${ENVIRONMENT} pods to talk to ${COMMON_NAMESPACE_PREFIX}-${ENVIRONMENT} pods"
+      destination:
+        - - $namespace=${COMMON_NAMESPACE_PREFIX}-${ENVIRONMENT}
+      source:
+        - - $namespace=${NAMESPACE_PREFIX}-${ENVIRONMENT}
 parameters:
   - name: NAMESPACE_PREFIX
     displayName: Namespace
+    description: |
+      The namespace prefix this policy is being deployed to;
+    required: true
+  - name: COMMON_NAMESPACE_PREFIX
+    displayName: Common Namespace
     description: |
       The namespace prefix this policy is being deployed to;
     required: true
