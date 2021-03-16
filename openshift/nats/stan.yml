@@ -2,9 +2,9 @@
 apiVersion: v1
 kind: Template
 metadata:
-  name: nats
+  name: stan
   annotations:
-    "openshift.io/display-name": nats
+    "openshift.io/display-name": stan
 parameters:
   - description: The pod namespace
     name: POD_NAMESPACE
