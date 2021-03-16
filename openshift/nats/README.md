@@ -16,4 +16,4 @@ switch to the project using oc cli and run this command. `oc delete all,pvc,conf
 
 `Step 2.`  Login to OC through command line. switch to the namespace you want to deploy nats streaming. run the command, replacing the question mark with proper namespace.
 
-`Step 3.`  `oc apply -f https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/nats/stan.yml -p POD_NAMESPACE=? `
+`Step 3.`  `oc new-app -f https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/nats/stan.yml -p POD_NAMESPACE=? `
