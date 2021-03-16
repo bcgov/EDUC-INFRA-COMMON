@@ -111,7 +111,7 @@ objects:
                }
              steps {
                  script{
-                      extJSHelper.performPenServicesApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}",JOB_NAME, "${PEN_SERVICES_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "${MIN_REPLICAS}", "${MAX_REPLICAS}", "${MIN_CPU}", "${MAX_CPU}", "${MIN_MEM}", "${MAX_MEM}", "${TARGET_ENV}", "${NAMESPACE}", "${COMMON_NAMESPACE}")
+                      extJSHelper.performPenServicesApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}",JOB_NAME, "${PEN_REPORT_GENERATION_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "${MIN_REPLICAS}", "${MAX_REPLICAS}", "${MIN_CPU}", "${MAX_CPU}", "${MIN_MEM}", "${MAX_MEM}", "${TARGET_ENV}", "${NAMESPACE}", "${COMMON_NAMESPACE}")
                    }
                 }
          }
