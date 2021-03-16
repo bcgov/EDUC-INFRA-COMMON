@@ -68,6 +68,9 @@ objects:
                                         string(defaultValue: "",
                                                 description: 'Enter PEN Services API version, leave the tag blank if this service is not to be deployed',
                                                 name: 'PEN_SERVICES_API_VERSION'),
+                                        string(defaultValue: "",
+                                                          description: 'Enter PEN Report Generation API version, leave the tag blank if this service is not to be deployed',
+                                                          name: 'PEN_REPORT_GENERATION_API_VERSION'),
        							])
        					// Save to variables. Default to empty string if not found.
                         STUDENT_PROFILE_SAGA_API_VERSION = tagInput.STUDENT_PROFILE_SAGA_API_VERSION?:''
@@ -77,6 +80,7 @@ objects:
                         PEN_REG_BATCH_API_VERSION = tagInput.PEN_REG_BATCH_API_VERSION?:''
                         PEN_MATCH_API_VERSION = tagInput.PEN_MATCH_API_VERSION?:''
                         PEN_SERVICES_API_VERSION = tagInput.PEN_SERVICES_API_VERSION?:''
+                        PEN_REPORT_GENERATION_API_VERSION= tagInput.PEN_REPORT_GENERATION_API_VERSION?:''
        				}
        			}
        		}
@@ -88,6 +92,29 @@ objects:
        			  }
        		  }
        		}
+            stage('PEN Report Generation API'){
+             when {
+                 expression {
+                     return "${PEN_REPORT_GENERATION_API_VERSION}" != "<Not Required>" && "${PEN_REPORT_GENERATION_API_VERSION}" != "";
+                 }
+             }
+             environment {
+                APP_NAME = "pen-report-generation-api"
+                REPO_NAME = "educ-pen-report-generation-api"
+                DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REPORT-GENERATION-API/main/tools/openshift/api.dc.yaml"
+                MIN_REPLICAS = "2"
+                MAX_REPLICAS = "3"
+                MIN_CPU = "30m"
+                MAX_CPU = "60m"
+                MIN_MEM = "125Mi"
+                MAX_MEM = "250Mi"
+               }
+             steps {
+                 script{
+                      extJSHelper.performPenServicesApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}",JOB_NAME, "${PEN_SERVICES_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "${MIN_REPLICAS}", "${MAX_REPLICAS}", "${MIN_CPU}", "${MAX_CPU}", "${MIN_MEM}", "${MAX_MEM}", "${TARGET_ENV}", "${NAMESPACE}", "${COMMON_NAMESPACE}")
+                   }
+                }
+         }
             stage('PEN Reg Batch API'){
                 when {
                     expression {
