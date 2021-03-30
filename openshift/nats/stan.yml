@@ -141,3 +141,6 @@ objects:
           - name: config-volume
             configMap:
               name: stan-config
+          - name: stan-educ-vol
+            persistentVolumeClaim:
+              claimName: stan-educ-vol
