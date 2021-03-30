@@ -29,12 +29,6 @@ objects:
        store: file
        dir: /data/educ-nats-cluster/store
        ft_group_name: "educ_nats_cluster"
-       file_options {
-            buffer_size: 100mb
-            sync_on_flush: true
-            slice_max_bytes: 512mb
-            parallel_recovery: 64
-       }
        store_limits: {
          # Override some global limits
          max_channels: 0
