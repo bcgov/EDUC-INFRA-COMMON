@@ -98,7 +98,7 @@ objects:
             image: "docker-remote.artifacts.developer.gov.bc.ca/nats-streaming:alpine"
             resources:
               requests:
-                cpu: "100m"
+                cpu: "50m"
                 memory: "256Mi"
               limits:
                 cpu: "200m"
