@@ -126,6 +126,7 @@ objects:
                     fieldPath: metadata.namespace
               - name: TZ
                 value: America/Vancouver
+            imagePullPolicy: Always
             volumeMounts:
               - name: config-volume
                 mountPath: /etc/stan-config
