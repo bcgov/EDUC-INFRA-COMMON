@@ -15,7 +15,7 @@ objects:
   metadata:
     name: stan-config
     labels:
-    app: stan
+      app: stan
   data:
     stan.conf: |
       port: 4222
