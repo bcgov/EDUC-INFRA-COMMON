@@ -23,9 +23,10 @@ objects:
         max_payload: 100Mb
         debug: true
         trace: true
-        trace_verbose: true
+        trace_verbose: false
         cluster {
             port: 6222
+            name: educ-nats-cluster
             routes [
                nats://nats-0.nats.${POD_NAMESPACE}.svc.cluster.local:6222
                nats://nats-1.nats.${POD_NAMESPACE}.svc.cluster.local:6222
@@ -138,6 +139,7 @@ objects:
                 value: $(POD_NAME).nats.$(POD_NAMESPACE).svc
               - name: TZ
                 value: America/Vancouver
+            imagePullPolicy: Always
             volumeMounts:
               - mountPath: /etc/nats-config
                 name: config-volume
