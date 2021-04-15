@@ -1,0 +1,288 @@
+ def IDIR = 'NONE'
+ def IDIR_PW = 'NONE'
+ def STUDENT_PROFILE_SAGA_API_VERSION = '<Not Required>'
+ def STAFF_ADMIN_VERSION = '<Not Required>'
+ def STUDENT_PROFILE_VERSION = '<Not Required>'
+ def STUDENT_PROFILE_EMAIL_API_VERSION = '<Not Required>'
+ def PEN_MATCH_API_VERSION = '<Not Required>'
+ def PEN_SERVICES_API_VERSION = '<Not Required>'
+ def PEN_REG_BATCH_API_VERSION = '<Not Required>'
+
+ def DEV = '8878b4-tools'
+ def TARGET_ENVIRONMENT = '8878b4-prod'
+ def JOB_NAME = 'master'
+ def JOB_NAME_MAIN = 'main'
+ def STAGING_ENV = 'Prod'
+ def TARGET_ENV = 'prod'
+ def APP_DOMAIN = 'apps.silver.devops.gov.bc.ca'
+
+ pipeline {
+     environment {
+      extJSHelper = '';
+    NAMESPACE='8878b4'
+    COMMON_NAMESPACE='75e61b'
+     }
+     agent any
+  stages {
+      stage('Select Versions for Deployment') {
+          steps {
+              script {
+                  // Get the input
+                  def tagInput = input(
+                          id: 'tagInput', message: 'Please enter the version number for each component to be tagged/deployed:',
+                          parameters: [
+
+                                  string(defaultValue: "",
+                                          description: 'Enter Staff Admin Version, leave the tag blank if this service is not to be deployed',
+                                          name: 'STAFF_ADMIN_VERSION'),
+                                  string(defaultValue: "",
+                                          description: 'Enter Student Profile Version, leave the tag blank if this service is not to be deployed',
+                                          name: 'STUDENT_PROFILE_VERSION'),
+                                  string(defaultValue: "",
+                                          description: 'Enter Student Profile Email API Version, leave the tag blank if this service is not to be deployed',
+                                          name: 'STUDENT_PROFILE_EMAIL_API_VERSION'),
+                                  string(defaultValue: "",
+                                          description: 'Enter Student Profile Saga API version, leave the tag blank if this service is not to be deployed',
+                                          name: 'STUDENT_PROFILE_SAGA_API_VERSION'),
+                                  string(defaultValue: "",
+                                          description: 'Enter Pen Reg Batch API version, leave the tag blank if this service is not to be deployed',
+                                          name: 'PEN_REG_BATCH_API_VERSION'),
+                                  string(defaultValue: "",
+                                          description: 'Enter PEN Match API version, leave the tag blank if this service is not to be deployed',
+                                          name: 'PEN_MATCH_API_VERSION'),
+                                  string(defaultValue: "",
+                                          description: 'Enter PEN Services API version, leave the tag blank if this service is not to be deployed',
+                                          name: 'PEN_SERVICES_API_VERSION'),
+                                  string(defaultValue: "",
+                                                    description: 'Enter PEN Report Generation API version, leave the tag blank if this service is not to be deployed',
+                                                    name: 'PEN_REPORT_GENERATION_API_VERSION'),
+                          ])
+                  // Save to variables. Default to empty string if not found.
+                  STUDENT_PROFILE_SAGA_API_VERSION = tagInput.STUDENT_PROFILE_SAGA_API_VERSION?:''
+                  STAFF_ADMIN_VERSION = tagInput.STAFF_ADMIN_VERSION?:''
+                  STUDENT_PROFILE_VERSION = tagInput.STUDENT_PROFILE_VERSION?:''
+                  STUDENT_PROFILE_EMAIL_API_VERSION = tagInput.STUDENT_PROFILE_EMAIL_API_VERSION?:''
+                  PEN_REG_BATCH_API_VERSION = tagInput.PEN_REG_BATCH_API_VERSION?:''
+                  PEN_MATCH_API_VERSION = tagInput.PEN_MATCH_API_VERSION?:''
+                  PEN_SERVICES_API_VERSION = tagInput.PEN_SERVICES_API_VERSION?:''
+                  PEN_REPORT_GENERATION_API_VERSION= tagInput.PEN_REPORT_GENERATION_API_VERSION?:''
+              }
+          }
+      }
+      stage('Initialize deploy library'){
+        steps{
+            script{
+                 sh "wget -O - https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/deployHelpers.js > deployHelpers.js"
+                 extJSHelper = evaluate readFile('deployHelpers.js')
+            }
+        }
+      }
+      stage('PEN Report Generation API'){
+       when {
+           expression {
+               return "${PEN_REPORT_GENERATION_API_VERSION}" != "<Not Required>" && "${PEN_REPORT_GENERATION_API_VERSION}" != "";
+           }
+       }
+       environment {
+          APP_NAME = "pen-report-generation-api"
+          REPO_NAME = "educ-pen-report-generation-api"
+          DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REPORT-GENERATION-API/main/tools/openshift/api.dc.yaml"
+          MIN_REPLICAS = "2"
+          MAX_REPLICAS = "3"
+          MIN_CPU = "30m"
+          MAX_CPU = "60m"
+          MIN_MEM = "125Mi"
+          MAX_MEM = "250Mi"
+         }
+       steps {
+           script{
+                extJSHelper.performReportGenerationApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME_MAIN, "${PEN_REPORT_GENERATION_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "${MIN_REPLICAS}", "${MAX_REPLICAS}", "${MIN_CPU}", "${MAX_CPU}", "${MIN_MEM}", "${MAX_MEM}", "${TARGET_ENV}", "${NAMESPACE}", "${COMMON_NAMESPACE}")
+             }
+          }
+   }
+      stage('PEN Reg Batch API'){
+          when {
+              expression {
+                  return "${PEN_REG_BATCH_API_VERSION}" != "<Not Required>" && "${PEN_REG_BATCH_API_VERSION}" != "";
+              }
+          }
+          environment {
+             APP_NAME = "pen-reg-batch-api"
+             REPO_NAME = "educ-pen-reg-batch-api"
+             DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REG-BATCH-API/master/tools/openshift/api.dc.ocp4.yaml"
+             MIN_REPLICAS = "2"
+             MAX_REPLICAS = "3"
+             MIN_CPU = "100m"
+             MAX_CPU = "150m"
+             MIN_MEM = "800Mi"
+             MAX_MEM = "1600Mi"
+            }
+          steps {
+              script{
+                 extJSHelper.performPenRegApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${PEN_REG_BATCH_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "${MIN_REPLICAS}", "${MAX_REPLICAS}", "${MIN_CPU}", "${MAX_CPU}", "${MIN_MEM}", "${MAX_MEM}", "${TARGET_ENV}", "${NAMESPACE}", "${COMMON_NAMESPACE}")
+              }
+           }
+      }
+      stage('PEN Services API'){
+          when {
+              expression {
+                  return "${PEN_SERVICES_API_VERSION}" != "<Not Required>" && "${PEN_SERVICES_API_VERSION}" != "";
+              }
+          }
+          environment {
+             APP_NAME = "pen-services-api"
+             REPO_NAME = "educ-pen-services-api"
+             DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-SERVICES-API/master/tools/openshift/api.dc.ocp4.yaml"
+             MIN_REPLICAS = "2"
+             MAX_REPLICAS = "3"
+             MIN_CPU = "50m"
+             MAX_CPU = "150m"
+             MIN_MEM = "500Mi"
+             MAX_MEM = "1000Mi"
+            }
+          steps {
+              script{
+                 extJSHelper.performPenServicesApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${PEN_SERVICES_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "${MIN_REPLICAS}", "${MAX_REPLICAS}", "${MIN_CPU}", "${MAX_CPU}", "${MIN_MEM}", "${MAX_MEM}", "${TARGET_ENV}", "${NAMESPACE}", "${COMMON_NAMESPACE}")
+              }
+           }
+      }
+      stage('PEN Match API'){
+          when {
+              expression {
+                  return "${PEN_MATCH_API_VERSION}" != "<Not Required>" && "${PEN_MATCH_API_VERSION}" != "";
+              }
+          }
+          environment {
+             APP_NAME = "pen-match-api"
+             REPO_NAME = "educ-pen-match-api"
+             DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-MATCH-API/master/tools/openshift/api.dc.ocp4.yaml"
+             MIN_REPLICAS = "2"
+             MAX_REPLICAS = "3"
+             MIN_CPU = "50m"
+             MAX_CPU = "150m"
+             MIN_MEM = "500Mi"
+             MAX_MEM = "1000Mi"
+            }
+          steps {
+              script{
+                 extJSHelper.performPenRegApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${PEN_MATCH_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "${MIN_REPLICAS}", "${MAX_REPLICAS}", "${MIN_CPU}", "${MAX_CPU}", "${MIN_MEM}", "${MAX_MEM}", "${TARGET_ENV}", "${NAMESPACE}", "${COMMON_NAMESPACE}")
+              }
+           }
+      }
+      stage('Student Profile Saga API'){
+          when {
+              expression {
+                  return "${STUDENT_PROFILE_SAGA_API_VERSION}" != "<Not Required>" && "${STUDENT_PROFILE_SAGA_API_VERSION}" != "";
+              }
+          }
+          environment {
+             APP_NAME = "student-profile-saga-api"
+               REPO_NAME = "educ-student-profile-saga-api"
+             DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-SAGA-API/master/tools/openshift/api.dc.ocp4.yaml"
+               MIN_REPLICAS = "2"
+               MAX_REPLICAS = "3"
+               MIN_CPU = "30m"
+               MAX_CPU = "150m"
+               MIN_MEM = "650Mi"
+               MAX_MEM = "750Mi"
+             }
+          steps {
+               script{
+                  extJSHelper.performSagaApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${STUDENT_PROFILE_SAGA_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "${MIN_REPLICAS}", "${MAX_REPLICAS}", "${MIN_CPU}", "${MAX_CPU}", "${MIN_MEM}", "${MAX_MEM}", "${TARGET_ENV}", "${NAMESPACE}", "${COMMON_NAMESPACE}")
+               }
+            }
+      }
+      stage('Student Profile Email API'){
+          when {
+              expression {
+                  return "${STUDENT_PROFILE_EMAIL_API_VERSION}" != "<Not Required>" && "${STUDENT_PROFILE_EMAIL_API_VERSION}" != "";
+              }
+          }
+          environment {
+             APP_NAME = "student-profile-email-api"
+               REPO_NAME = "educ-student-profile-email-api"
+             DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-EMAIL-API/master/tools/openshift/api.dc.ocp4.yaml"
+               MIN_REPLICAS = "2"
+               MAX_REPLICAS = "3"
+               MIN_CPU = "50m"
+               MAX_CPU = "150m"
+               MIN_MEM = "650Mi"
+               MAX_MEM = "750Mi"
+             }
+          steps {
+               script{
+                  extJSHelper.performEmailApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${STUDENT_PROFILE_EMAIL_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "${MIN_REPLICAS}", "${MAX_REPLICAS}", "${MIN_CPU}", "${MAX_CPU}", "${MIN_MEM}", "${MAX_MEM}", TARGET_ENV, NAMESPACE, COMMON_NAMESPACE)
+               }
+             }
+      }
+      stage('Student Admin Frontend and Backend'){
+          when {
+              expression {
+                  return "${STAFF_ADMIN_VERSION}" != "<Not Required>" && "${STAFF_ADMIN_VERSION}" != "";
+              }
+          }
+          environment {
+             APP_NAME = "student-admin"
+               REPO_NAME = "educ-student-admin"
+             DC_URL_FRONTEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/openshift/frontend-static.dc.ocp4.yaml"
+             DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/openshift/backend.dc.ocp4.yaml"
+               MIN_REPLICAS_FE = "2"
+               MAX_REPLICAS_FE = "3"
+               MIN_CPU_FE = "25m"
+               MAX_CPU_FE = "50m"
+               MIN_MEM_FE = "50Mi"
+               MAX_MEM_FE = "100Mi"
+               MIN_REPLICAS_BE = "2"
+               MAX_REPLICAS_BE = "3"
+               MIN_CPU_BE = "50m"
+               MAX_CPU_BE = "100m"
+               MIN_MEM_BE = "200Mi"
+               MAX_MEM_BE = "250Mi"
+               PROD_HOST_ROUTE = "student-admin-8878b4-prod.apps.silver.devops.gov.bc.ca"
+             }
+          steps {
+               script{
+                  extJSHelper.performUIDeploy(PROD_HOST_ROUTE, STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${STAFF_ADMIN_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}", "${MIN_REPLICAS_FE}", "${MAX_REPLICAS_FE}", "${MIN_CPU_FE}", "${MAX_CPU_FE}", "${MIN_MEM_FE}", "${MAX_MEM_FE}", "${MIN_REPLICAS_BE}", "${MAX_REPLICAS_BE}", "${MIN_CPU_BE}", "${MAX_CPU_BE}", "${MIN_MEM_BE}", "${MAX_MEM_BE}", TARGET_ENV, NAMESPACE, COMMON_NAMESPACE, "", "", "")
+               }
+            }
+      }
+      stage('Student Profile Frontend and Backend'){
+          when {
+              expression {
+                  return "${STUDENT_PROFILE_VERSION}" != "<Not Required>" && "${STUDENT_PROFILE_VERSION}" != "";
+              }
+          }
+          environment {
+             APP_NAME = "student-profile"
+               REPO_NAME = "educ-student-profile"
+             DC_URL_FRONTEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE/master/tools/openshift/frontend-static.dc.ocp4.yaml"
+             DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE/master/tools/openshift/backend.dc.ocp4.yaml"
+               MIN_REPLICAS_FE = "2"
+               MAX_REPLICAS_FE = "3"
+               MIN_CPU_FE = "25m"
+               MAX_CPU_FE = "50m"
+               MIN_MEM_FE = "50Mi"
+               MAX_MEM_FE = "100Mi"
+               MIN_REPLICAS_BE = "2"
+               MAX_REPLICAS_BE = "3"
+               MIN_CPU_BE = "50m"
+               MAX_CPU_BE = "100m"
+               MIN_MEM_BE = "200Mi"
+               MAX_MEM_BE = "250Mi"
+               PROD_HOST_ROUTE = "getmypen.gov.bc.ca"
+               CA_CERT = "";
+               CERT = "";
+               PRIV_KEY = "";
+             }
+          steps {
+               script{
+                  CA_CERT = sh( script: "oc -n ${TARGET_ENVIRONMENT} -o json get secret prod-certs-ssl | sed -n 's/.*\"ca-certificate-l1k\": \"\\(.*\\)\",/\\1/p' | base64 --decode", returnStdout: true);
+                  CERT = sh( script: "oc -n ${TARGET_ENVIRONMENT} -o json get secret prod-certs-ssl | sed -n 's/.*\"certificate\": \"\\(.*\\)\",/\\1/p' | base64 --decode", returnStdout: true);
+                  PRIV_KEY = sh( script: "oc -n ${TARGET_ENVIRONMENT} -o json get secret prod-certs-ssl | sed -n 's/.*\"private-key\": \"\\(.*\\)\"/\\1/p' | base64 --decode", returnStdout: true);
+
+                  extJSHelper.performUIDeploy(PROD_HOST_ROUTE, STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${STUDENT_PROFILE_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}", "${MIN_REPLICAS_FE}", "${MAX_REPLICAS_FE}", "${MIN_CPU_FE}", "${MAX_CPU_FE}", "${MIN_MEM_FE}", "${MAX_MEM_FE}", "${MIN_REPLICAS_BE}", "${MAX_REPLICAS_BE}", "${MIN_CPU_BE}", "${MAX_CPU_BE}", "${MIN_MEM_BE}", "${MAX_MEM_BE}", TARGET_ENV, NAMESPACE, COMMON_NAMESPACE, CA_CERT, CERT, PRIV_KEY)
+               }
+             }
+      }
+  }
+ }
