@@ -27,6 +27,7 @@ objects:
        def DEV = '8878b4-tools'
        def TARGET_ENVIRONMENT = '8878b4-prod'
        def JOB_NAME = 'master'
+       def JOB_NAME_MAIN = 'main'
        def STAGING_ENV = 'Prod'
        def TARGET_ENV = 'prod'
        def APP_DOMAIN = 'apps.silver.devops.gov.bc.ca'
@@ -111,7 +112,7 @@ objects:
                }
              steps {
                  script{
-                      extJSHelper.performPenServicesApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}",JOB_NAME, "${PEN_REPORT_GENERATION_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "${MIN_REPLICAS}", "${MAX_REPLICAS}", "${MIN_CPU}", "${MAX_CPU}", "${MIN_MEM}", "${MAX_MEM}", "${TARGET_ENV}", "${NAMESPACE}", "${COMMON_NAMESPACE}")
+                      extJSHelper.performPenServicesApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME_MAIN, "${PEN_REPORT_GENERATION_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "${MIN_REPLICAS}", "${MAX_REPLICAS}", "${MIN_CPU}", "${MAX_CPU}", "${MIN_MEM}", "${MAX_MEM}", "${TARGET_ENV}", "${NAMESPACE}", "${COMMON_NAMESPACE}")
                    }
                 }
          }
