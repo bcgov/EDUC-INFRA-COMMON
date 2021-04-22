@@ -21,8 +21,8 @@ objects:
         pid_file: "/var/run/nats/nats.pid"
         http: 8222
         max_payload: 100Mb
-        debug: true
-        trace: true
+        debug: false
+        trace: false
         trace_verbose: false
         server_name: $POD_NAME
         cluster {
