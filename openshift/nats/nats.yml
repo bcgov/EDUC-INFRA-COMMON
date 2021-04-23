@@ -32,6 +32,8 @@ objects:
                nats://nats-0.nats.${POD_NAMESPACE}.svc.cluster.local:6222
                nats://nats-1.nats.${POD_NAMESPACE}.svc.cluster.local:6222
                nats://nats-2.nats.${POD_NAMESPACE}.svc.cluster.local:6222
+               nats://nats-3.nats.${POD_NAMESPACE}.svc.cluster.local:6222
+               nats://nats-4.nats.${POD_NAMESPACE}.svc.cluster.local:6222
             ]
             cluster_advertise: $CLUSTER_ADVERTISE
             connect_retries: 50
@@ -41,7 +43,7 @@ objects:
         }
         jetstream {
           store_dir: /data
-          max_file: 2Gi
+          max_file: 5Gi
         }
 - apiVersion: v1
   kind: Service
@@ -77,7 +79,7 @@ objects:
     selector:
       matchLabels:
         app: nats
-    replicas: 3
+    replicas: 5
     serviceName: "nats"
     volumeClaimTemplates:
       - metadata:
@@ -89,7 +91,7 @@ objects:
           persistentVolumeReclaimPolicy: Delete
           resources:
             requests:
-              storage: 2Gi
+              storage: 5Gi
     template:
       metadata:
         labels:
@@ -121,10 +123,10 @@ objects:
             image: docker-remote.artifacts.developer.gov.bc.ca/nats:alpine
             resources:
               requests:
-                cpu: "50m"
+                cpu: "100m"
                 memory: "256Mi"
               limits:
-                cpu: "200m"
+                cpu: "250m"
                 memory: "1024Mi"
             ports:
               - containerPort: 4222
