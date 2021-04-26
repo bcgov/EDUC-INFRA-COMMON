@@ -617,4 +617,44 @@ def performPenRegApiDeploy(String stageEnv, String projectEnv, String repoName, 
    performStandardRollout(appName, projectEnv, jobName)
  }
 
+ def performPenMyEdApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String commonNamespace){
+   script{
+     deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
+     dir('tools/jenkins'){
+       sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
+     }
+   }
+   configMapMyEdSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
+   script{
+     dir('tools/jenkins'){
+       sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${commonNamespace}\""
+     }
+   }
+   performStandardRollout(appName, projectEnv, jobName)
+ }
+
+ def configMapMyEdSetup(String appName,String appNameUpper, String namespace, String targetEnv, String sourceEnv){
+   script {
+     try{
+       sh( script: "oc project ${namespace}-${targetEnv}", returnStdout: true)
+       sh( script: "oc describe configmaps ${appName}-${targetEnv}-setup-config", returnStdout: true)
+       sh( script: "oc project ${sourceEnv}", returnStdout: true)
+       echo 'Config map already exists. Moving to next stage...'
+     } catch(e){
+       configProperties = input(
+         id: 'configProperties', message: "Please enter the required property values to allow ${appName} to run.",
+         parameters: [
+       string(defaultValue: "",
+         description: "Token for ${appName} FluentBit sidecar to connect to the Splunk",
+         name: 'SPLUNK_TOKEN'),
+     ])
+       sh """
+       set +x
+       echo Running curl command...
+       oc create -n ${namespace}-${targetEnv} configmap ${appName}-${targetEnv}-setup-config --from-literal=SPLUNK_TOKEN_${appNameUpper}=${configProperties.SPLUNK_TOKEN}  --dry-run -o yaml | oc apply -f -
+       oc project ${namespace}-tools
+       """
+     }
+   }
+ }
 return this;
