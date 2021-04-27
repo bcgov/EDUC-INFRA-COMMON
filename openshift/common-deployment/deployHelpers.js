@@ -642,16 +642,16 @@ def performPenRegApiDeploy(String stageEnv, String projectEnv, String repoName, 
        echo 'Config map already exists. Moving to next stage...'
      } catch(e){
        configProperties = input(
-         id: 'configProperties', message: "Please enter the required property values to allow ${appName} to run.",
+         id: 'configProperties', message: "Please enter the required credentials to allow ${appName} to run:",
          parameters: [
-       string(defaultValue: "",
+         string(defaultValue: "",
          description: "Token for ${appName} FluentBit sidecar to connect to the Splunk",
-         name: 'SPLUNK_TOKEN'),
+         name: "SPLUNK_TOKEN"),
      ])
        sh """
        set +x
        echo Running curl command...
-       oc create -n ${namespace}-${targetEnv} configmap ${appName}-${targetEnv}-setup-config --from-literal=SPLUNK_TOKEN_${appNameUpper}=${configProperties.SPLUNK_TOKEN}  --dry-run -o yaml | oc apply -f -
+       oc create -n ${namespace}-${targetEnv} configmap ${appName}-${targetEnv}-setup-config --from-literal=SPLUNK_TOKEN_${appNameUpper}=${configProperties} --dry-run -o yaml | oc apply -f -
        oc project ${namespace}-tools
        """
      }
