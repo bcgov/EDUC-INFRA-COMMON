@@ -10,7 +10,11 @@ def performApiDeploy(String stageEnv, String projectEnv, String repoName, String
     configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
     script{
       dir('tools/jenkins'){
-        sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\""
+          if(tag == "latest") {
+              sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\""
+          } else {
+              sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/${tag}/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\""
+          }
       }
     }
     performStandardRollout(appName, projectEnv, jobName)
@@ -24,11 +28,7 @@ def performEmailApiDeploy(String stageEnv, String projectEnv, String repoName, S
         }
     }
     configMapChesSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
-    script{
-      dir('tools/jenkins'){
-        sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${commonNamespace}\""
-      }
-    }
+    performStandardUpdateConfigMapStep("${repoName}", "${tag}", "${targetEnv}", "${appName}", "${NAMESPACE}", "${commonNamespace}");
     performStandardRollout(appName, projectEnv, jobName)
 }
 
@@ -51,11 +51,7 @@ def performSagaApiDeploy(String stageEnv, String projectEnv, String repoName, St
       }
     }
     configMapSetupSplunkOnly("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
-    script{
-      dir('tools/jenkins'){
-        sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${commonNamespace}\""
-      }
-    }
+    performStandardUpdateConfigMapStep("${repoName}", "${tag}", "${targetEnv}", "${appName}", "${NAMESPACE}", "${commonNamespace}");
     performStandardRollout(appName, projectEnv, jobName)
 }
 
@@ -69,7 +65,11 @@ def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, St
     configMapSetupSplunkOnly("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
     script{
       dir('tools/jenkins'){
-        sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${DEV_EXCHANGE_REALM}\""
+          if(tag == "latest") {
+              sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${DEV_EXCHANGE_REALM}\""
+          } else {
+              sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/${tag}/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${DEV_EXCHANGE_REALM}\""
+          }
       }
       openshift.withCluster() {
         openshift.withProject("${projectEnv}") {
@@ -101,10 +101,8 @@ def performUIDeploy(String hostRoute, String stageEnv, String projectEnv, String
         }
     }
     configMapSetupSplunkOnly("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
+    performStandardUpdateConfigMapStep("${repoName}", "${tag}", "${targetEnv}", "${appName}", "${NAMESPACE}", "${commonNamespace}");
     script{
-      dir('tools/jenkins'){
-        sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${commonNamespace}\""
-      }
       openshift.withCluster() {
         openshift.withProject("${projectEnv}") {
           def dcAppBE = openshift.selector('dc', "${appName}-backend-${jobName}")
@@ -525,11 +523,7 @@ def performPenRegApiDeploy(String stageEnv, String projectEnv, String repoName, 
         }
     }
     configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
-    script{
-      dir('tools/jenkins'){
-        sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${commonNamespace}\""
-      }
-    }
+    performStandardUpdateConfigMapStep("${repoName}", "${tag}", "${targetEnv}", "${appName}", "${NAMESPACE}", "${commonNamespace}");
     performStandardRollout(appName, projectEnv, jobName)
 }
 
@@ -541,11 +535,7 @@ def performPenRegApiDeploy(String stageEnv, String projectEnv, String repoName, 
      }
    }
    configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
-   script{
-     dir('tools/jenkins'){
-       sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${commonNamespace}\""
-     }
-   }
+   performStandardUpdateConfigMapStep("${repoName}", "${tag}", "${targetEnv}", "${appName}", "${NAMESPACE}", "${commonNamespace}");
    performStandardRollout(appName, projectEnv, jobName)
  }
 
@@ -557,12 +547,20 @@ def performPenRegApiDeploy(String stageEnv, String projectEnv, String repoName, 
      }
    }
    configMapCDOGSSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
-   script{
-     dir('tools/jenkins'){
-       sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${commonNamespace}\""
-     }
-   }
+   performStandardUpdateConfigMapStep("${repoName}", "${tag}", "${targetEnv}", "${appName}", "${NAMESPACE}", "${commonNamespace}");
    performStandardRollout(appName, projectEnv, jobName)
+ }
+
+ def performStandardUpdateConfigMapStep(String repoName,String tag, String targetEnv, String appName, String NAMESPACE, String commonNamespace){
+     script{
+         dir('tools/jenkins'){
+             if(tag == "latest") {
+                 sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${commonNamespace}\""
+             } else {
+                 sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/${tag}/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${commonNamespace}\""
+             }
+         }
+     }
  }
 
  def configMapCDOGSSetup(String appName,String appNameUpper, String namespace, String targetEnv, String sourceEnv){
@@ -611,7 +609,11 @@ def performPenRegApiDeploy(String stageEnv, String projectEnv, String repoName, 
    configMapChesSetup("${appName}","${appName}".toUpperCase(), "${NAMESPACE}", "${targetEnv}", "${sourceEnv}");
    script{
      dir('tools/jenkins'){
-       sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/${jobName}/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\""
+         if(tag == "latest") {
+             sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/main/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\""
+         } else {
+             sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/${tag}/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\""
+         }
      }
    }
    performStandardRollout(appName, projectEnv, jobName)
@@ -625,11 +627,7 @@ def performPenRegApiDeploy(String stageEnv, String projectEnv, String repoName, 
      }
    }
    configMapMyEdSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
-   script{
-     dir('tools/jenkins'){
-       sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${commonNamespace}\""
-     }
-   }
+   performStandardUpdateConfigMapStep("${repoName}", "${tag}", "${targetEnv}", "${appName}", "${NAMESPACE}", "${commonNamespace}");
    performStandardRollout(appName, projectEnv, jobName)
  }
 
