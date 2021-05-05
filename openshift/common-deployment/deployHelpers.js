@@ -83,7 +83,11 @@ def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, St
             }
           }
           openshift.selector('dc', "${appName}-${jobName}").rollout().latest()
-          openshift.selector('dc', "sso-${targetEnv}").rollout().latest()
+
+          def ssoApp = openshift.selector('dc', "sso-${targetEnv}")
+
+          ssoApp.rollout().cancel()
+          ssoApp.rollout().latest()
         }
       }
     }
