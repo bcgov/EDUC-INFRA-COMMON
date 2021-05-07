@@ -44,40 +44,25 @@ objects:
       ingress:
         - from:
             - podSelector: {}
-  - apiVersion: security.devops.gov.bc.ca/v1alpha1
-    kind: NetworkSecurityPolicy
+  - kind: NetworkPolicy
+    apiVersion: networking.k8s.io/v1
     metadata:
-      name: any-to-external
+      name: allow-traffic-from-gateway-to-penmyed-api
     spec:
-      description: |
-        Allow all pods to talk to external systems
-      source:
-        - - "$namespace=${NAMESPACE_PREFIX}-${ENVIRONMENT}"
-      destination:
-        - - "ext:network=any"
-  - apiVersion: security.devops.gov.bc.ca/v1alpha1
-    kind: NetworkSecurityPolicy
-    metadata:
-      name: any-to-any
-    spec:
-      description: |
-        allow all pods to communicate
-      source:
-        - - "$namespace=${NAMESPACE_PREFIX}-${ENVIRONMENT}"
-      destination:
-        - - "$namespace=*"
-  - apiVersion: security.devops.gov.bc.ca/v1alpha1
-    kind: NetworkSecurityPolicy
-    metadata:
-      name: intra-namespace-comms-pen-to-common
-      labels:
-        type: NetworkSecurityPolicy
-    spec:
-      description: "allow ${NAMESPACE_PREFIX}-${ENVIRONMENT} pods to talk to ${COMMON_NAMESPACE_PREFIX}-${ENVIRONMENT} pods"
-      destination:
-        - - $namespace=${COMMON_NAMESPACE_PREFIX}-${ENVIRONMENT}
-      source:
-        - - $namespace=${NAMESPACE_PREFIX}-${ENVIRONMENT}
+      podSelector:
+        matchLabels:
+          app: pen-myed-api-main
+      ingress:
+        - from:
+            - namespaceSelector:
+                matchLabels:
+                  environment: test
+                  name: 264e6f
+        - from:
+            - namespaceSelector:
+                matchLabels:
+                  environment: prod
+                  name: 264e6f
 parameters:
   - name: NAMESPACE_PREFIX
     displayName: Namespace
