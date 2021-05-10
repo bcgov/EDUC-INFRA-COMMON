@@ -69,7 +69,7 @@ objects:
       name: allow-common-to-pen
     spec:
       # Allow all pods from the given namespace to talk to
-      # the NATS service.
+      # the services deployed in PEN Namespace.
       podSelector: { }
       ingress:
         - from:
