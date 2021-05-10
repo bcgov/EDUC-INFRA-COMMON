@@ -63,6 +63,21 @@ objects:
                 matchLabels:
                   environment: prod
                   name: 264e6f
+  - kind: NetworkPolicy
+    apiVersion: networking.k8s.io/v1
+    metadata:
+      name: allow-common-to-pen
+    spec:
+      # Allow all pods from the given namespace to talk to
+      # the services deployed in PEN Namespace.
+      podSelector: { }
+      ingress:
+        - from:
+            - namespaceSelector:
+                matchLabels:
+                  environment: ${ENVIRONMENT}
+                  name: ${COMMON_NAMESPACE_PREFIX}
+              podSelector: { }
 parameters:
   - name: NAMESPACE_PREFIX
     displayName: Namespace
