@@ -305,7 +305,7 @@ objects:
                  }
                  steps {
                    script{
-                     extJSHelper.performTraxNotificationApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, REPO_NAME, "${APP_NAME}", "main", "${TRAX_NOTIFICATION_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, DC_URL, MIN_REPLICAS, MAX_REPLICAS, "40m", "80m", "400Mi", "750Mi", TARGET_ENV, NAMESPACE)
+                     extJSHelper.performTraxNotificationApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, REPO_NAME, "${APP_NAME}", "main", "${TRAX_NOTIFICATION_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, DC_URL, MIN_REPLICAS, MAX_REPLICAS, "75m", "150m", "400Mi", "750Mi", TARGET_ENV, NAMESPACE)
                    }
                  }
             }
