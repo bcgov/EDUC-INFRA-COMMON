@@ -13,7 +13,7 @@ objects:
   spec:
     strategy:
       jenkinsPipelineStrategy:
-        jenkinsfile: | 
+        jenkinsfile: |
             def GIT_USER = 'NONE'
             def GIT_TOKEN = 'NONE'
             def DIGITAL_ID_API_VERSION = '<Not Required>'
@@ -27,12 +27,10 @@ objects:
             def SLD_API_VERSION = '<Not Required>'
             def PEN_TRAX_API_VERSION = '<Not Required>'
 
-            def TOOLS = 'c2mvws-tools'
-            def TARGET_ENVIRONMENT = 'c2mvws-dev'
+            def TOOLS = '75e61b-tools'
             def JOB_NAME = 'master'
             def STAGING_ENV = 'Dev'
-            def APP_DOMAIN = 'pathfinder.gov.bc.ca'
-            
+
             pipeline {
                 environment {
                    APPROVERS = ''
@@ -46,7 +44,7 @@ objects:
             					def userInput = input(
             							id: 'userInput', message: 'Please enter your GitHub info:',
             							parameters: [
-            
+
             									string(defaultValue: '',
             											description: 'Your GitHub username',
             											name: 'GitHubUser'),
@@ -67,7 +65,7 @@ objects:
                                 def tagInput = input(
                                         id: 'tagInput', message: 'Please enter the release version number for each component to be tagged out of master in GIT.',
                                         parameters: [
-            
+
                                                 string(defaultValue: "",
                                                         description: 'Enter Digital Identity API Version, leave the tag blank if this service is not to be tagged.',
                                                         name: 'DIGITAL_ID_API_VERSION'),
@@ -113,21 +111,19 @@ objects:
             				}
                         }
                     }
-                    stage('Tagging Credentials & Approval') {
-                        steps {
-                            timeout(time:2, unit:'DAYS')
-                     	    {
-                               input message: 'Do you approve this Tagging In Git?'
-                            }
-                        }
-                    }
             		stage('Tag Digital ID In Git'){
             		    when {
             				expression {
             					return "${DIGITAL_ID_API_VERSION}" != "<Not Required>" && "${DIGITAL_ID_API_VERSION}" != "";
             				}
             			}
+                        environment {
+                         APP_NAME = "DIGITALID-API"
+                         REPO_NAME = "educ-digitalid-api"
+                         JOB_NAME = "master"
+                        }
             			steps {
+                           tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${DIGITAL_ID_API_VERSION}", "${TOOLS}");
             				createGitTag("${DIGITAL_ID_API_VERSION}", "${DIGITAL_ID_API_VERSION}", 'EDUC-DIGITALID-API')
             			}
             		}
@@ -137,7 +133,13 @@ objects:
             					return "${PEN_DEMOG_API_VERSION}" != "<Not Required>" && "${PEN_DEMOG_API_VERSION}" != "";
             				}
             			}
+                        environment {
+                         APP_NAME = "PEN-DEMOG-API"
+                         REPO_NAME = "educ-pen-demog-api"
+                         JOB_NAME = "master"
+                        }
             			steps {
+                           tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${PEN_DEMOG_API_VERSION}", "${TOOLS}");
             			   createGitTag("${PEN_DEMOG_API_VERSION}", "${PEN_DEMOG_API_VERSION}", 'EDUC-PEN-DEMOG-API')
             			}
             		}
@@ -147,7 +149,13 @@ objects:
             					return "${PEN_REQUEST_API_VERSION}" != "<Not Required>" && "${PEN_REQUEST_API_VERSION}" != "";
             				}
             			}
+                        environment {
+                         APP_NAME = "PEN-REQUEST-API"
+                         REPO_NAME = "educ-pen-request-api"
+                         JOB_NAME = "master"
+                        }
             			steps {
+                           tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${PEN_REQUEST_API_VERSION}", "${TOOLS}");
             			   createGitTag("${PEN_REQUEST_API_VERSION}", "${PEN_REQUEST_API_VERSION}", 'EDUC-PEN-REQUEST-API')
             			}
             		}
@@ -157,7 +165,13 @@ objects:
             					return "${SERVICES_CARD_API_VERSION}" != "<Not Required>" && "${SERVICES_CARD_API_VERSION}" != "";
             				}
             			}
+                        environment {
+                         APP_NAME = "SERVICES-CARD-API"
+                         REPO_NAME = "educ-services-card-api"
+                         JOB_NAME = "master"
+                        }
             			steps {
+                           tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${SERVICES_CARD_API_VERSION}", "${TOOLS}");
             		       createGitTag("${SERVICES_CARD_API_VERSION}", "${SERVICES_CARD_API_VERSION}", 'EDUC-SERVICES-CARD-API')
             			}
             		}
@@ -167,7 +181,13 @@ objects:
             					return "${SOAM_API_VERSION}" != "<Not Required>" && "${SOAM_API_VERSION}" != "";
             				}
             			}
+                        environment {
+                         APP_NAME = "SOAM-API"
+                         REPO_NAME = "educ-soam-api"
+                         JOB_NAME = "master"
+                        }
             			steps {
+                           tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${SOAM_API_VERSION}", "${TOOLS}");
             		       createGitTag("${SOAM_API_VERSION}", "${SOAM_API_VERSION}", 'EDUC-SOAM-API')
             			}
             		}
@@ -177,7 +197,13 @@ objects:
             					return "${STUDENT_API_VERSION}" != "<Not Required>" && "${STUDENT_API_VERSION}" != "";
             				}
             			}
+                        environment {
+                         APP_NAME = "STUDENT-API"
+                         REPO_NAME = "educ-student-api"
+                         JOB_NAME = "master"
+                        }
             			steps {
+                           tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${STUDENT_API_VERSION}", "${TOOLS}");
             		       createGitTag("${STUDENT_API_VERSION}", "${STUDENT_API_VERSION}", 'EDUC-STUDENT-API')
             			}
             		}
@@ -187,7 +213,13 @@ objects:
             					return "${STUDENT_PROFILE_API_VERSION}" != "<Not Required>" && "${STUDENT_PROFILE_API_VERSION}" != "";
             				}
             			}
+                        environment {
+                         APP_NAME = "STUDENT-PROFILE-API"
+                         REPO_NAME = "educ-student-profile-api"
+                         JOB_NAME = "master"
+                        }
             			steps {
+                           tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${STUDENT_PROFILE_API_VERSION}", "${TOOLS}");
             		       createGitTag("${STUDENT_PROFILE_API_VERSION}", "${STUDENT_PROFILE_API_VERSION}", 'EDUC-STUDENT-PROFILE-API')
             			}
             		}
@@ -197,7 +229,13 @@ objects:
             					return "${SCHOOL_API_VERSION}" != "<Not Required>" && "${SCHOOL_API_VERSION}" != "";
             				}
             			}
+                        environment {
+                         APP_NAME = "SCHOOL-API"
+                         REPO_NAME = "educ-school-api"
+                         JOB_NAME = "master"
+                        }
             			steps {
+                           tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${SCHOOL_API_VERSION}", "${TOOLS}");
             		       createGitTag("${SCHOOL_API_VERSION}", "${SCHOOL_API_VERSION}", 'EDUC-SCHOOL-API')
             			}
             		}
@@ -207,7 +245,13 @@ objects:
             					return "${SLD_API_VERSION}" != "<Not Required>" && "${SLD_API_VERSION}" != "";
             				}
             			}
+                        environment {
+                         APP_NAME = "SLD-API"
+                         REPO_NAME = "educ-sld-api"
+                         JOB_NAME = "main"
+                        }
             			steps {
+                           tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${SLD_API_VERSION}", "${TOOLS}");
             		       createGitTag("${SLD_API_VERSION}", "${SLD_API_VERSION}", 'EDUC-SLD-API')
             			}
             		}
@@ -217,20 +261,30 @@ objects:
             					return "${PEN_TRAX_API_VERSION}" != "<Not Required>" && "${PEN_TRAX_API_VERSION}" != "";
             				}
             			}
+                        environment {
+                         APP_NAME = "PEN-TRAX-API"
+                         REPO_NAME = "educ-pen-trax-api"
+                         JOB_NAME = "master"
+                        }
             			steps {
+                           tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${PEN_TRAX_API_VERSION}", "${TOOLS}");
             		       createGitTag("${PEN_TRAX_API_VERSION}", "${PEN_TRAX_API_VERSION}", 'EDUC-PEN-TRAX-API')
             			}
             		}
                 }
             }
-            
+
             def createGitTag(String tagName, String tagMessage, String repoName) {
             script{
                 def gitUrl="https://github.com/bcgov/${repoName}.git"
                 echo "gitUrl is: ${gitUrl}"
                 def path="/tmp/${repoName}"
                 echo "Path is: ${path}"
-            
+                echo "Clearing out previous clone"
+                sh """
+                   rm -rf ${path}
+                """
+
                 dir ("${path}"){
             		sh """
             		  set +x
@@ -242,5 +296,14 @@ objects:
             		"""
                 }
               }
+            }
+
+            def tagRelease(String repoName, String appName, String jobName, String tag, String sourceEnv) {
+                openshift.withCluster() {
+                    openshift.withProject("${sourceEnv}") {
+                        echo "Tagging ${appName} image with version ${tag}"
+                        openshift.tag("${sourceEnv}/${repoName}-${jobName}:latest", "${repoName}-${jobName}:${tag}")
+                    }
+                }
             }
       type: JenkinsPipeline
