@@ -112,7 +112,7 @@
              DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REG-BATCH-API/master/tools/openshift/api.dc.ocp4.yaml"
              MIN_REPLICAS = "3"
              MAX_REPLICAS = "5"
-             MIN_CPU = "50m"
+             MIN_CPU = "150m"
              MAX_CPU = "300m"
              MIN_MEM = "800Mi"
              MAX_MEM = "1600Mi"
@@ -135,8 +135,8 @@
              DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-SERVICES-API/master/tools/openshift/api.dc.ocp4.yaml"
              MIN_REPLICAS = "3"
              MAX_REPLICAS = "5"
-             MIN_CPU = "50m"
-             MAX_CPU = "150m"
+             MIN_CPU = "100m"
+             MAX_CPU = "200m"
              MIN_MEM = "500Mi"
              MAX_MEM = "1000Mi"
             }
@@ -158,8 +158,8 @@
              DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-MATCH-API/master/tools/openshift/api.dc.ocp4.yaml"
              MIN_REPLICAS = "3"
              MAX_REPLICAS = "5"
-             MIN_CPU = "50m"
-             MAX_CPU = "150m"
+             MIN_CPU = "100m"
+             MAX_CPU = "200m"
              MIN_MEM = "500Mi"
              MAX_MEM = "1000Mi"
             }
@@ -181,10 +181,10 @@
              DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-SAGA-API/master/tools/openshift/api.dc.ocp4.yaml"
                MIN_REPLICAS = "3"
                MAX_REPLICAS = "5"
-               MIN_CPU = "30m"
+               MIN_CPU = "75m"
                MAX_CPU = "150m"
-               MIN_MEM = "650Mi"
-               MAX_MEM = "750Mi"
+               MIN_MEM = "400Mi"
+               MAX_MEM = "800Mi"
              }
           steps {
                script{
@@ -204,10 +204,10 @@
              DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-EMAIL-API/master/tools/openshift/api.dc.ocp4.yaml"
                MIN_REPLICAS = "3"
                MAX_REPLICAS = "3"
-               MIN_CPU = "50m"
+               MIN_CPU = "75m"
                MAX_CPU = "150m"
-               MIN_MEM = "650Mi"
-               MAX_MEM = "750Mi"
+               MIN_MEM = "400Mi"
+               MAX_MEM = "800Mi"
              }
           steps {
                script{
@@ -236,7 +236,7 @@
                MAX_REPLICAS_BE = "5"
                MIN_CPU_BE = "50m"
                MAX_CPU_BE = "100m"
-               MIN_MEM_BE = "200Mi"
+               MIN_MEM_BE = "125Mi"
                MAX_MEM_BE = "250Mi"
                PROD_HOST_ROUTE = "student-admin-8878b4-prod.apps.silver.devops.gov.bc.ca"
              }
@@ -267,7 +267,7 @@
                MAX_REPLICAS_BE = "5"
                MIN_CPU_BE = "50m"
                MAX_CPU_BE = "100m"
-               MIN_MEM_BE = "200Mi"
+               MIN_MEM_BE = "125Mi"
                MAX_MEM_BE = "250Mi"
                PROD_HOST_ROUTE = "getmypen.gov.bc.ca"
                CA_CERT = "";
