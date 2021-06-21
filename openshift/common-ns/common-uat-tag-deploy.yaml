@@ -279,23 +279,6 @@ objects:
                     }
                    }
        		}
-       		stage('SOAM API'){
-       			when {
-       				expression {
-       					return "${SOAM_API_VERSION}" != "<Not Required>" && "${SOAM_API_VERSION}" != "";
-       				}
-       			}
-       			environment {
-       			   APP_NAME = "soam-api"
-                     REPO_NAME = "educ-soam-api"
-       			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-SOAM-API/master/tools/openshift/api.dc.ocp4.yaml"
-                   }
-       			steps {
-                    script{
-                      extJSHelper.performSoamApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, REPO_NAME, "${APP_NAME}", JOB_NAME, "${SOAM_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, DC_URL, MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE, DEV_EXCHANGE_REALM)
-                    }
-                   }
-       		}
             stage('TRAX NOTIFICATION API'){
                  when {
                      expression {
@@ -330,5 +313,22 @@ objects:
                     }
                   }
             }
+       		stage('SOAM API'){
+       			when {
+       				expression {
+       					return "${SOAM_API_VERSION}" != "<Not Required>" && "${SOAM_API_VERSION}" != "";
+       				}
+       			}
+       			environment {
+       			   APP_NAME = "soam-api"
+                     REPO_NAME = "educ-soam-api"
+       			   DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-SOAM-API/master/tools/openshift/api.dc.ocp4.yaml"
+                   }
+       			steps {
+                    script{
+                      extJSHelper.performSoamApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, REPO_NAME, "${APP_NAME}", JOB_NAME, "${SOAM_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, DC_URL, MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE, DEV_EXCHANGE_REALM)
+                    }
+                   }
+       		}
        	}
        }
