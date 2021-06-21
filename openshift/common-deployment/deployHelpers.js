@@ -3,9 +3,6 @@
 def performApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE){
     script {
         deployStageNoEnv(sourceEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
-        dir('tools/jenkins'){
-            sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
-        }
     }
     configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
     script{
@@ -23,9 +20,6 @@ def performApiDeploy(String stageEnv, String projectEnv, String repoName, String
 def performEmailApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String commonNamespace){
     script{
         deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
-        dir('tools/jenkins'){
-            sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
-        }
     }
     configMapChesSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
     performStandardUpdateConfigMapStep("${repoName}", "${tag}", "${targetEnv}", "${appName}", "${NAMESPACE}", "${commonNamespace}");
@@ -46,9 +40,6 @@ def performSagaApiDeploy(String stageEnv, String projectEnv, String repoName, St
         }
       }
       deployStage(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem, targetEnv)
-      dir('tools/jenkins'){
-          sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
-      }
     }
     configMapSetupSplunkOnly("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
     performStandardUpdateConfigMapStep("${repoName}", "${tag}", "${targetEnv}", "${appName}", "${NAMESPACE}", "${commonNamespace}");
@@ -58,9 +49,6 @@ def performSagaApiDeploy(String stageEnv, String projectEnv, String repoName, St
 def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String DEV_EXCHANGE_REALM){
     script {
         deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
-        dir('tools/jenkins'){
-            sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
-        }
     }
     configMapSetupSplunkOnly("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
     script{
@@ -99,9 +87,6 @@ def performUIDeploy(String hostRoute, String stageEnv, String projectEnv, String
             deployUIStage(hostRoute, stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, frontendDCRaw, backendDCRaw, minReplicasFE, maxReplicasFE, minCPUFE, maxCPUFE, minMemFE, maxMemFE, minReplicasBE, maxReplicasBE, minCPUBE, maxCPUBE, minMemBE, maxMemBE)
         }else{
             deployUIStageWithCerts(hostRoute, stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, frontendDCRaw, backendDCRaw, minReplicasFE, maxReplicasFE, minCPUFE, maxCPUFE, minMemFE, maxMemFE, minReplicasBE, maxReplicasBE, minCPUBE, maxCPUBE, minMemBE, maxMemBE, caCert, cert, privateKey)
-        }
-        dir('tools/jenkins'){
-            sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
         }
     }
     configMapSetupSplunkOnly("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
@@ -158,9 +143,7 @@ def configMapSetupSplunkOnly(String appName,String appNameUpper, String namespac
     script {
 
       try{
-        sh( script: "oc project ${namespace}-${targetEnv}", returnStdout: true)
-        sh( script: "oc describe configmaps ${appName}-${targetEnv}-setup-config", returnStdout: true)
-        sh( script: "oc project ${sourceEnv}", returnStdout: true)
+        sh( script: "oc -n ${namespace}-${targetEnv} describe configmaps ${appName}-${targetEnv}-setup-config", returnStdout: true)
         echo 'Config map already exists. Moving to next stage...'
       } catch(e){
           configProperties = input(
@@ -174,7 +157,6 @@ def configMapSetupSplunkOnly(String appName,String appNameUpper, String namespac
 		  set +x
 		  echo Running curl command...
 		  oc create -n ${namespace}-${targetEnv} configmap ${appName}-${targetEnv}-setup-config --from-literal=SPLUNK_TOKEN_${appNameUpper}=${configProperties} --dry-run -o yaml | oc apply -f -
-		  oc project ${namespace}-tools
 		"""
       }
     }
@@ -184,9 +166,7 @@ def configMapSetup(String appName,String appNameUpper, String namespace, String 
     script {
 
       try{
-        sh( script: "oc project ${namespace}-${targetEnv}", returnStdout: true)
-        sh( script: "oc describe configmaps ${appName}-${targetEnv}-setup-config", returnStdout: true)
-        sh( script: "oc project ${sourceEnv}", returnStdout: true)
+        sh( script: "oc -n ${namespace}-${targetEnv} describe configmaps ${appName}-${targetEnv}-setup-config", returnStdout: true)
         echo 'Config map already exists. Moving to next stage...'
       } catch(e){
           configProperties = input(
@@ -209,7 +189,6 @@ def configMapSetup(String appName,String appNameUpper, String namespace, String 
 		  set +x
 		  echo Running curl command...
 		  oc create -n ${namespace}-${targetEnv} configmap ${appName}-${targetEnv}-setup-config --from-literal=SPLUNK_TOKEN_${appNameUpper}=${configProperties.SPLUNK_TOKEN} --from-literal=DB_JDBC_CONNECT_STRING=${configProperties.DB_JDBC_CONNECT_STRING} --from-literal=DB_USER_${appNameUpper}=${configProperties.DB_USER} --from-literal=DB_PWD_${appNameUpper}=${configProperties.DB_PWD} --dry-run -o yaml | oc apply -f -
-		  oc project ${namespace}-tools
 		"""
       }
     }
@@ -218,9 +197,7 @@ def configMapSetup(String appName,String appNameUpper, String namespace, String 
 def configMapChesSetup(String appName,String appNameUpper, String namespace, String targetEnv, String sourceEnv){
     script {
        try{
-        sh( script: "oc project ${namespace}-${targetEnv}", returnStdout: true)
-        sh( script: "oc describe configmaps ${appName}-${targetEnv}-setup-config", returnStdout: true)
-        sh( script: "oc project ${sourceEnv}", returnStdout: true)
+        sh( script: "oc -n ${namespace}-${targetEnv} describe configmaps ${appName}-${targetEnv}-setup-config", returnStdout: true)
         echo 'Config map already exists. Moving to next stage...'
       } catch(e){
           configProperties = input(
@@ -255,7 +232,6 @@ def configMapChesSetup(String appName,String appNameUpper, String namespace, Str
          set +x
          echo Running curl command...
          oc create -n ${namespace}-${targetEnv} configmap ${appName}-${targetEnv}-setup-config --from-literal=SPLUNK_TOKEN_${appNameUpper}=${configProperties.SPLUNK_TOKEN} --from-literal=DB_JDBC_CONNECT_STRING=${configProperties.DB_JDBC_CONNECT_STRING} --from-literal=DB_USER_${appNameUpper}=${configProperties.DB_USER} --from-literal=DB_PWD_${appNameUpper}=${configProperties.DB_PWD} --from-literal=CHES_CLIENT_ID=${configProperties.CHES_CLIENT_ID} --from-literal=CHES_TOKEN_URL=${configProperties.CHES_TOKEN_URL} --from-literal=CHES_ENDPOINT_URL=${configProperties.CHES_ENDPOINT_URL} --from-literal=CHES_CLIENT_SECRET=${configProperties.CHES_CLIENT_SECRET} --dry-run -o yaml | oc apply -f -
-         oc project ${namespace}-tools
        """
       }
     }
@@ -522,9 +498,6 @@ def waitForWorkflowRunComplete(String token) {
 def performPenRegApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String commonNamespace){
     script{
         deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
-        dir('tools/jenkins'){
-            sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
-        }
     }
     configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
     performStandardUpdateConfigMapStep("${repoName}", "${tag}", "${targetEnv}", "${appName}", "${NAMESPACE}", "${commonNamespace}");
@@ -534,9 +507,6 @@ def performPenRegApiDeploy(String stageEnv, String projectEnv, String repoName, 
  def performPenServicesApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String commonNamespace){
    script{
      deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
-     dir('tools/jenkins'){
-       sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
-     }
    }
    configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
    performStandardUpdateConfigMapStep("${repoName}", "${tag}", "${targetEnv}", "${appName}", "${NAMESPACE}", "${commonNamespace}");
@@ -546,9 +516,6 @@ def performPenRegApiDeploy(String stageEnv, String projectEnv, String repoName, 
  def performReportGenerationApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String commonNamespace){
    script{
      deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
-     dir('tools/jenkins'){
-       sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
-     }
    }
    configMapCDOGSSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
    performStandardUpdateConfigMapStep("${repoName}", "${tag}", "${targetEnv}", "${appName}", "${NAMESPACE}", "${commonNamespace}");
@@ -570,9 +537,7 @@ def performPenRegApiDeploy(String stageEnv, String projectEnv, String repoName, 
  def configMapCDOGSSetup(String appName,String appNameUpper, String namespace, String targetEnv, String sourceEnv){
    script {
      try{
-       sh( script: "oc project ${namespace}-${targetEnv}", returnStdout: true)
-       sh( script: "oc describe configmaps ${appName}-${targetEnv}-setup-config", returnStdout: true)
-       sh( script: "oc project ${sourceEnv}", returnStdout: true)
+       sh( script: "oc -n ${namespace}-${targetEnv} describe configmaps ${appName}-${targetEnv}-setup-config", returnStdout: true)
        echo 'Config map already exists. Moving to next stage...'
      } catch(e){
        configProperties = input(
@@ -598,7 +563,6 @@ def performPenRegApiDeploy(String stageEnv, String projectEnv, String repoName, 
        set +x
        echo Running curl command...
        oc create -n ${namespace}-${targetEnv} configmap ${appName}-${targetEnv}-setup-config --from-literal=SPLUNK_TOKEN_${appNameUpper}=${configProperties.SPLUNK_TOKEN} --from-literal=CDOGS_CLIENT_ID=${configProperties.CDOGS_CLIENT_ID} --from-literal=CDOGS_CLIENT_SECRET=${configProperties.CDOGS_CLIENT_SECRET} --from-literal=CDOGS_TOKEN_ENDPOINT=${configProperties.CDOGS_TOKEN_ENDPOINT} --from-literal=CDOGS_BASE_URL=${configProperties.CDOGS_BASE_URL} --dry-run -o yaml | oc apply -f -
-       oc project ${namespace}-tools
        """
      }
    }
@@ -606,9 +570,6 @@ def performPenRegApiDeploy(String stageEnv, String projectEnv, String repoName, 
  def performTraxNotificationApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE){
    script {
      deployStageNoEnv(sourceEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
-     dir('tools/jenkins'){
-       sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
-     }
    }
    configMapChesSetup("${appName}","${appName}".toUpperCase(), "${NAMESPACE}", "${targetEnv}", "${sourceEnv}");
    script{
@@ -626,9 +587,6 @@ def performPenRegApiDeploy(String stageEnv, String projectEnv, String repoName, 
  def performPenMyEdApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String commonNamespace){
    script{
      deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
-     dir('tools/jenkins'){
-       sh "curl https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/common-deployment/download-kc.sh | bash /dev/stdin \"${NAMESPACE}\""
-     }
    }
    configMapMyEdSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
    performStandardUpdateConfigMapStep("${repoName}", "${tag}", "${targetEnv}", "${appName}", "${NAMESPACE}", "${commonNamespace}");
@@ -638,9 +596,7 @@ def performPenRegApiDeploy(String stageEnv, String projectEnv, String repoName, 
  def configMapMyEdSetup(String appName,String appNameUpper, String namespace, String targetEnv, String sourceEnv){
    script {
      try{
-       sh( script: "oc project ${namespace}-${targetEnv}", returnStdout: true)
-       sh( script: "oc describe configmaps ${appName}-${targetEnv}-setup-config", returnStdout: true)
-       sh( script: "oc project ${sourceEnv}", returnStdout: true)
+       sh( script: "oc -n ${namespace}-${targetEnv} describe configmaps ${appName}-${targetEnv}-setup-config", returnStdout: true)
        echo 'Config map already exists. Moving to next stage...'
      } catch(e){
        configProperties = input(
@@ -654,7 +610,6 @@ def performPenRegApiDeploy(String stageEnv, String projectEnv, String repoName, 
        set +x
        echo Running curl command...
        oc create -n ${namespace}-${targetEnv} configmap ${appName}-${targetEnv}-setup-config --from-literal=SPLUNK_TOKEN_${appNameUpper}=${configProperties} --dry-run -o yaml | oc apply -f -
-       oc project ${namespace}-tools
        """
      }
    }
