@@ -47,9 +47,6 @@ def performSagaApiDeploy(String stageEnv, String projectEnv, String repoName, St
 }
 
 def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String DEV_EXCHANGE_REALM){
-    script {
-        deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
-    }
     configMapSetupSplunkOnly("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
     script{
       dir('tools/jenkins'){
@@ -59,24 +56,22 @@ def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, St
               sh "curl -s https://raw.githubusercontent.com/bcgov/${repoName}/${tag}/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${DEV_EXCHANGE_REALM}\""
           }
       }
-      openshift.withCluster() {
-        openshift.withProject("${projectEnv}") {
-          def dcApp = openshift.selector('dc', "${appName}-${jobName}")
-          dcApp.rollout().cancel()
-          timeout(10) {
-            try{
-                dcApp.rollout().status('--watch=true')
-            }catch(Exception e){
-              //Do nothing
-            }
-          }
-          openshift.selector('dc', "${appName}-${jobName}").rollout().latest()
-
-          def ssoApp = openshift.selector('dc', "sso-${targetEnv}")
-
-          ssoApp.rollout().cancel()
-          ssoApp.rollout().latest()
-        }
+      script {
+         deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
+      }
+      echo "Rolling out ${appName}-${jobName}"
+      try {
+          sh(script: "oc -n ${projectEnv} rollout latest dc/${appName}-${jobName}", returnStdout: true)
+      }
+      catch(e){
+          //Do nothing
+      }
+      echo "Rolling out sso-${targetEnv}"
+      try {
+          sh(script: "oc -n ${projectEnv} rollout latest dc/sso-${targetEnv}", returnStdout: true)
+      }
+      catch(e){
+          //Do nothing
       }
     }
 }
