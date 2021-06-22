@@ -5,9 +5,9 @@ def performApiDeploy(String stageEnv, String projectEnv, String repoName, String
     script{
       dir('tools/jenkins'){
           if(tag == "latest") {
-              sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\""
+              sh "curl -s https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\""
           } else {
-              sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/${tag}/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\""
+              sh "curl -s https://raw.githubusercontent.com/bcgov/${repoName}/${tag}/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\""
           }
       }
     }
@@ -54,9 +54,9 @@ def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, St
     script{
       dir('tools/jenkins'){
           if(tag == "latest") {
-              sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${DEV_EXCHANGE_REALM}\""
+              sh "curl -s https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${DEV_EXCHANGE_REALM}\""
           } else {
-              sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/${tag}/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${DEV_EXCHANGE_REALM}\""
+              sh "curl -s https://raw.githubusercontent.com/bcgov/${repoName}/${tag}/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${DEV_EXCHANGE_REALM}\""
           }
       }
       openshift.withCluster() {
@@ -149,7 +149,7 @@ def configMapSetupSplunkOnly(String appName,String appNameUpper, String namespac
           ])
 		sh """
 		  set +x
-		  echo Running curl command...
+		  echo Creating ${appName}-${targetEnv}-setup-config configmap...
 		  oc create -n ${namespace}-${targetEnv} configmap ${appName}-${targetEnv}-setup-config --from-literal=SPLUNK_TOKEN_${appNameUpper}=${configProperties} --dry-run -o yaml | oc apply -f -
 		"""
       }
@@ -181,7 +181,7 @@ def configMapSetup(String appName,String appNameUpper, String namespace, String 
           ])
 		sh """
 		  set +x
-		  echo Running curl command...
+          echo Creating ${appName}-${targetEnv}-setup-config configmap...
 		  oc create -n ${namespace}-${targetEnv} configmap ${appName}-${targetEnv}-setup-config --from-literal=SPLUNK_TOKEN_${appNameUpper}=${configProperties.SPLUNK_TOKEN} --from-literal=DB_JDBC_CONNECT_STRING=${configProperties.DB_JDBC_CONNECT_STRING} --from-literal=DB_USER_${appNameUpper}=${configProperties.DB_USER} --from-literal=DB_PWD_${appNameUpper}=${configProperties.DB_PWD} --dry-run -o yaml | oc apply -f -
 		"""
       }
@@ -224,7 +224,7 @@ def configMapChesSetup(String appName,String appNameUpper, String namespace, Str
           ])
        sh """
          set +x
-         echo Running curl command...
+         echo Creating ${appName}-${targetEnv}-setup-config configmap...
          oc create -n ${namespace}-${targetEnv} configmap ${appName}-${targetEnv}-setup-config --from-literal=SPLUNK_TOKEN_${appNameUpper}=${configProperties.SPLUNK_TOKEN} --from-literal=DB_JDBC_CONNECT_STRING=${configProperties.DB_JDBC_CONNECT_STRING} --from-literal=DB_USER_${appNameUpper}=${configProperties.DB_USER} --from-literal=DB_PWD_${appNameUpper}=${configProperties.DB_PWD} --from-literal=CHES_CLIENT_ID=${configProperties.CHES_CLIENT_ID} --from-literal=CHES_TOKEN_URL=${configProperties.CHES_TOKEN_URL} --from-literal=CHES_ENDPOINT_URL=${configProperties.CHES_ENDPOINT_URL} --from-literal=CHES_CLIENT_SECRET=${configProperties.CHES_CLIENT_SECRET} --dry-run -o yaml | oc apply -f -
        """
       }
@@ -500,9 +500,9 @@ def performPenRegApiDeploy(String stageEnv, String projectEnv, String repoName, 
      script{
          dir('tools/jenkins'){
              if(tag == "latest") {
-                 sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${commonNamespace}\""
+                 sh "curl -s https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${commonNamespace}\""
              } else {
-                 sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/${tag}/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${commonNamespace}\""
+                 sh "curl -s https://raw.githubusercontent.com/bcgov/${repoName}/${tag}/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${commonNamespace}\""
              }
          }
      }
@@ -535,7 +535,7 @@ def performPenRegApiDeploy(String stageEnv, String projectEnv, String repoName, 
      ])
        sh """
        set +x
-       echo Running curl command...
+       echo Creating ${appName}-${targetEnv}-setup-config configmap...
        oc create -n ${namespace}-${targetEnv} configmap ${appName}-${targetEnv}-setup-config --from-literal=SPLUNK_TOKEN_${appNameUpper}=${configProperties.SPLUNK_TOKEN} --from-literal=CDOGS_CLIENT_ID=${configProperties.CDOGS_CLIENT_ID} --from-literal=CDOGS_CLIENT_SECRET=${configProperties.CDOGS_CLIENT_SECRET} --from-literal=CDOGS_TOKEN_ENDPOINT=${configProperties.CDOGS_TOKEN_ENDPOINT} --from-literal=CDOGS_BASE_URL=${configProperties.CDOGS_BASE_URL} --dry-run -o yaml | oc apply -f -
        """
      }
@@ -549,9 +549,9 @@ def performPenRegApiDeploy(String stageEnv, String projectEnv, String repoName, 
    script{
      dir('tools/jenkins'){
          if(tag == "latest") {
-             sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/main/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\""
+             sh "curl -s https://raw.githubusercontent.com/bcgov/${repoName}/main/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\""
          } else {
-             sh "curl https://raw.githubusercontent.com/bcgov/${repoName}/${tag}/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\""
+             sh "curl -s https://raw.githubusercontent.com/bcgov/${repoName}/${tag}/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\""
          }
      }
    }
@@ -582,7 +582,7 @@ def performPenRegApiDeploy(String stageEnv, String projectEnv, String repoName, 
      ])
        sh """
        set +x
-       echo Running curl command...
+       echo Creating ${appName}-${targetEnv}-setup-config configmap...
        oc create -n ${namespace}-${targetEnv} configmap ${appName}-${targetEnv}-setup-config --from-literal=SPLUNK_TOKEN_${appNameUpper}=${configProperties} --dry-run -o yaml | oc apply -f -
        """
      }
