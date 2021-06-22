@@ -124,7 +124,7 @@ def performStandardRollout(String appName, String projectEnv, String jobName){
   script{
      echo "Rolling out ${appName}-${jobName}"
      try {
-         sh(script: "oc rollout latest dc/${appName}-${jobName}", returnStdout: true)
+         sh(script: "oc -n ${projectEnv} rollout latest dc/${appName}-${jobName}", returnStdout: true)
      }
      catch(e){
          //Do nothing
