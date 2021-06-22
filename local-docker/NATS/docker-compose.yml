@@ -1,9 +1,12 @@
 version: "3.5"
 services:
-  nats:
+  nats-0:
     image: nats:alpine
-    container_name: nats-main
+    container_name: nats-0
     restart: always
+    environment:
+      - HOST_HOSTNAME=nats-0
+      - TZ=America/Vancouver
     command:
       - "nats-server"
       - "--config"
@@ -13,20 +16,48 @@ services:
       - "4222:4222"
     volumes:
       - ./nats.conf:/etc/nats-config/nats.conf
-  stan:
-    image: nats-streaming:alpine
+      - ./data-0:/data
+  nats-1:
+    image: nats:alpine
+    container_name: nats-1
     depends_on:
-     - nats
+      - nats-0
     restart: always
+    environment:
+      - HOST_HOSTNAME=nats-1
+      - TZ=America/Vancouver
     command:
-      - "-SD"
-      - "-SV"
-      - "-SDV"
-      - "--hb_interval=2S"
-      - "-hbf=1"
-      - "--ns=nats://nats-main:4222"
-    links:
-      - nats
+      - "nats-server"
+      - "--config"
+      - "/etc/nats-config/nats.conf"
     ports:
-      - "8223:8223"
+      - "8223:8222"
+      - "4223:4222"
+    volumes:
+      - ./nats.conf:/etc/nats-config/nats.conf
+      - ./data-1:/data
+  nats-2:
+    image: nats:alpine
+    container_name: nats-2
+    depends_on:
+      - nats-0
+      - nats-1
+
+    restart: always
+    environment:
+      - HOST_HOSTNAME=nats-2
+      - TZ=America/Vancouver
+    command:
+      - "nats-server"
+      - "--config"
+      - "/etc/nats-config/nats.conf"
+    ports:
+      - "8224:8222"
+      - "4224:4222"
+    links:
+      - nats-0
+      - nats-1
+    volumes:
+      - ./nats.conf:/etc/nats-config/nats.conf
+      - ./data-2:/data
 
