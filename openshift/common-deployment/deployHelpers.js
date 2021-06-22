@@ -123,7 +123,13 @@ def performUIDeploy(String hostRoute, String stageEnv, String projectEnv, String
 def performStandardRollout(String appName, String projectEnv, String jobName){
   script{
      echo "Rolling out ${appName}-${jobName}"
-     sh( script: "oc rollout latest dc/${appName}-${jobName}", returnStdout: true)
+     try {
+         sh(script: "oc rollout latest dc/${appName}-${jobName}", returnStdout: true)
+     }
+     catch(e){
+         //Do nothing
+     }
+
   }
 }
 
