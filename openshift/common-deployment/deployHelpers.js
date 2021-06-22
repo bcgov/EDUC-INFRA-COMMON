@@ -129,7 +129,6 @@ def performStandardRollout(String appName, String projectEnv, String jobName){
      catch(e){
          //Do nothing
      }
-
   }
 }
 

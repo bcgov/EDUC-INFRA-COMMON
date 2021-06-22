@@ -101,196 +101,192 @@ pipeline {
            }
        }
      }
-     stage('Deploy required services'){
-         parallel {
-             stage('Digital ID API'){
-                 when {
-                     expression {
-                         return "${DIGITAL_ID_API_VERSION}" != "<Not Required>" && "${DIGITAL_ID_API_VERSION}" != "";
-                     }
-                 }
-                 environment {
-                    APP_NAME = "digitalid-api"
-                      REPO_NAME = "educ-digitalid-api"
-                    DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-DIGITALID-API/master/tools/openshift/api.dc.ocp4.yaml"
-                    }
-                 steps {
-                     script{
-                       extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${DIGITAL_ID_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
-                     }
-                    }
-             }
-             stage('PEN Demographics API'){
-                 when {
-                     expression {
-                         return "${PEN_DEMOG_API_VERSION}" != "<Not Required>" && "${PEN_DEMOG_API_VERSION}" != "";
-                     }
-                 }
-                 environment {
-                    APP_NAME = "pen-demographics-api"
-                      REPO_NAME = "educ-pen-demog-api"
-                    DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-DEMOG-API/master/tools/openshift/api.dc.ocp4.yaml"
-                    }
-                 steps {
-                     script{
-                       extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${PEN_DEMOG_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
-                     }
-                    }
-             }
-             stage('PEN Request API'){
-                 when {
-                     expression {
-                         return "${PEN_REQUEST_API_VERSION}" != "<Not Required>" && "${PEN_REQUEST_API_VERSION}" != "";
-                     }
-                 }
-                 environment {
-                    APP_NAME = "pen-request-api"
-                      REPO_NAME = "educ-pen-request-api"
-                    DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST-API/master/tools/openshift/api.dc.ocp4.yaml"
-                    }
-                 steps {
-                     script{
-                       extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${PEN_REQUEST_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
-                     }
-                    }
-             }
-             stage('Services Card API'){
-                 when {
-                     expression {
-                         return "${SERVICES_CARD_API_VERSION}" != "<Not Required>" && "${SERVICES_CARD_API_VERSION}" != "";
-                     }
-                 }
-                 environment {
-                    APP_NAME = "services-card-api"
-                      REPO_NAME = "educ-services-card-api"
-                    DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-SERVICES-CARD-API/master/tools/openshift/api.dc.ocp4.yaml"
-                    }
-                 steps {
-                     script{
-                       extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${SERVICES_CARD_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
-                     }
-                    }
-             }
-             stage('Student API'){
-                 when {
-                     expression {
-                         return "${STUDENT_API_VERSION}" != "<Not Required>" && "${STUDENT_API_VERSION}" != "";
-                     }
-                 }
-                 environment {
-                    APP_NAME = "student-api"
-                      REPO_NAME = "educ-student-api"
-                    DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-API/master/tools/openshift/api.dc.ocp4.yaml"
-                    }
-                 steps {
-                     script{
-                       extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${STUDENT_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
-                     }
-                    }
-             }
-             stage('Student Profile API'){
-                 when {
-                     expression {
-                         return "${STUDENT_PROFILE_API_VERSION}" != "<Not Required>" && "${STUDENT_PROFILE_API_VERSION}" != "";
-                     }
-                 }
-                 environment {
-                    APP_NAME = "student-profile-api"
-                      REPO_NAME = "educ-student-profile-api"
-                    DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-API/master/tools/openshift/api.dc.ocp4.yaml"
-                    }
-                 steps {
-                     script{
-                       extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${STUDENT_PROFILE_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
-                     }
-                    }
-             }
-             stage('School API'){
-                   when {
-                       expression {
-                           return "${SCHOOL_API_VERSION}" != "<Not Required>" && "${SCHOOL_API_VERSION}" != "";
-                       }
-                   }
-                   environment {
-                      APP_NAME = "school-api"
-                        REPO_NAME = "educ-school-api"
-                      DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-SCHOOL-API/master/tools/openshift/api.dc.ocp4.yaml"
-                      }
-                   steps {
-                       script{
-                         extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${SCHOOL_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
-                       }
-                      }
-               }
-             stage('SLD API'){
-                   when {
-                       expression {
-                           return "${SLD_API_VERSION}" != "<Not Required>" && "${SLD_API_VERSION}" != "";
-                       }
-                   }
-                   environment {
-                      APP_NAME = "sld-api"
-                      REPO_NAME = "educ-sld-api"
-                      DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-SLD-API/master/tools/openshift/api.dc.ocp4.yaml"
-                      }
-                   steps {
-                       script{
-                         extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${SLD_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
-                       }
-                      }
-               }
-             stage('PEN TRAX API'){
-                   when {
-                       expression {
-                           return "${PEN_TRAX_API_VERSION}" != "<Not Required>" && "${PEN_TRAX_API_VERSION}" != "";
-                       }
-                   }
-                   environment {
-                      APP_NAME = "pen-trax-api"
-                      REPO_NAME = "educ-pen-trax-api"
-                      DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-TRAX-API/master/tools/openshift/api.dc.ocp4.yaml"
-                      }
-                   steps {
-                       script{
-                         extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${PEN_TRAX_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
-                       }
-                      }
-             }
-             stage('TRAX NOTIFICATION API'){
-                  when {
-                      expression {
-                          return "${TRAX_NOTIFICATION_API_VERSION}" != "<Not Required>" && "${TRAX_NOTIFICATION_API_VERSION}" != "";
-                      }
-                  }
-                  environment {
-                     APP_NAME = "trax-notification-api"
-                     REPO_NAME = "educ-trax-notification-api"
-                     DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-TRAX-NOTIFICATION-API/main/tools/openshift/api.dc.yaml"
-                  }
-                  steps {
-                    script{
-                      extJSHelper.performTraxNotificationApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, REPO_NAME, "${APP_NAME}", "main", "${TRAX_NOTIFICATION_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, DC_URL, MIN_REPLICAS, MAX_REPLICAS, "75m", "150m", "375Mi", "750Mi", TARGET_ENV, NAMESPACE)
-                    }
-                  }
-             }
-             stage('SLD NOTIFICATION API'){
-                   when {
-                       expression {
-                           return "${SLD_NOTIFICATION_API_VERSION}" != "<Not Required>" && "${SLD_NOTIFICATION_API_VERSION}" != "";
-                       }
-                   }
-                   environment {
-                      APP_NAME = "sld-notification-api"
-                      REPO_NAME = "educ-sld-notification-api"
-                      DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-SLD-NOTIFICATION-API/main/tools/openshift/api.dc.yaml"
-                   }
-                   steps {
-                     script{
-                       extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, REPO_NAME, "${APP_NAME}", "main", "${SLD_NOTIFICATION_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, DC_URL, MIN_REPLICAS, MAX_REPLICAS, "75m", "150m", "375Mi", "750Mi", TARGET_ENV, NAMESPACE)
-                     }
-                   }
+     stage('Digital ID API'){
+         when {
+             expression {
+                 return "${DIGITAL_ID_API_VERSION}" != "<Not Required>" && "${DIGITAL_ID_API_VERSION}" != "";
              }
          }
+         environment {
+            APP_NAME = "digitalid-api"
+              REPO_NAME = "educ-digitalid-api"
+            DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-DIGITALID-API/master/tools/openshift/api.dc.ocp4.yaml"
+            }
+         steps {
+             script{
+               extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${DIGITAL_ID_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
+             }
+            }
+     }
+     stage('PEN Demographics API'){
+         when {
+             expression {
+                 return "${PEN_DEMOG_API_VERSION}" != "<Not Required>" && "${PEN_DEMOG_API_VERSION}" != "";
+             }
+         }
+         environment {
+            APP_NAME = "pen-demographics-api"
+              REPO_NAME = "educ-pen-demog-api"
+            DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-DEMOG-API/master/tools/openshift/api.dc.ocp4.yaml"
+            }
+         steps {
+             script{
+               extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${PEN_DEMOG_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
+             }
+            }
+     }
+     stage('PEN Request API'){
+         when {
+             expression {
+                 return "${PEN_REQUEST_API_VERSION}" != "<Not Required>" && "${PEN_REQUEST_API_VERSION}" != "";
+             }
+         }
+         environment {
+            APP_NAME = "pen-request-api"
+              REPO_NAME = "educ-pen-request-api"
+            DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REQUEST-API/master/tools/openshift/api.dc.ocp4.yaml"
+            }
+         steps {
+             script{
+               extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${PEN_REQUEST_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
+             }
+            }
+     }
+     stage('Services Card API'){
+         when {
+             expression {
+                 return "${SERVICES_CARD_API_VERSION}" != "<Not Required>" && "${SERVICES_CARD_API_VERSION}" != "";
+             }
+         }
+         environment {
+            APP_NAME = "services-card-api"
+              REPO_NAME = "educ-services-card-api"
+            DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-SERVICES-CARD-API/master/tools/openshift/api.dc.ocp4.yaml"
+            }
+         steps {
+             script{
+               extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${SERVICES_CARD_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
+             }
+            }
+     }
+     stage('Student API'){
+         when {
+             expression {
+                 return "${STUDENT_API_VERSION}" != "<Not Required>" && "${STUDENT_API_VERSION}" != "";
+             }
+         }
+         environment {
+            APP_NAME = "student-api"
+              REPO_NAME = "educ-student-api"
+            DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-API/master/tools/openshift/api.dc.ocp4.yaml"
+            }
+         steps {
+             script{
+               extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${STUDENT_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
+             }
+            }
+     }
+     stage('Student Profile API'){
+         when {
+             expression {
+                 return "${STUDENT_PROFILE_API_VERSION}" != "<Not Required>" && "${STUDENT_PROFILE_API_VERSION}" != "";
+             }
+         }
+         environment {
+            APP_NAME = "student-profile-api"
+              REPO_NAME = "educ-student-profile-api"
+            DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-PROFILE-API/master/tools/openshift/api.dc.ocp4.yaml"
+            }
+         steps {
+             script{
+               extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${STUDENT_PROFILE_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
+             }
+            }
+     }
+     stage('School API'){
+           when {
+               expression {
+                   return "${SCHOOL_API_VERSION}" != "<Not Required>" && "${SCHOOL_API_VERSION}" != "";
+               }
+           }
+           environment {
+              APP_NAME = "school-api"
+                REPO_NAME = "educ-school-api"
+              DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-SCHOOL-API/master/tools/openshift/api.dc.ocp4.yaml"
+              }
+           steps {
+               script{
+                 extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${SCHOOL_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
+               }
+              }
+       }
+     stage('SLD API'){
+           when {
+               expression {
+                   return "${SLD_API_VERSION}" != "<Not Required>" && "${SLD_API_VERSION}" != "";
+               }
+           }
+           environment {
+              APP_NAME = "sld-api"
+              REPO_NAME = "educ-sld-api"
+              DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-SLD-API/master/tools/openshift/api.dc.ocp4.yaml"
+              }
+           steps {
+               script{
+                 extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${SLD_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
+               }
+              }
+       }
+     stage('PEN TRAX API'){
+           when {
+               expression {
+                   return "${PEN_TRAX_API_VERSION}" != "<Not Required>" && "${PEN_TRAX_API_VERSION}" != "";
+               }
+           }
+           environment {
+              APP_NAME = "pen-trax-api"
+              REPO_NAME = "educ-pen-trax-api"
+              DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-TRAX-API/master/tools/openshift/api.dc.ocp4.yaml"
+              }
+           steps {
+               script{
+                 extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${PEN_TRAX_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
+               }
+              }
+     }
+     stage('TRAX NOTIFICATION API'){
+          when {
+              expression {
+                  return "${TRAX_NOTIFICATION_API_VERSION}" != "<Not Required>" && "${TRAX_NOTIFICATION_API_VERSION}" != "";
+              }
+          }
+          environment {
+             APP_NAME = "trax-notification-api"
+             REPO_NAME = "educ-trax-notification-api"
+             DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-TRAX-NOTIFICATION-API/main/tools/openshift/api.dc.yaml"
+          }
+          steps {
+            script{
+              extJSHelper.performTraxNotificationApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, REPO_NAME, "${APP_NAME}", "main", "${TRAX_NOTIFICATION_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, DC_URL, MIN_REPLICAS, MAX_REPLICAS, "75m", "150m", "375Mi", "750Mi", TARGET_ENV, NAMESPACE)
+            }
+          }
+     }
+     stage('SLD NOTIFICATION API'){
+           when {
+               expression {
+                   return "${SLD_NOTIFICATION_API_VERSION}" != "<Not Required>" && "${SLD_NOTIFICATION_API_VERSION}" != "";
+               }
+           }
+           environment {
+              APP_NAME = "sld-notification-api"
+              REPO_NAME = "educ-sld-notification-api"
+              DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-SLD-NOTIFICATION-API/main/tools/openshift/api.dc.yaml"
+           }
+           steps {
+             script{
+               extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, REPO_NAME, "${APP_NAME}", "main", "${SLD_NOTIFICATION_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, DC_URL, MIN_REPLICAS, MAX_REPLICAS, "75m", "150m", "375Mi", "750Mi", TARGET_ENV, NAMESPACE)
+             }
+           }
      }
      stage('SOAM API'){
          when {
