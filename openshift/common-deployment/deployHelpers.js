@@ -269,7 +269,7 @@ def deployStageNoEnv(String stageEnv, String projectEnv, String repoName, String
     echo "Tagging ${appName} image with version ${tag}"
     sh( script: "oc tag ${sourceEnv}/${repoName}-${jobName}:${tag} ${projectEnv}/${repoName}-${jobName}:${tag}", returnStdout: true)
     echo "Applying Deployment for ${appName}"
-    sh( script: "oc process -f ${rawApiDcURL} -p REPO_NAME=bob=${repoName} -p JOB_NAME=${jobName} -p NAMESPACE=${projectEnv} -p APP_NAME=${appName} -p HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain} -p TAG=${tag} -p MIN_REPLICAS=${minReplicas} -p MAX_REPLICAS=${maxReplicas} -p MIN_CPU=${minCPU} -p MAX_CPU=${maxCPU} -p MIN_MEM=${minMem} -p MAX_MEM=${maxMem} | oc apply -f -", returnStdout: true)
+    sh( script: "oc process -f ${rawApiDcURL} -p REPO_NAME=${repoName} -p JOB_NAME=${jobName} -p NAMESPACE=${projectEnv} -p APP_NAME=${appName} -p HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain} -p TAG=${tag} -p MIN_REPLICAS=${minReplicas} -p MAX_REPLICAS=${maxReplicas} -p MIN_CPU=${minCPU} -p MAX_CPU=${maxCPU} -p MIN_MEM=${minMem} -p MAX_MEM=${maxMem} | oc apply -f -", returnStdout: true)
 }
 
 def deployUIStage(String hostRoute, String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURLFrontend, String rawApiDcURLBackend, String minReplicasFE, String maxReplicasFE, String minCPUFE, String maxCPUFE, String minMemFE, String maxMemFE, String minReplicasBE, String maxReplicasBE, String minCPUBE, String maxCPUBE, String minMemBE, String maxMemBE) {
