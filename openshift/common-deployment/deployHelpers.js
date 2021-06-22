@@ -1,9 +1,6 @@
  echo "Loading deployment helpers"
 
 def performApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE){
-    script {
-        deployStageNoEnv(sourceEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
-    }
     configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
     script{
       dir('tools/jenkins'){
@@ -14,7 +11,10 @@ def performApiDeploy(String stageEnv, String projectEnv, String repoName, String
           }
       }
     }
-    performStandardRollout(appName, projectEnv, jobName)
+    //performStandardRollout(appName, projectEnv, jobName)
+     script {
+         deployStageNoEnv(sourceEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
+     }
 }
 
 def performEmailApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String commonNamespace){
@@ -125,11 +125,15 @@ def performStandardRollout(String appName, String projectEnv, String jobName){
     openshift.withCluster() {
       openshift.withProject("${projectEnv}") {
         def dcApp = openshift.selector('dc', "${appName}-${jobName}")
-        try{
-          openshift.selector('dc', "${appName}-${jobName}").rollout().latest()
-        }catch(Exception e){
-        //Do nothing
+         dcApp.rollout().cancel()
+        timeout(10) {
+          try{
+              dcApp.rollout().status('--watch=true')
+          }catch(Exception e){
+            //Do nothing
+          }
         }
+        openshift.selector('dc', "${appName}-${jobName}").rollout().latest()
       }
     }
   }
