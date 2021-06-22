@@ -11,10 +11,10 @@ def performApiDeploy(String stageEnv, String projectEnv, String repoName, String
           }
       }
     }
-    //performStandardRollout(appName, projectEnv, jobName)
      script {
          deployStageNoEnv(sourceEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
      }
+     performStandardRollout(appName, projectEnv, jobName)
 }
 
 def performEmailApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String commonNamespace){
@@ -122,20 +122,8 @@ def performUIDeploy(String hostRoute, String stageEnv, String projectEnv, String
 
 def performStandardRollout(String appName, String projectEnv, String jobName){
   script{
-    openshift.withCluster() {
-      openshift.withProject("${projectEnv}") {
-        def dcApp = openshift.selector('dc', "${appName}-${jobName}")
-         dcApp.rollout().cancel()
-        timeout(10) {
-          try{
-              dcApp.rollout().status('--watch=true')
-          }catch(Exception e){
-            //Do nothing
-          }
-        }
-        openshift.selector('dc', "${appName}-${jobName}").rollout().latest()
-      }
-    }
+     echo "Rolling out ${appName}-${jobName}"
+     sh( script: "oc rollout latest dc/${appName}-${jobName}", returnStdout: true)
   }
 }
 
