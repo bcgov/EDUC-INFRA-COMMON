@@ -125,15 +125,11 @@ def performStandardRollout(String appName, String projectEnv, String jobName){
     openshift.withCluster() {
       openshift.withProject("${projectEnv}") {
         def dcApp = openshift.selector('dc', "${appName}-${jobName}")
-         dcApp.rollout().cancel()
-        timeout(10) {
-          try{
-              dcApp.rollout().status('--watch=true')
-          }catch(Exception e){
-            //Do nothing
-          }
+        try{
+          openshift.selector('dc', "${appName}-${jobName}").rollout().latest()
+        }catch(Exception e){
+        //Do nothing
         }
-        openshift.selector('dc', "${appName}-${jobName}").rollout().latest()
       }
     }
   }
