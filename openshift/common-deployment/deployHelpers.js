@@ -254,10 +254,30 @@ def deployStage(String stageEnv, String projectEnv, String repoName, String appN
 }
 
 def deployStageNoEnv(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem) {
-    echo "Tagging ${appName} image with version ${tag}"
-    sh( script: "oc tag ${sourceEnv}/${repoName}-${jobName}:${tag} ${projectEnv}/${repoName}-${jobName}:${tag}", returnStdout: true)
-    echo "Applying Deployment for ${appName}"
-    sh( script: "oc -n ${projectEnv} process -f ${rawApiDcURL} -p REPO_NAME=${repoName} -p JOB_NAME=${jobName} -p NAMESPACE=${projectEnv} -p APP_NAME=${appName} -p HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain} -p TAG=${tag} -p MIN_REPLICAS=${minReplicas} -p MAX_REPLICAS=${maxReplicas} -p MIN_CPU=${minCPU} -p MAX_CPU=${maxCPU} -p MIN_MEM=${minMem} -p MAX_MEM=${maxMem} | oc apply -f -", returnStdout: true)
+  openshift.withCluster() {
+   openshift.withProject(projectEnv) {
+     echo "Tagging ${appName} image with version ${tag}"
+     openshift.tag("${sourceEnv}/${repoName}-${jobName}:${tag}", "${repoName}-${jobName}:${tag}")
+     def dcTemplate = openshift.process('-f',
+       "${rawApiDcURL}",
+       "REPO_NAME=${repoName}",
+       "JOB_NAME=${jobName}",
+       "NAMESPACE=${projectEnv}",
+       "APP_NAME=${appName}",
+       "HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain}",
+       "TAG=${tag}",
+       "MIN_REPLICAS=${minReplicas}",
+       "MAX_REPLICAS=${maxReplicas}",
+       "MIN_CPU=${minCPU}",
+       "MAX_CPU=${maxCPU}",
+       "MIN_MEM=${minMem}",
+       "MAX_MEM=${maxMem}"
+     )
+
+     echo "Applying Deployment for ${appName}"
+     def dc = openshift.apply(dcTemplate).narrow('dc')
+   }
+  }
 }
 
 def deployUIStage(String hostRoute, String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURLFrontend, String rawApiDcURLBackend, String minReplicasFE, String maxReplicasFE, String minCPUFE, String maxCPUFE, String minMemFE, String maxMemFE, String minReplicasBE, String maxReplicasBE, String minCPUBE, String maxCPUBE, String minMemBE, String maxMemBE) {
