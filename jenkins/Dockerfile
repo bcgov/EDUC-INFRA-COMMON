@@ -7,7 +7,7 @@ USER root
 RUN wget http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo
 RUN sed -i s/\$releasever/7/g /etc/yum.repos.d/epel-apache-maven.repo
 RUN yum install -y apache-maven --skip-broken
-RUN mvn -version
+RUN yum install -y libnss3.so libnspr4.so libgbm.so.1 liberation-fonts libdrm.so.2 libnssutil3.so libsmime3.so libssl3.so libvulkan.so.1 libxshmfence.so.1 xdg-utils
 RUN wget https://chromedriver.storage.googleapis.com/2.40/chromedriver_linux64.zip
 RUN unzip chromedriver_linux64.zip
 RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
