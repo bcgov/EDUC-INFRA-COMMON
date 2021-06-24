@@ -15,12 +15,12 @@ RUN yum install -y apache-maven --skip-broken
 
 RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
-RUN echo "[google-chrome]\n" \
-         "name=google-chrome\n" \
-         "baseurl=https://dl.google.com/linux/chrome/rpm/stable/$basearch\n" \
-         "enabled=1\n" \
-         "gpgcheck=1\n" \
-         "gpgkey=https://dl-ssl.google.com/linux/linux_signing_key.pub\n" > /etc/yum.repos.d/google-chrome.repo
+RUN echo "[google-chrome]\n\" \
+         "name=google-chrome\n\" \
+         "baseurl=https://dl.google.com/linux/chrome/rpm/stable/$basearch\n\" \
+         "enabled=1\n\" \
+         "gpgcheck=1\n\" \
+         "gpgkey=https://dl-ssl.google.com/linux/linux_signing_key.pub\n\" > /etc/yum.repos.d/google-chrome.repo
 
 RUN echo $(cat /etc/yum.repos.d/google-chrome.repo)
 
