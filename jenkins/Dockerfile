@@ -4,21 +4,9 @@ COPY plugins.txt /plugins.txt
 RUN /usr/local/bin/install-plugins.sh /plugins.txt
 USER root
 #RUN wget https://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo
-#RUN wget http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo
-#RUN sed -i s/\$releasever/7/g /etc/yum.repos.d/epel-apache-maven.repo
-RUN subscription-manager remove --all
-RUN subscription-manager unregister
-RUN subscription-manager clean
-RUN subscription-manager register
-RUN subscription-manager refresh
-RUN subscription-manager attach --auto
-RUN yum install maven
-#RUN wget http://mirrors.sonic.net/apache/maven/maven-3/3.5.3/binaries/apache-maven-3.5.3-bin.zip
-#RUN unzip apache-maven-3.5.3-bin.zip
-#RUN mv apache-maven-3.5.3 maven
-#RUN rm -f apache-maven-3.5.3-bin.zip
-#RUN nano /etc/profile.d/maven.sh
-#RUN export PATH=/opt/maven/bin:${PATH}
+RUN wget http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo
+RUN sed -i s/\$releasever/6/g /etc/yum.repos.d/epel-apache-maven.repo
+RUN yum install apache-maven
 RUN wget https://chromedriver.storage.googleapis.com/2.40/chromedriver_linux64.zip
 RUN unzip chromedriver_linux64.zip
 RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
