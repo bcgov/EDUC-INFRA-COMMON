@@ -22,6 +22,8 @@ RUN echo "[google-chrome]\n" \
          "gpgcheck=1\n" \
          "gpgkey=https://dl-ssl.google.com/linux/linux_signing_key.pub\n" > /etc/yum.repos.d/google-chrome.repo
 
+RUN echo $(cat /etc/yum.repos.d/google-chrome.repo)
+
 RUN yum -y update --nobest
 RUN yum install google-chrome-stable
 # drop back to the regular jenkins user - good practice
