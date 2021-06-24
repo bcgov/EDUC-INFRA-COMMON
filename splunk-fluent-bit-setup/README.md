@@ -4,7 +4,7 @@
 3. Change application properties to produce json logs
 4. Change application code to produce valid log output
 
-####Setup fluent bit as sidecar to application container for log collection
+#### Setup fluent bit as sidecar to application container for log collection
 1. The application container and fluent bit share logs through volume mounts to achieve this, the deployment-config needs to have below sections added.
 ```
         - image: docker-remote.artifacts.developer.gov.bc.ca/fluent/fluent-bit:1.5.7
