@@ -63,7 +63,11 @@
     https://github.com/bcgov/EDUC-PEN-REG-BATCH-API/blob/master/tools/openshift/api.dc.yaml
     ```
 #### Configure fluent bit to send json logs to splunk
-1. The fluent bit config map is volume mounted, only the splunk token and app name gets substituted as a secret while adding the config-map to OS. below is a sample
+1. The fluent bit config map is volume mounted, only the splunk token and app name gets substituted as a secret while adding the config-map to OS. For more fluent-bit related docs please visit the below link.
+   
+   https://docs.fluentbit.io/manual/
+   
+   below is a working sample
     ```
     SPLUNK_URL="gww.splunk.educ.gov.bc.ca"
     FLB_CONFIG="[SERVICE]
