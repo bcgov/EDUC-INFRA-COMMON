@@ -130,21 +130,29 @@
     https://github.com/bcgov/EDUC-PEN-REG-BATCH-API/blob/master/Dockerfile
     ```
 2. Change application.properties of the spring boot app, add or modify the existing keys. since spring boot uses logback by default it is taken care magically by spring boot. the line# number and method name are skipped for performance reasons.
-   M / method
-   Outputs the method name where the logging request was issued.
-   Generating the method name is not particularly fast. Thus, its use should be avoided unless execution speed is not an issue.
-   L / line
-   Outputs the line number from where the logging request was issued.
-   Generating the line number information is not particularly fast. Thus, its use should be avoided unless execution speed is not an issue. Please follow this link of logback to know more details.
-   http://logback.qos.ch/manual/layouts.html
-    ```
-    logging.file.name=/logs/app.log
-    logging.logback.rollingpolicy.max-file-size=5MB
-    logging.logback.rollingpolicy.clean-history-on-start=true
-    logging.logback.rollingpolicy.max-history=1
-    logging.pattern.file={"time_stamp":"%d{yyyy-MM-dd HH:mm:ss.SSS}","level":"%3p" ,"thread":"%t" ,"class":"%logger{36}","msg":"%replace(%msg){'[\n\r\"]',''}", "exception":"%replace(%rEx{10}){'[\n\r\"]',''}","http_event":%X{httpEvent:-""},"message_event":%X{messageEvent:-""}}%nopex%n
-    logging.pattern.console=%d{yyyy-MM-dd HH:mm:ss.SSS} | [%5p] | [%t] | [%logger{36}] | [%replace(%msg){'[\n\r\"]',''} %X{httpEvent} %X{messageEvent}] | %replace(%rEx{10}){'[\n\r\"]',''}%nopex%n
-    ```
+   
+    
+        M / method
+          Outputs the method name where the logging request was issued.
+          Generating the method name is not particularly fast. Thus, its use should be avoided unless execution speed is not an issue.
+       
+    
+        L / line
+          Outputs the line number from where the logging request was issued.
+          Generating the line number information is not particularly fast. Thus, its use should be avoided unless execution speed is     not an issue. 
+    
+        Please follow this link of logback to know more details.
+        http://logback.qos.ch/manual/layouts.html
+
+        Add the below snippet to your application.properties file.
+
+        logging.file.name=/logs/app.log
+        logging.logback.rollingpolicy.max-file-size=5MB
+        logging.logback.rollingpolicy.clean-history-on-start=true
+        logging.logback.rollingpolicy.max-history=1
+        logging.pattern.file={"time_stamp":"%d{yyyy-MM-dd HH:mm:ss.SSS}","level":"%3p" ,"thread":"%t" ,"class":"%logger{36}","msg":"%replace(%msg){'[\n\r\"]',''}", "exception":"%replace(%rEx{10}){'[\n\r\"]',''}","http_event":%X{httpEvent:-""},"message_event":%X{messageEvent:-""}}%nopex%n
+        logging.pattern.console=%d{yyyy-MM-dd HH:mm:ss.SSS} | [%5p] | [%t] | [%logger{36}] | [%replace(%msg){'[\n\r\"]',''} %X{httpEvent} %X{messageEvent}] | %replace(%rEx{10}){'[\n\r\"]',''}%nopex%n
+
 #### Change application code to produce valid log output
 1. Application code needs to be added/modified so that it produces a valid json o/p in log, For example 
    ```
