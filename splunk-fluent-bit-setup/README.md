@@ -60,7 +60,7 @@
                 name: "${APP_NAME}-flb-sc-config-map"
                 
     follow this link for a working sample
-    https://github.com/bcgov/EDUC-PEN-REG-BATCH-API/blob/master/tools/openshift/api.dc.yaml
+    https://github.com/bcgov/EDUC-PEN-REG-BATCH-API/blob/master/tools/openshift/api.dc.ocp4.yaml
     ```
 #### Configure fluent bit to send json logs to splunk
 1. The fluent bit config map is volume mounted, only the splunk token and app name gets substituted as a secret while adding the config-map to OS. For more fluent-bit related docs please visit the below link.
