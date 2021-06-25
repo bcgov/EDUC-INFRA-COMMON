@@ -204,20 +204,20 @@
    
    2. Add this logClientHttpReqResponseDetails method to LogHelper
      public static void logClientHttpReqResponseDetails(@NonNull final HttpMethod method, final String url, final int responseCode, final List<String> correlationID) {
-    try {
-      final Map<String, Object> httpMap = new HashMap<>();
-      httpMap.put("client_http_response_code", responseCode);
-      httpMap.put("client_http_request_method", method.toString());
-      httpMap.put("client_http_request_url", url);
-      if (correlationID != null) {
-        httpMap.put("correlation_id", String.join(",", correlationID));
-      }
-      MDC.putCloseable("httpEvent", mapper.writeValueAsString(httpMap));
-      log.info("");
-      MDC.clear();
-    } catch (final Exception exception) {
-      log.error("Exception ", exception);
-    }
-}
+        try {
+          final Map<String, Object> httpMap = new HashMap<>();
+          httpMap.put("client_http_response_code", responseCode);
+          httpMap.put("client_http_request_method", method.toString());
+          httpMap.put("client_http_request_url", url);
+          if (correlationID != null) {
+            httpMap.put("correlation_id", String.join(",", correlationID));
+          }
+          MDC.putCloseable("httpEvent", mapper.writeValueAsString(httpMap));
+          log.info("");
+          MDC.clear();
+        } catch (final Exception exception) {
+          log.error("Exception ", exception);
+        }
+     }
    https://github.com/bcgov/EDUC-PEN-REG-BATCH-API/blob/master/api/src/main/java/ca/bc/gov/educ/penreg/api/helpers/LogHelper.java 
     ```
