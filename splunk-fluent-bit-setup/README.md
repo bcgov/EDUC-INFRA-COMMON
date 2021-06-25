@@ -58,11 +58,12 @@
             - name: flb-sc-config-volume
               configMap:
                 name: "${APP_NAME}-flb-sc-config-map"
-                
-    follow this link for a working sample
-   [Working yaml sample](https://github.com/bcgov/EDUC-PEN-REG-BATCH-API/blob/master/tools/openshift/api.dc.ocp4.yaml)
-    
     ```
+    
+   [Working dc yaml sample] 
+
+   https://github.com/bcgov/EDUC-PEN-REG-BATCH-API/blob/master/tools/openshift/api.dc.ocp4.yaml
+
 #### Configure fluent bit to send json logs to splunk
 1. The fluent bit config map is volume mounted, only the splunk token and app name gets substituted as a secret while adding the config-map to OS. For more fluent-bit related docs please visit the below link.
    
@@ -111,11 +112,12 @@
     
     echo Creating config map "$APP_NAME"-flb-sc-config-map
     oc create -n "$PEN_NAMESPACE"-"$envValue" configmap "$APP_NAME"-flb-sc-config-map --from-literal=fluent-bit.conf="$FLB_CONFIG" --from-literal=parsers.conf="$PARSER_CONFIG" --dry-run -o yaml | oc apply -f -
+
+  2. full sample config-map setup link
+   
+     https://github.com/bcgov/EDUC-PEN-REG-BATCH-API/blob/master/tools/jenkins/update-configmap.sh
     
-    full sample config-map setup link
-    https://github.com/bcgov/EDUC-PEN-REG-BATCH-API/blob/master/tools/jenkins/update-configmap.sh
     
-    ```
 
 #### Change application build process to write log files inside logs folder and change application.properties to produce json logs
 1. Change Docker build process to create logs folder for your application container
@@ -126,13 +128,14 @@
     RUN chown -R spring:spring /logs
     RUN chmod 755 /logs
     USER spring
-    
-    working full sample
-    https://github.com/bcgov/EDUC-PEN-REG-BATCH-API/blob/master/Dockerfile
     ```
-2. Change application.properties of the spring boot app, add or modify the existing keys. since spring boot uses logback by default it is taken care magically by spring boot. the line# number and method name are skipped for performance reasons.
+    working full sample
    
-    
+    https://github.com/bcgov/EDUC-PEN-REG-BATCH-API/blob/master/Dockerfile
+
+
+2. Change application.properties of the spring boot app, add or modify the existing keys. since spring boot uses logback by default it is taken care magically by spring boot. the line# number and method name are skipped for performance reasons.
+  ```
         M / method
           Outputs the method name where the logging request was issued.
           Generating the method name is not particularly fast. Thus, its use should be avoided unless execution speed is not an issue.
@@ -141,11 +144,15 @@
         L / line
           Outputs the line number from where the logging request was issued.
           Generating the line number information is not particularly fast. Thus, its use should be avoided unless execution speed is not an issue. 
+  ```
     
-        Please follow this link of logback to know more details.
-        http://logback.qos.ch/manual/layouts.html
+        
+    
+3. Please follow this link of logback to know more details.
+   
+    http://logback.qos.ch/manual/layouts.html
 
-        Add the below snippet to your application.properties file.
+4.  Add the below snippet to your application.properties file.
 
         logging.file.name=/logs/app.log
         logging.logback.rollingpolicy.max-file-size=5MB
@@ -153,6 +160,9 @@
         logging.logback.rollingpolicy.max-history=1
         logging.pattern.file={"time_stamp":"%d{yyyy-MM-dd HH:mm:ss.SSS}","level":"%3p" ,"thread":"%t" ,"class":"%logger{36}","msg":"%replace(%msg){'[\n\r\"]',''}", "exception":"%replace(%rEx{10}){'[\n\r\"]',''}","http_event":%X{httpEvent:-""},"message_event":%X{messageEvent:-""}}%nopex%n
         logging.pattern.console=%d{yyyy-MM-dd HH:mm:ss.SSS} | [%5p] | [%t] | [%logger{36}] | [%replace(%msg){'[\n\r\"]',''} %X{httpEvent} %X{messageEvent}] | %replace(%rEx{10}){'[\n\r\"]',''}%nopex%n
+5. Link
+   
+   https://github.com/bcgov/EDUC-PEN-REG-BATCH-API/blob/master/api/src/main/resources/application.properties
 
 #### Change application code to produce valid log output
 1. Application code needs to be added/modified so that it produces a valid json o/p in log, For example 
@@ -164,10 +174,10 @@
 2. For http request and response logging with payload(POST or PUT), make sure the structs or dto or entities have proper toString() implementation for this to work. if the application is using lombok, and the struct extends to base class, please make sure lombok is generating toString for superclass fields as well(if needed) by adding `@ToString(callSuper=true)`. Then please add the following code 
 
         CustomRequestBodyAdviceAdapter
-         https://github.com/bcgov/EDUC-PEN-REG-BATCH-API/blob/master/api/src/main/java/ca/bc/gov/educ/penreg/api/adapter/CustomRequestBodyAdviceAdapter.java
+      https://github.com/bcgov/EDUC-PEN-REG-BATCH-API/blob/master/api/src/main/java/ca/bc/gov/educ/penreg/api/adapter/CustomRequestBodyAdviceAdapter.java
         
-        LogHelper
-        https://github.com/bcgov/EDUC-PEN-REG-BATCH-API/blob/master/api/src/main/java/ca/bc/gov/educ/penreg/api/helpers/LogHelper.java # logServerHttpReqResponseDetails method.
+        LogHelper # logServerHttpReqResponseDetails method.
+   https://github.com/bcgov/EDUC-PEN-REG-BATCH-API/blob/master/api/src/main/java/ca/bc/gov/educ/penreg/api/helpers/LogHelper.java 
 
 3. For logging incoming message event just add below items.
     ```
@@ -187,9 +197,12 @@
           log.error("Exception ", exception);
         }
       }
-      LogHelper
-        https://github.com/bcgov/EDUC-PEN-REG-BATCH-API/blob/master/api/src/main/java/ca/bc/gov/educ/penreg/api/helpers/LogHelper.java 
-    ```
+      
+   ```
+       LogHelper#logMessagingEventDetails method.
+   
+   https://github.com/bcgov/EDUC-PEN-REG-BATCH-API/blob/master/api/src/main/java/ca/bc/gov/educ/penreg/api/helpers/LogHelper.java 
+    
 4. For logging outbound http request and response code just add below items to the application.
     ```
    1. Add below code to RestWebClient component
@@ -199,9 +212,6 @@
          next.exchange(clientRequest)
            .doOnNext((clientResponse -> LogHelper.logClientHttpReqResponseDetails(clientRequest.method(), clientRequest.url().toString(), clientResponse.rawStatusCode(), clientRequest.headers().get(ApplicationProperties.CORRELATION_ID))));
      }
-   
-   Full component
-   https://github.com/bcgov/EDUC-PEN-REG-BATCH-API/blob/master/api/src/main/java/ca/bc/gov/educ/penreg/api/rest/RestWebClient.java
    
    2. Add this logClientHttpReqResponseDetails method to LogHelper
      public static void logClientHttpReqResponseDetails(@NonNull final HttpMethod method, final String url, final int responseCode, final List<String> correlationID) {
@@ -220,5 +230,7 @@
           log.error("Exception ", exception);
         }
      }
-   https://github.com/bcgov/EDUC-PEN-REG-BATCH-API/blob/master/api/src/main/java/ca/bc/gov/educ/penreg/api/helpers/LogHelper.java 
     ```
+       LogHelper#logClientHttpReqResponseDetails method.
+
+   https://github.com/bcgov/EDUC-PEN-REG-BATCH-API/blob/master/api/src/main/java/ca/bc/gov/educ/penreg/api/helpers/LogHelper.java 
