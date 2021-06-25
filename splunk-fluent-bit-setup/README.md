@@ -122,7 +122,6 @@
 #### Change application build process to write log files inside logs folder and change application.properties to produce json logs
 1. Change Docker build process to create logs folder for your application container
     ```
-    
     RUN useradd -ms /bin/bash spring
     RUN mkdir -p /logs
     RUN chown -R spring:spring /logs
@@ -134,20 +133,17 @@
     https://github.com/bcgov/EDUC-PEN-REG-BATCH-API/blob/master/Dockerfile
 
 
-2. Change application.properties of the spring boot app, add or modify the existing keys. since spring boot uses logback by default it is taken care magically by spring boot. the line# number and method name are skipped for performance reasons.
-  ```
-        M / method
-          Outputs the method name where the logging request was issued.
-          Generating the method name is not particularly fast. Thus, its use should be avoided unless execution speed is not an issue.
-       
-    
-        L / line
-          Outputs the line number from where the logging request was issued.
-          Generating the line number information is not particularly fast. Thus, its use should be avoided unless execution speed is not an issue. 
-  ```
-    
-        
-    
+2. In Log pattern, Application code should only use line# and method name for debugging purposes, this is the reason these are not added, please see below explanation.
+   ```
+   M / method
+   Outputs the method name where the logging request was issued.
+   Generating the method name is not particularly fast. Thus, its use should be avoided unless execution speed is not an issue.
+   
+   L / line
+   Outputs the line number from where the logging request was issued.
+   Generating the line number information is not particularly fast. Thus, its use should be avoided unless execution speed is not an issue. 
+  
+
 3. Please follow this link of logback to know more details.
    
     http://logback.qos.ch/manual/layouts.html
