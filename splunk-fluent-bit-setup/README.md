@@ -4,7 +4,7 @@
 3. Change application build process to write log files inside logs folder and change application.properties to produce json logs.
 4. Change application code to produce valid log output.
 
-#### Setup fluent bit as sidecar to application container for log collection
+### Setup fluent bit as sidecar to application container for log collection
 1. The application container and fluent bit share logs through volume mounts. To achieve this, the deployment-config yaml of the application needs to have below sections added.
     ```
             - image: docker-remote.artifacts.developer.gov.bc.ca/fluent/fluent-bit:1.5.7
@@ -64,7 +64,7 @@
 
    https://github.com/bcgov/EDUC-PEN-REG-BATCH-API/blob/master/tools/openshift/api.dc.ocp4.yaml
 
-#### Configure fluent bit to send json logs to splunk
+### Configure fluent bit to send json logs to splunk
 1. The fluent bit config map is volume mounted, only the splunk token and app name gets substituted as a secret while adding the config-map to OS. For more fluent-bit related docs please visit the below link.
    
    https://docs.fluentbit.io/manual/
@@ -119,7 +119,7 @@
     
     
 
-#### Change application build process to write log files inside logs folder and change application.properties to produce json logs
+### Change application build process to write log files inside logs folder and change application.properties to produce json logs
 1. Change Docker build process to create logs folder for your application container
     ```
     RUN useradd -ms /bin/bash spring
@@ -160,7 +160,7 @@
    
    https://github.com/bcgov/EDUC-PEN-REG-BATCH-API/blob/master/api/src/main/resources/application.properties
 
-#### Change application code to produce valid log output
+### Change application code to produce valid log output
 1. Application code needs to be added/modified so that it produces a valid json o/p in log, For example 
    ```
    1. logging incoming http request and the outbound response 
