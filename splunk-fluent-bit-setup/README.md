@@ -60,7 +60,8 @@
                 name: "${APP_NAME}-flb-sc-config-map"
                 
     follow this link for a working sample
-    https://github.com/bcgov/EDUC-PEN-REG-BATCH-API/blob/master/tools/openshift/api.dc.ocp4.yaml
+   [Working yaml sample](https://github.com/bcgov/EDUC-PEN-REG-BATCH-API/blob/master/tools/openshift/api.dc.ocp4.yaml)
+    
     ```
 #### Configure fluent bit to send json logs to splunk
 1. The fluent bit config map is volume mounted, only the splunk token and app name gets substituted as a secret while adding the config-map to OS. For more fluent-bit related docs please visit the below link.
@@ -139,7 +140,7 @@
     
         L / line
           Outputs the line number from where the logging request was issued.
-          Generating the line number information is not particularly fast. Thus, its use should be avoided unless execution speed is     not an issue. 
+          Generating the line number information is not particularly fast. Thus, its use should be avoided unless execution speed is not an issue. 
     
         Please follow this link of logback to know more details.
         http://logback.qos.ch/manual/layouts.html
