@@ -173,7 +173,14 @@
       https://github.com/bcgov/EDUC-PEN-REG-BATCH-API/blob/master/api/src/main/java/ca/bc/gov/educ/penreg/api/adapter/CustomRequestBodyAdviceAdapter.java
         
         LogHelper # logServerHttpReqResponseDetails method.
-   https://github.com/bcgov/EDUC-PEN-REG-BATCH-API/blob/master/api/src/main/java/ca/bc/gov/educ/penreg/api/helpers/LogHelper.java 
+   https://github.com/bcgov/EDUC-PEN-REG-BATCH-API/blob/master/api/src/main/java/ca/bc/gov/educ/penreg/api/helpers/LogHelper.java
+   
+       RequestResponseInterceptor
+    https://github.com/bcgov/EDUC-PEN-REG-BATCH-API/blob/master/api/src/main/java/ca/bc/gov/educ/penreg/api/config/RequestResponseInterceptor.java
+
+       PenRegAPIMVCConfig, Please rename according to project.
+   https://github.com/bcgov/EDUC-PEN-REG-BATCH-API/blob/master/api/src/main/java/ca/bc/gov/educ/penreg/api/config/PenRegAPIMVCConfig.java
+   
 
 3. For logging incoming message event just add below items.
     ```
