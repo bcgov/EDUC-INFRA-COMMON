@@ -1,10 +1,10 @@
 # This guide contains 4 sections.
-1. Setup fluent bit as sidecar to application container for log collection.
+1. Setup fluent bit as sidecar to application container for log aggregation and forwarding.
 2. Configure fluent bit to send json logs to splunk.
 3. Change application build process to write log files inside logs folder and change application.properties to produce json logs.
 4. Change application code to produce valid log output.
 
-### Setup fluent bit as sidecar to application container for log collection
+### Setup fluent bit as sidecar to application container for log aggregation and forwarding
 1. The application container and fluent bit share logs through volume mounts. To achieve this, the deployment-config yaml of the application needs to have below sections added.
     ```
             - image: docker-remote.artifacts.developer.gov.bc.ca/fluent/fluent-bit:1.5.7
