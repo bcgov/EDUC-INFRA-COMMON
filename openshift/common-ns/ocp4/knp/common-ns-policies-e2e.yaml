@@ -1,0 +1,33 @@
+---
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  template: common-e2e-network-security-policy
+metadata:
+  name: common-e2e-network-security-policy
+objects:
+  - kind: NetworkPolicy
+    apiVersion: networking.k8s.io/v1
+    metadata:
+      name: allow-traffic-from-gateway-to-penmyed-api
+    spec:
+      podSelector:
+        matchLabels:
+          app: jenkins
+      ingress:
+        - from:
+            - namespaceSelector:
+                matchLabels:
+                  environment: dev
+                  name: ${COMMON_NAMESPACE_PREFIX}
+        - from:
+            - namespaceSelector:
+                matchLabels:
+                  environment: test
+                  name: ${COMMON_NAMESPACE_PREFIX}
+parameters:
+  - name: COMMON_NAMESPACE_PREFIX
+    displayName: Namespace
+    description: |
+      Common namespace prefix for joining Pen and Common;
+    required: true
