@@ -11,15 +11,15 @@ objects:
     metadata:
       name: allow-traffic-from-jenkins-common-${ENVIRONMENT}
     spec:
-      podSelector:
-        matchLabels:
-          name: jenkins
       ingress:
         - from:
             - namespaceSelector:
                 matchLabels:
                   environment: ${ENVIRONMENT}
                   name: ${COMMON_NAMESPACE_PREFIX}
+            - podSelector:
+                matchLabels:
+                  name: jenkins
 parameters:
   - name: COMMON_NAMESPACE_PREFIX
     displayName: Namespace
