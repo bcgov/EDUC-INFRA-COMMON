@@ -9,7 +9,7 @@ objects:
   - kind: NetworkPolicy
     apiVersion: networking.k8s.io/v1
     metadata:
-      name: allow-traffic-from-gateway-to-penmyed-api
+      name: allow-traffic-from-jenkins-common-${ENVIRONMENT}
     spec:
       podSelector:
         matchLabels:
@@ -18,16 +18,16 @@ objects:
         - from:
             - namespaceSelector:
                 matchLabels:
-                  environment: dev
-                  name: ${COMMON_NAMESPACE_PREFIX}
-        - from:
-            - namespaceSelector:
-                matchLabels:
-                  environment: test
+                  environment: ${ENVIRONMENT}
                   name: ${COMMON_NAMESPACE_PREFIX}
 parameters:
   - name: COMMON_NAMESPACE_PREFIX
     displayName: Namespace
     description: |
       Common namespace prefix for joining Pen and Common;
+    required: true
+  - name: ENVIRONMENT
+    displayName: Environment
+    description: |
+      Environment for joining Pen and Common;
     required: true
