@@ -3,13 +3,14 @@ apiVersion: template.openshift.io/v1
 kind: Template
 labels:
   template: common-e2e-network-security-policy
+  name: allow-traffic-from-jenkins-pen-${ENVIRONMENT}
 metadata:
   name: common-e2e-network-security-policy
 objects:
   - kind: NetworkPolicy
     apiVersion: networking.k8s.io/v1
     metadata:
-      name: allow-traffic-from-jenkins-common-${ENVIRONMENT}
+      name: allow-traffic-from-jenkins-pen-${ENVIRONMENT}
     spec:
       ingress:
         - from:
