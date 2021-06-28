@@ -13,7 +13,7 @@ objects:
     spec:
       podSelector:
         matchLabels:
-          app: jenkins
+          name: jenkins
       ingress:
         - from:
             - namespaceSelector:
