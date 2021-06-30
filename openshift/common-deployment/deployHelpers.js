@@ -466,7 +466,7 @@ def waitForWorkflowRunComplete(String token) {
   if(!latestRunId) {
     error('No workflow run in Github Actions. Aborting the build!')
   } else {
-    def count = 60  //timeout (60 * 10) seconds = 10 minutes
+    def count = 120  //timeout (120 * 10) seconds = 20 minutes
     def status, conclusion
     while(count-- > 0 && status != 'completed') {
       (status, conclusion) = getWorkflowRunById(token, latestRunId)
