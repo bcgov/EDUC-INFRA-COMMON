@@ -1,6 +1,9 @@
  echo "Loading deployment helpers"
 
 def performApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE){
+    script {
+        deployStageNoEnv(sourceEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem, false)
+    }
     configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
     script{
       dir('tools/jenkins'){
@@ -11,17 +14,20 @@ def performApiDeploy(String stageEnv, String projectEnv, String repoName, String
           }
       }
     }
-     script {
-         deployStageNoEnv(sourceEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
-     }
+    script {
+        deployStageNoEnv(sourceEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem, true)
+    }
      performStandardRollout(appName, projectEnv, jobName)
 }
 
 def performEmailApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String commonNamespace){
+     script{
+         deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem, false)
+     }
      configMapChesSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
      performStandardUpdateConfigMapStep("${repoName}", "${tag}", "${targetEnv}", "${appName}", "${NAMESPACE}", "${commonNamespace}");
      script{
-         deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
+         deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem, true)
      }
      performStandardRollout(appName, projectEnv, jobName)
 }
@@ -39,14 +45,20 @@ def performSagaApiDeploy(String stageEnv, String projectEnv, String repoName, St
           }
         }
       }
-      deployStage(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem, targetEnv)
+      deploySagaStage(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem, targetEnv, false)
     }
     configMapSetupSplunkOnly("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
     performStandardUpdateConfigMapStep("${repoName}", "${tag}", "${targetEnv}", "${appName}", "${NAMESPACE}", "${commonNamespace}");
+    script{
+        deploySagaStage(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem, targetEnv, true)
+    }
     performStandardRollout(appName, projectEnv, jobName)
 }
 
 def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String DEV_EXCHANGE_REALM){
+    script {
+        deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem, false);
+    }
     configMapSetupSplunkOnly("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
     script{
       dir('tools/jenkins'){
@@ -57,7 +69,7 @@ def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, St
           }
       }
       script {
-         deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem);
+         deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem, true);
       }
       echo "Rolling out ${appName}-${jobName}"
       try {
@@ -225,60 +237,70 @@ def configMapChesSetup(String appName,String appNameUpper, String namespace, Str
     }
 }
 
-def deployStage(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv) {
+def deploySagaStage(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, Boolean deployEvenIfExists) {
   openshift.withCluster() {
    openshift.withProject(projectEnv) {
-     echo "Tagging ${appName} image with version ${tag}"
-     openshift.tag("${sourceEnv}/${repoName}-${jobName}:${tag}", "${repoName}-${jobName}:${tag}")
-     def dcTemplate = openshift.process('-f',
-       "${rawApiDcURL}",
-       "REPO_NAME=${repoName}",
-       "JOB_NAME=${jobName}",
-       "NAMESPACE=${projectEnv}",
-       "APP_NAME=${appName}",
-       "HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain}",
-       "TAG=${tag}",
-       "MIN_REPLICAS=${minReplicas}",
-       "MAX_REPLICAS=${maxReplicas}",
-       "MIN_CPU=${minCPU}",
-       "MAX_CPU=${maxCPU}",
-       "MIN_MEM=${minMem}",
-       "MAX_MEM=${maxMem}",
-       "ENV=${targetEnv}"
-     )
+     def dcApp = openshift.selector('dc', "${appName}-${jobName}")
+     if(!dcApp.exists() || deployEvenIfExists){
+         echo "Tagging ${appName} image with version ${tag}"
+         openshift.tag("${sourceEnv}/${repoName}-${jobName}:${tag}", "${repoName}-${jobName}:${tag}")
+         def dcTemplate = openshift.process('-f',
+           "${rawApiDcURL}",
+           "REPO_NAME=${repoName}",
+           "JOB_NAME=${jobName}",
+           "NAMESPACE=${projectEnv}",
+           "APP_NAME=${appName}",
+           "HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain}",
+           "TAG=${tag}",
+           "MIN_REPLICAS=${minReplicas}",
+           "MAX_REPLICAS=${maxReplicas}",
+           "MIN_CPU=${minCPU}",
+           "MAX_CPU=${maxCPU}",
+           "MIN_MEM=${minMem}",
+           "MAX_MEM=${maxMem}",
+           "ENV=${targetEnv}"
+         )
 
-     echo "Applying Deployment for ${appName}"
-     def dc = openshift.apply(dcTemplate).narrow('dc')
+         echo "Applying Deployment for ${appName}"
+         def dc = openshift.apply(dcTemplate).narrow('dc')
+     }else{
+         echo "DC already exists for ${appName}-${jobName}, skipping initial rollout"
+     }
    }
   }
 }
 
-def deployStageNoEnv(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem) {
-  openshift.withCluster() {
-   openshift.withProject(projectEnv) {
-     echo "Tagging ${appName} image with version ${tag}"
-     openshift.tag("${sourceEnv}/${repoName}-${jobName}:${tag}", "${repoName}-${jobName}:${tag}")
-     def dcTemplate = openshift.process('-f',
-       "${rawApiDcURL}",
-       "REPO_NAME=${repoName}",
-       "JOB_NAME=${jobName}",
-       "NAMESPACE=${projectEnv}",
-       "APP_NAME=${appName}",
-       "HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain}",
-       "TAG=${tag}",
-       "MIN_REPLICAS=${minReplicas}",
-       "MAX_REPLICAS=${maxReplicas}",
-       "MIN_CPU=${minCPU}",
-       "MAX_CPU=${maxCPU}",
-       "MIN_MEM=${minMem}",
-       "MAX_MEM=${maxMem}"
-     )
+ def deployStageNoEnv(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, Boolean deployEvenIfExists) {
+     openshift.withCluster() {
+         openshift.withProject(projectEnv) {
+             def dcApp = openshift.selector('dc', "${appName}-${jobName}")
+             if(!dcApp.exists() || deployEvenIfExists){
+                 echo "Tagging ${appName} image with version ${tag}"
+                 openshift.tag("${sourceEnv}/${repoName}-${jobName}:${tag}", "${repoName}-${jobName}:${tag}")
+                 def dcTemplate = openshift.process('-f',
+                     "${rawApiDcURL}",
+                     "REPO_NAME=${repoName}",
+                     "JOB_NAME=${jobName}",
+                     "NAMESPACE=${projectEnv}",
+                     "APP_NAME=${appName}",
+                     "HOST_ROUTE=${appName}-${targetEnvironment}.${appDomain}",
+                     "TAG=${tag}",
+                     "MIN_REPLICAS=${minReplicas}",
+                     "MAX_REPLICAS=${maxReplicas}",
+                     "MIN_CPU=${minCPU}",
+                     "MAX_CPU=${maxCPU}",
+                     "MIN_MEM=${minMem}",
+                     "MAX_MEM=${maxMem}"
+                 )
 
-     echo "Applying Deployment for ${appName}"
-     def dc = openshift.apply(dcTemplate).narrow('dc')
-   }
-  }
-}
+                 echo "Applying Deployment for ${appName}"
+                 def dc = openshift.apply(dcTemplate).narrow('dc')
+             }else{
+                 echo "DC already exists for ${appName}-${jobName}, skipping initial rollout"
+             }
+         }
+     }
+ }
 
 def deployUIStage(String hostRoute, String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURLFrontend, String rawApiDcURLBackend, String minReplicasFE, String maxReplicasFE, String minCPUFE, String maxCPUFE, String minMemFE, String maxMemFE, String minReplicasBE, String maxReplicasBE, String minCPUBE, String maxCPUBE, String minMemBE, String maxMemBE) {
   openshift.withCluster() {
@@ -484,28 +506,37 @@ def waitForWorkflowRunComplete(String token) {
   }
 }
 def performPenRegApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String commonNamespace){
+    script{
+        deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem, false)
+    }
     configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
     performStandardUpdateConfigMapStep("${repoName}", "${tag}", "${targetEnv}", "${appName}", "${NAMESPACE}", "${commonNamespace}");
     performStandardRollout(appName, projectEnv, jobName)
     script{
-        deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
+        deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem, true)
     }
 }
 
  def performPenServicesApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String commonNamespace){
+    script{
+        deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem, false)
+    }
     configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
     performStandardUpdateConfigMapStep("${repoName}", "${tag}", "${targetEnv}", "${appName}", "${NAMESPACE}", "${commonNamespace}");
     script{
-        deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
+        deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem, true)
     }
     performStandardRollout(appName, projectEnv, jobName)
  }
 
  def performReportGenerationApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String commonNamespace){
+    script{
+        deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem, false)
+    }
     configMapCDOGSSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
     performStandardUpdateConfigMapStep("${repoName}", "${tag}", "${targetEnv}", "${appName}", "${NAMESPACE}", "${commonNamespace}");
     script{
-        deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
+        deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem, true)
     }
     performStandardRollout(appName, projectEnv, jobName)
  }
@@ -557,7 +588,7 @@ def performPenRegApiDeploy(String stageEnv, String projectEnv, String repoName, 
  }
  def performTraxNotificationApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE){
    script {
-     deployStageNoEnv(sourceEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
+     deployStageNoEnv(sourceEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem, false)
    }
    configMapChesSetup("${appName}","${appName}".toUpperCase(), "${NAMESPACE}", "${targetEnv}", "${sourceEnv}");
    script{
@@ -569,15 +600,21 @@ def performPenRegApiDeploy(String stageEnv, String projectEnv, String repoName, 
          }
      }
    }
+   script {
+       deployStageNoEnv(sourceEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem, true)
+   }
    performStandardRollout(appName, projectEnv, jobName)
  }
 
  def performPenMyEdApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String commonNamespace){
    script{
-     deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem)
+     deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem, false)
    }
    configMapMyEdSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
    performStandardUpdateConfigMapStep("${repoName}", "${tag}", "${targetEnv}", "${appName}", "${NAMESPACE}", "${commonNamespace}");
+   script{
+       deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem, true)
+   }
    performStandardRollout(appName, projectEnv, jobName)
  }
 
