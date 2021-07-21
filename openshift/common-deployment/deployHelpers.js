@@ -432,7 +432,7 @@ def deployPatroniSecrets(String stageEnv, String projectEnv, String appName) {
 
 def deployPatroni(String stageEnv, String projectEnv, String appName, String sourceEnv) {
  def patroni = openshift.selector('statefulset', "${appName}-pgsql-${stageEnv}")
- if(!patroni.exists()){
+ // if(!patroni.exists()){
    def dcTemplate = openshift.process('-f',
      'https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/patroni/patroni-postgresql.yaml',
      "NAME=${appName}-pgsql",
@@ -448,9 +448,9 @@ def deployPatroni(String stageEnv, String projectEnv, String appName, String sou
    timeout(5) {
      template.rollout().status('--watch=true')
    }
- } else {
-   echo "Deployment of patroni already exists, so skipping to next step"
- }
+ // } else {
+ //   echo "Deployment of patroni already exists, so skipping to next step"
+ // }
 }
 
 def triggerWorkflow(String token, String eventType = 'smoke-test-test-admin') {
