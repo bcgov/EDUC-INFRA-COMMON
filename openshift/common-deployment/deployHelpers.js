@@ -39,10 +39,10 @@ def performSagaApiDeploy(String stageEnv, String projectEnv, String repoName, St
           def patroni = openshift.selector('statefulset', "${appName}-pgsql-${targetEnv}")
           if(!patroni.exists()){
             deployPatroniSecrets("${targetEnv}", "${projectEnv}", "${appName}")
-            deployPatroni("${targetEnv}", "${projectEnv}", "${appName}", "${sourceEnv}")
           }else {
             echo "Deployment of patroni secrets already exists, so skipping to next step"
           }
+          deployPatroni("${targetEnv}", "${projectEnv}", "${appName}", "${sourceEnv}")
         }
       }
       deploySagaStage(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem, targetEnv, false)
