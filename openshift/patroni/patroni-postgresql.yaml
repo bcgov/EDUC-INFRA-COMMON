@@ -205,7 +205,7 @@ objects:
                   name: postgresql
             - env:
                 - name: DATA_SOURCE_URI
-                  value: 'localhost:5432/wally?sslmode=disable'
+                  value: 'localhost:5432/student_profile_saga?sslmode=disable'
                 - name: DATA_SOURCE_USER
                   valueFrom:
                     secretKeyRef:
@@ -216,8 +216,10 @@ objects:
                     secretKeyRef:
                       key: app-db-password
                       name: wally-psql
-              image: wrouesnel/postgres_exporter
+              image: docker-remote.artifacts.developer.gov.bc.ca/wrouesnel/postgres_exporter
               imagePullPolicy: Always
+              imagePullSecrets:
+                - name: artifactory-creds
               name: pg-exporter
               ports:
                 - containerPort: 9187
