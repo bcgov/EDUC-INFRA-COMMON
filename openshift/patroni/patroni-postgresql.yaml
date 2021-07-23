@@ -218,8 +218,6 @@ objects:
                       name: student-profile-saga-api-pgsql-${ENV}
               image: docker-remote.artifacts.developer.gov.bc.ca/wrouesnel/postgres_exporter
               imagePullPolicy: Always
-              imagePullSecrets:
-                - name: artifactory-creds
               name: pg-exporter
               ports:
                 - containerPort: 9187
