@@ -7,6 +7,8 @@
  def PEN_MATCH_API_VERSION = '<Not Required>'
  def PEN_SERVICES_API_VERSION = '<Not Required>'
  def PEN_REG_BATCH_API_VERSION = '<Not Required>'
+ def PEN_REPLICATION_API_VERSION = '<Not Required>'
+ def PEN_MYED_API_VERSION = '<Not Required>'
 
  def DEV = '8878b4-tools'
  def TARGET_ENVIRONMENT = '8878b4-prod'
@@ -56,6 +58,13 @@
                                   string(defaultValue: "",
                                                     description: 'Enter PEN Report Generation API version, leave the tag blank if this service is not to be deployed',
                                                     name: 'PEN_REPORT_GENERATION_API_VERSION'),
+                                  string(defaultValue: "",
+                                                    description: 'Enter PEN MyEd API version, leave the tag blank if this service is not to be deployed',
+                                                    name: 'PEN_MYED_API_VERSION'),
+                                   string(defaultValue: "",
+                                                     description: 'Enter PEN Replication API version, leave the tag blank if this service is not to be deployed',
+                                                     name: 'PEN_REPLICATION_API_VERSION'),
+
                           ])
                   // Save to variables. Default to empty string if not found.
                   STUDENT_PROFILE_SAGA_API_VERSION = tagInput.STUDENT_PROFILE_SAGA_API_VERSION?:''
@@ -66,6 +75,8 @@
                   PEN_MATCH_API_VERSION = tagInput.PEN_MATCH_API_VERSION?:''
                   PEN_SERVICES_API_VERSION = tagInput.PEN_SERVICES_API_VERSION?:''
                   PEN_REPORT_GENERATION_API_VERSION= tagInput.PEN_REPORT_GENERATION_API_VERSION?:''
+                  PEN_MYED_API_VERSION= tagInput.PEN_MYED_API_VERSION?:''
+                  PEN_REPLICATION_API_VERSION= tagInput.PEN_REPLICATION_API_VERSION?:''
               }
           }
       }
@@ -77,6 +88,52 @@
             }
         }
       }
+      stage('PEN MyEd API'){
+             when {
+                 expression {
+                     return "${PEN_MYED_API_VERSION}" != "<Not Required>" && "${PEN_MYED_API_VERSION}" != "";
+                 }
+             }
+             environment {
+                APP_NAME = "pen-myed-api"
+                REPO_NAME = "educ-pen-myed-api"
+                DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-MYED-API/main/tools/openshift/api.dc.yaml"
+                MIN_REPLICAS = "2"
+                MAX_REPLICAS = "3"
+                MIN_CPU = "75m"
+                MAX_CPU = "150m"
+                MIN_MEM = "350Mi"
+                MAX_MEM = "700Mi"
+               }
+             steps {
+                 script{
+                      extJSHelper.performPenMyEdApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME_MAIN, "${PEN_MYED_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "${MIN_REPLICAS}", "${MAX_REPLICAS}", "${MIN_CPU}", "${MAX_CPU}", "${MIN_MEM}", "${MAX_MEM}", "${TARGET_ENV}", "${NAMESPACE}", "${COMMON_NAMESPACE}")
+                   }
+                }
+         }
+      stage('PEN Replication API'){
+             when {
+                 expression {
+                     return "${PEN_REPLICATION_API_VERSION}" != "<Not Required>" && "${PEN_REPLICATION_API_VERSION}" != "";
+                 }
+             }
+             environment {
+                APP_NAME = "pen-replication-api"
+                REPO_NAME = "educ-pen-replication-api"
+                DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REPLICATION-API/main/tools/openshift/api.dc.yaml"
+                MIN_REPLICAS = "2"
+                MAX_REPLICAS = "3"
+                MIN_CPU = "75m"
+                MAX_CPU = "150m"
+                MIN_MEM = "350Mi"
+                MAX_MEM = "700Mi"
+               }
+             steps {
+                 script{
+                      extJSHelper.performPenRegApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${PEN_REPLICATION_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "${MIN_REPLICAS}", "${MAX_REPLICAS}", "${MIN_CPU}", "${MAX_CPU}", "${MIN_MEM}", "${MAX_MEM}", "${TARGET_ENV}", "${NAMESPACE}", "${COMMON_NAMESPACE}")
+                   }
+                }
+         }
       stage('PEN Report Generation API'){
        when {
            expression {
