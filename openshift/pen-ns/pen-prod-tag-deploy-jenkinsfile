@@ -120,7 +120,7 @@
              environment {
                 APP_NAME = "pen-replication-api"
                 REPO_NAME = "educ-pen-replication-api"
-                DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REPLICATION-API/main/tools/openshift/api.dc.yaml"
+                DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REPLICATION-API/main/tools/openshift/api.dc.ocp4.yaml"
                 MIN_REPLICAS = "2"
                 MAX_REPLICAS = "3"
                 MIN_CPU = "75m"
