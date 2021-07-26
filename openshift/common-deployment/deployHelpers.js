@@ -178,7 +178,7 @@ def configMapSetup(String appName,String appNameUpper, String namespace, String 
               string(defaultValue: "",
                       description: "Username for ${appName} to connect to the database",
                       name: "DB_USER"),
-              password(defaultValue: "",
+              string(defaultValue: "",
                       description: "Password for ${appName} to connect to the database",
                       name: "DB_PWD"),
               string(defaultValue: "",
