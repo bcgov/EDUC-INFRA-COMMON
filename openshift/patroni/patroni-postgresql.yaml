@@ -95,9 +95,6 @@ objects:
             cluster-name: ${INSTANCE}
             app.kubernetes.io/name: patroni
             app: ${NAME}${SUFFIX}
-        annotations:
-          prometheus.io/scrape: "true"
-          prometheus.io/port: "9187"
         spec:
           containers:
             - env:
@@ -203,28 +200,6 @@ objects:
               volumeMounts:
                 - mountPath: /home/postgres/pgdata
                   name: postgresql
-            - env:
-                - name: DATA_SOURCE_URI
-                  value: 'localhost:5432/student_profile_saga?sslmode=disable'
-                - name: DATA_SOURCE_USER
-                  valueFrom:
-                    secretKeyRef:
-                      key: app-db-username
-                      name: student-profile-saga-api-pgsql-${ENV}
-                - name: DATA_SOURCE_PASS
-                  valueFrom:
-                    secretKeyRef:
-                      key: app-db-password
-                      name: student-profile-saga-api-pgsql-${ENV}
-              image: docker-remote.artifacts.developer.gov.bc.ca/wrouesnel/postgres_exporter
-              imagePullPolicy: Always
-              name: pg-exporter
-              ports:
-                - containerPort: 9187
-                  protocol: TCP
-              resources: {}
-              terminationMessagePath: /dev/termination-log
-              terminationMessagePolicy: File
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           schedulerName: default-scheduler
@@ -365,5 +340,3 @@ parameters:
     value: netapp-block-standard
   - name: IMAGE_REGISTRY
     value: docker-registry.default.svc:5000
-  - name: ENV
-    value: tools
