@@ -188,6 +188,7 @@ def configMapSetup(String appName,String appNameUpper, String namespace, String 
 		sh """
 		  set +x
           echo Creating ${appName}-${targetEnv}-setup-config configmap...
+          echo Config ${configProperties}
           echo DB_PWD_${appNameUpper}=${configProperties.DB_PWD}
           echo SPLUNK_TOKEN_${appNameUpper}=${configProperties.SPLUNK_TOKEN}
           echo DB_JDBC_CONNECT_STRING=${configProperties.DB_JDBC_CONNECT_STRING}
