@@ -21,6 +21,7 @@ objects:
         pid_file: "/var/run/nats/nats.pid"
         http: 8222
         max_payload: 100Mb
+        max_pending: 120Mb
         debug: false
         trace: false
         trace_verbose: false
