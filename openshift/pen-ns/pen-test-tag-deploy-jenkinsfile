@@ -123,10 +123,10 @@
                 DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REPLICATION-API/main/tools/openshift/api.dc.ocp4.yaml"
                 MIN_REPLICAS = "2"
                 MAX_REPLICAS = "3"
-                MIN_CPU = "75m"
-                MAX_CPU = "150m"
-                MIN_MEM = "350Mi"
-                MAX_MEM = "700Mi"
+                MIN_CPU = "150m"
+                MAX_CPU = "300m"
+                MIN_MEM = "500Mi"
+                MAX_MEM = "1000Mi"
                }
              steps {
                  script{
