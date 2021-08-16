@@ -189,6 +189,7 @@ def configMapSetup(String appName,String appNameUpper, String namespace, String 
 		  set +x
           echo Creating ${appName}-${targetEnv}-setup-config configmap...
           echo Config ${configProperties}
+          echo Config ${configProperties}
 		  oc create -n ${namespace}-${targetEnv} configmap ${appName}-${targetEnv}-setup-config --from-literal=DB_PWD_${appNameUpper}="${configProperties.DB_PWD}" --from-literal=SPLUNK_TOKEN_${appNameUpper}=${configProperties.SPLUNK_TOKEN} --from-literal=DB_JDBC_CONNECT_STRING=${configProperties.DB_JDBC_CONNECT_STRING} --from-literal=DB_USER_${appNameUpper}=${configProperties.DB_USER} --dry-run -o yaml | oc apply -f -
 		'''
       }
