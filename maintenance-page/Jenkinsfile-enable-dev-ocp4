@@ -49,9 +49,9 @@ pipeline {
             openshift.withProject(TOOLS) {
               Backend: {
                 try {
-                  def bcBackendBuild = openshift.selector('bc', "${NAME}")
+                  def bcBackendImage = openshift.selector('imagestream', "${TOOLS}/${NAME}:latest")
 
-                  if (!bcBackendBuild.exists()) {
+                  if (!bcBackendImage.exists()) {
                     echo "Building maintenance page..."
 
                     def bcBackend = openshift.process('-f', 'maintenance-page/openshift/bc.yaml', "SOURCE_REPO_URL=${SOURCE_REPO_URL}", "SOURCE_REPO_REF=${SOURCE_REPO_REF}")
