@@ -68,6 +68,30 @@ pipeline {
           }
         }
       }
+      post {
+        success {
+          echo 'Cleanup BuildConfigs...'
+          script {
+            openshift.withCluster() {
+              openshift.withProject(DEV) {
+                if (DEBUG_OUTPUT.equalsIgnoreCase('true')) {
+                  echo "DEBUG - Using project: ${openshift.project()}"
+                } else {
+                  def bcBackend = openshift.selector('bc', "${NAME}")
+
+                  if (bcBackend.exists()) {
+                    echo "Removing BuildConfig maintenance page..."
+                    bcBackend.delete()
+                  }
+                }
+              }
+            }
+          }
+        }
+        failure {
+          echo 'Build stage failed'
+        }
+      }
     }
     stage('Deploy to DEV') {
       steps {
