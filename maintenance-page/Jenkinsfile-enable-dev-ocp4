@@ -49,13 +49,13 @@ pipeline {
             openshift.withProject(TOOLS) {
               Backend: {
                 try {
-                  def bcBackend = openshift.selector('bc', "${NAME}")
+                  def bcBackendBuild = openshift.selector('bc', "${NAME}")
 
-                  if (!bcBackend.exists()) {
+                  if (!bcBackendBuild.exists()) {
                     echo "Building maintenance page..."
 
-                    def bcBackend = openshift.process('-f', 'maintenance-page/openshift/bc.yaml', "SOURCE_REPO_URL=${SOURCE_REPO_URL}", "SOURCE_REPO_REF=${SOURCE_REPO_REF}")
-                    openshift.apply(bcBackend).narrow('bc').startBuild('-w').logs('-f')
+                    def bcBackendBuild = openshift.process('-f', 'maintenance-page/openshift/bc.yaml', "SOURCE_REPO_URL=${SOURCE_REPO_URL}", "SOURCE_REPO_REF=${SOURCE_REPO_REF}")
+                    openshift.apply(bcBackendBuild).narrow('bc').startBuild('-w').logs('-f')
                   } else {
                     echo "Maintenance page build exists, skipping build."
                   }
