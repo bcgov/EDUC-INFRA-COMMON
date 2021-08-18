@@ -46,7 +46,7 @@ pipeline {
       steps {
         script {
           openshift.withCluster() {
-            openshift.withProject(DEV) {
+            openshift.withProject(TOOLS) {
               Backend: {
                 try {
                   def bcBackendBuild = openshift.selector('is', "${NAME}")
@@ -73,7 +73,7 @@ pipeline {
           echo 'Cleanup BuildConfigs...'
           script {
             openshift.withCluster() {
-              openshift.withProject(DEV) {
+              openshift.withProject(TOOLS) {
                 if (DEBUG_OUTPUT.equalsIgnoreCase('true')) {
                   echo "DEBUG - Using project: ${openshift.project()}"
                 } else {
