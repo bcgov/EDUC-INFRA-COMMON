@@ -20,15 +20,16 @@ def APP_DOMAIN = 'apps.silver.devops.gov.bc.ca'
 
 pipeline {
     environment {
-     extJSHelper = '';
-   NAMESPACE='75e61b'
-   DEV_EXCHANGE_REALM='v45fd2kb'
-     MIN_REPLICAS = "2"
-     MAX_REPLICAS = "3"
-     MIN_CPU = "50m"
-     MAX_CPU = "150m"
-     MIN_MEM = "650Mi"
-     MAX_MEM = "750Mi"
+       extJSHelper = '';
+       NAMESPACE='75e61b'
+      PEN_NAMESPACE='8878b4'
+      DEV_EXCHANGE_REALM='v45fd2kb'
+      MIN_REPLICAS = "2"
+      MAX_REPLICAS = "3"
+      MIN_CPU = "50m"
+      MAX_CPU = "150m"
+      MIN_MEM = "650Mi"
+      MAX_MEM = "750Mi"
     }
     agent any
   stages {
@@ -43,6 +44,9 @@ pipeline {
                                  string(defaultValue: "",
                                          description: 'Enter Digital Identity API Version, leave the tag blank if this service is not to be deployed',
                                          name: 'DIGITAL_ID_API_VERSION'),
+                                 string(defaultValue: "",
+                                         description: 'Enter Devops Support App Version, leave the tag blank if this service is not to be deployed',
+                                         name: 'DOSA_VERSION'),
                                  string(defaultValue: "",
                                          description: 'Enter PEN Demog API Version, leave the tag blank if this service is not to be deployed',
                                          name: 'PEN_DEMOG_API_VERSION'),
@@ -79,6 +83,7 @@ pipeline {
                          ])
                  // Save to variables. Default to empty string if not found.
                  DIGITAL_ID_API_VERSION = tagInput.DIGITAL_ID_API_VERSION?:''
+                 DOSA_VERSION = tagInput.DOSA_VERSION?:''
                  PEN_DEMOG_API_VERSION = tagInput.PEN_DEMOG_API_VERSION?:''
                  PEN_REQUEST_API_VERSION = tagInput.PEN_REQUEST_API_VERSION?:''
                  SERVICES_CARD_API_VERSION = tagInput.SERVICES_CARD_API_VERSION?:''
@@ -305,5 +310,41 @@ pipeline {
              }
          }
      }
+    stage('DOSA Frontend and Backend'){
+      when {
+        expression {
+          return "${DOSA_VERSION}" != "<Not Required>" && "${DOSA_VERSION}" != "";
+        }
+      }
+      environment {
+        APP_NAME = "dosa"
+        REPO_NAME = "educ-devops-support-app"
+        DC_URL_FRONTEND = "https://raw.githubusercontent.com/bcgov/EDUC-DEVOPS-SUPPORT-APP/main/tools/openshift/frontend-static.dc.ocp4.yaml"
+        DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-DEVOPS-SUPPORT-APP/main/tools/openshift/backend.dc.ocp4.yaml"
+        dosaExtJSHelper = '';
+        MIN_REPLICAS_FE = "1"
+        MAX_REPLICAS_FE = "1"
+        MIN_CPU_FE = "25m"
+        MAX_CPU_FE = "50m"
+        MIN_MEM_FE = "50Mi"
+        MAX_MEM_FE = "100Mi"
+        MIN_REPLICAS_BE = "1"
+        MAX_REPLICAS_BE = "1"
+        MIN_CPU_BE = "50m"
+        MAX_CPU_BE = "100m"
+        MIN_MEM_BE = "125Mi"
+        MAX_MEM_BE = "250Mi"
+        TEST_HOST_ROUTE = "dosa-75e61b-test.apps.silver.devops.gov.bc.ca"
+      }
+      steps {
+        script{
+          sh "wget -O - https://raw.githubusercontent.com/bcgov/EDUC-DEVOPS-SUPPORT-APP/main/tools/jenkins/deployHelpers.js > deployHelpers.js"
+          dosaExtJSHelper = evaluate readFile('deployHelpers.js')
+        }
+        script{
+          dosaExtJSHelper.performUIDeploy(TEST_HOST_ROUTE, STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${DOSA_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}", "${MIN_REPLICAS_FE}", "${MAX_REPLICAS_FE}", "${MIN_CPU_FE}", "${MAX_CPU_FE}", "${MIN_MEM_FE}", "${MAX_MEM_FE}", "${MIN_REPLICAS_BE}", "${MAX_REPLICAS_BE}", "${MIN_CPU_BE}", "${MAX_CPU_BE}", "${MIN_MEM_BE}", "${MAX_MEM_BE}", TARGET_ENV, NAMESPACE, NAMESPACE, PEN_NAMESPACE)
+        }
+      }
+    }
   }
 }
