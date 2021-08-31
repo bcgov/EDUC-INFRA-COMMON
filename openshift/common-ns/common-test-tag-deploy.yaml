@@ -1,6 +1,7 @@
 def IDIR = 'NONE'
 def IDIR_PW = 'NONE'
 def DIGITAL_ID_API_VERSION = '<Not Required>'
+def DOSA_VERSION = '<Not Required>'
 def PEN_DEMOG_API_VERSION = '<Not Required>'
 def PEN_REQUEST_API_VERSION = '<Not Required>'
 def SERVICES_CARD_API_VERSION = '<Not Required>'
