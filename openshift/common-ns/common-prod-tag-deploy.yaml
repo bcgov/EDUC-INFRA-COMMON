@@ -25,10 +25,10 @@ pipeline {
       NAMESPACE='75e61b'
       PEN_NAMESPACE='8878b4'
       DEV_EXCHANGE_REALM='v45fd2kb'
-      MIN_REPLICAS = "2"
-      MAX_REPLICAS = "3"
+      MIN_REPLICAS = "3"
+      MAX_REPLICAS = "5"
       MIN_CPU = "50m"
-      MAX_CPU = "150m"
+      MAX_CPU = "300m"
       MIN_MEM = "650Mi"
       MAX_MEM = "750Mi"
     }
