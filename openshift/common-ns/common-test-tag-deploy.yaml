@@ -11,6 +11,7 @@ def STUDENT_PROFILE_API_VERSION = '<Not Required>'
 def SCHOOL_API_VERSION = '<Not Required>'
 def SLD_API_VERSION = '<Not Required>'
 def PEN_TRAX_API_VERSION = '<Not Required>'
+def MACRO_API_VERSION = '<Not Required>'
 
 def DEV = '75e61b-tools'
 def TARGET_ENVIRONMENT = '75e61b-dev'
@@ -81,6 +82,9 @@ pipeline {
                                  string(defaultValue: "",
                                                      description: 'Enter SLD NOTIFICATION API Version, leave the tag blank if this service is not to be deployed',
                                                      name: 'SLD_NOTIFICATION_API_VERSION'),
+                                 string(defaultValue: "",
+                                         description: 'Enter MACRO API Version, leave the tag blank if this service is not to be deployed',
+                                         name: 'MACRO_API_VERSION'),
                          ])
                  // Save to variables. Default to empty string if not found.
                  DIGITAL_ID_API_VERSION = tagInput.DIGITAL_ID_API_VERSION?:''
@@ -96,6 +100,7 @@ pipeline {
                  PEN_TRAX_API_VERSION = tagInput.PEN_TRAX_API_VERSION?:''
                  TRAX_NOTIFICATION_API_VERSION = tagInput.TRAX_NOTIFICATION_API_VERSION?:''
                  SLD_NOTIFICATION_API_VERSION = tagInput.SLD_NOTIFICATION_API_VERSION?:''
+                 MACRO_API_VERSION = tagInput.MACRO_API_VERSION?:''
              }
          }
      }
@@ -293,6 +298,23 @@ pipeline {
                extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, REPO_NAME, "${APP_NAME}", "main", "${SLD_NOTIFICATION_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, DC_URL, MIN_REPLICAS, MAX_REPLICAS, "75m", "150m", "375Mi", "750Mi", TARGET_ENV, NAMESPACE)
              }
            }
+     }
+     stage('MACRO API'){
+         when {
+             expression {
+                  return "${MACRO_API_VERSION}" != "<Not Required>" && "${MACRO_API_VERSION}" != "";
+             }
+         }
+         environment {
+            APP_NAME = "macro-api"
+            REPO_NAME = "educ-macro-api"
+            DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-MACRO-API/main/tools/openshift/api.dc.yaml"
+         }
+         steps {
+            script{
+                extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, REPO_NAME, "${APP_NAME}", "master", "${MACRO_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, DC_URL, MIN_REPLICAS, MAX_REPLICAS, "75m", "150m", "375Mi", "750Mi", TARGET_ENV, NAMESPACE)
+            }
+         }
      }
      stage('SOAM API'){
          when {
