@@ -308,7 +308,7 @@ pipeline {
          environment {
             APP_NAME = "macro-api"
             REPO_NAME = "educ-macro-api"
-            DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-MACRO-API/main/tools/openshift/api.dc.ocp4.yaml"
+            DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-MACRO-API/master/tools/openshift/api.dc.ocp4.yaml"
          }
          steps {
             script{
