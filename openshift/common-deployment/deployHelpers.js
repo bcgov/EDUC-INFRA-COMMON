@@ -78,13 +78,6 @@ def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, St
       catch(e){
           //Do nothing
       }
-      echo "Rolling out sso-${targetEnv}"
-      try {
-          sh(script: "oc -n ${projectEnv} rollout latest dc/sso-${targetEnv}", returnStdout: true)
-      }
-      catch(e){
-          //Do nothing
-      }
     }
 }
 
