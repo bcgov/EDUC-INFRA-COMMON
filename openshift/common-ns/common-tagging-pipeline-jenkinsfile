@@ -263,7 +263,7 @@
             		stage('Tag PEN Macro API In Git'){
             		    when {
             				expression {
-            					return "${PEN_TRAX_API_VERSION}" != "<Not Required>" && "${PEN_TRAX_API_VERSION}" != "";
+            					return "${PEN_MACRO_API_VERSION}" != "<Not Required>" && "${PEN_MACRO_API_VERSION}" != "";
             				}
             			}
                         environment {
