@@ -82,7 +82,7 @@
                                                         description: 'Enter PEN TRAX API Version, leave the tag blank if this service is not to be deployed',
                                                         name: 'PEN_TRAX_API_VERSION')
                                                 string(defaultValue: "",
-                                                        description: 'Enter PEN Macro API Version, leave the tag blank if this service is not to be deployed',
+                                                        description: 'Enter PEN MACRO API Version, leave the tag blank if this service is not to be deployed',
                                                         name: 'PEN_MACRO_API_VERSION')
                                         ])
             					// Save to variables. Default to empty string if not found.
