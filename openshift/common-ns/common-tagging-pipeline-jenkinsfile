@@ -136,7 +136,7 @@
             			steps {
                            tagUIRelease("${REPO_NAME_FE}", "${APP_NAME}", "${JOB_NAME}", "${DOSA_VERSION}", "${TOOLS}");
                            tagUIRelease("${REPO_NAME_BE}", "${APP_NAME}", "${JOB_NAME}", "${DOSA_VERSION}", "${TOOLS}");
-            		       createGitTag("${STAFF_ADMIN_VERSION}", "${DOSA_VERSION}", 'EDUC-DEVOPS-SUPPORT-APP')
+            		       createGitTag("${DOSA_VERSION}", "${DOSA_VERSION}", 'EDUC-DEVOPS-SUPPORT-APP')
             			}
             		}
             		stage('Tag PEN Demographics API In Git'){
