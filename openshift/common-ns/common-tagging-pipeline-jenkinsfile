@@ -129,12 +129,14 @@
             			}
                         environment {
                          APP_NAME = "DOSA"
-                         REPO_NAME = "educ-devops-support-app"
+                         REPO_NAME_FE = "educ-devops-support-app-backend"
+                         REPO_NAME_BE = "educ-devops-support-app-frontend"
                          JOB_NAME = "master"
                         }
             			steps {
-                           tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${DOSA_VERSION}", "${TOOLS}");
-            				createGitTag("${DOSA_VERSION}", "${DOSA_VERSION}", 'EDUC-DEVOPS-SUPPORT-APP')
+                           tagUIRelease("${REPO_NAME_FE}", "${APP_NAME}", "${JOB_NAME}", "${DOSA_VERSION}", "${TOOLS}");
+                           tagUIRelease("${REPO_NAME_BE}", "${APP_NAME}", "${JOB_NAME}", "${DOSA_VERSION}", "${TOOLS}");
+            		       createGitTag("${STAFF_ADMIN_VERSION}", "${DOSA_VERSION}", 'EDUC-DEVOPS-SUPPORT-APP')
             			}
             		}
             		stage('Tag PEN Demographics API In Git'){
@@ -329,6 +331,15 @@
                     openshift.withProject("${sourceEnv}") {
                         echo "Tagging ${appName} image with version ${tag}"
                         openshift.tag("${sourceEnv}/${repoName}-${jobName}:latest", "${repoName}-${jobName}:${tag}")
+                    }
+                }
+            }
+
+            def tagUIRelease(String repoName, String appName, String jobName, String tag, String sourceEnv) {
+                openshift.withCluster() {
+                    openshift.withProject("${sourceEnv}") {
+                        echo "Tagging ${appName} image with version ${tag}"
+                        openshift.tag("${sourceEnv}/${repoName}:latest", "${repoName}:${tag}")
                     }
                 }
             }
