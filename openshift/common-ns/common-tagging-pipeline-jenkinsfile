@@ -1,6 +1,7 @@
             def GIT_USER = 'NONE'
             def GIT_TOKEN = 'NONE'
             def DIGITAL_ID_API_VERSION = '<Not Required>'
+            def DOSA_VERSION = '<Not Required>'
             def PEN_DEMOG_API_VERSION = '<Not Required>'
             def PEN_REQUEST_API_VERSION = '<Not Required>'
             def SERVICES_CARD_API_VERSION = '<Not Required>'
@@ -55,6 +56,9 @@
                                                         description: 'Enter Digital Identity API Version, leave the tag blank if this service is not to be tagged.',
                                                         name: 'DIGITAL_ID_API_VERSION'),
                                                 string(defaultValue: "",
+                                                        description: 'Enter DOSA API Version, leave the tag blank if this service is not to be tagged.',
+                                                        name: 'DOSA_VERSION'),
+                                                string(defaultValue: "",
                                                         description: 'Enter PEN Demog API Version, leave the tag blank if this service is not to be tagged',
                                                         name: 'PEN_DEMOG_API_VERSION'),
                                                 string(defaultValue: "",
@@ -87,6 +91,7 @@
                                         ])
             					// Save to variables. Default to empty string if not found.
                                 DIGITAL_ID_API_VERSION = tagInput.DIGITAL_ID_API_VERSION?:''
+                                DOSA_VERSION = tagInput.DOSA_VERSION?:''
                                 PEN_DEMOG_API_VERSION = tagInput.PEN_DEMOG_API_VERSION?:''
             					PEN_REQUEST_API_VERSION = tagInput.PEN_REQUEST_API_VERSION?:''
             					SERVICES_CARD_API_VERSION = tagInput.SERVICES_CARD_API_VERSION?:''
@@ -114,6 +119,22 @@
             			steps {
                            tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${DIGITAL_ID_API_VERSION}", "${TOOLS}");
             				createGitTag("${DIGITAL_ID_API_VERSION}", "${DIGITAL_ID_API_VERSION}", 'EDUC-DIGITALID-API')
+            			}
+            		}
+            		stage('Tag DOSA In Git'){
+            		    when {
+            				expression {
+            					return "${DOSA_VERSION}" != "<Not Required>" && "${DOSA_VERSION}" != "";
+            				}
+            			}
+                        environment {
+                         APP_NAME = "DOSA"
+                         REPO_NAME = "educ-devops-support-app"
+                         JOB_NAME = "master"
+                        }
+            			steps {
+                           tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${DOSA_VERSION}", "${TOOLS}");
+            				createGitTag("${DOSA_VERSION}", "${DOSA_VERSION}", 'EDUC-DEVOPS-SUPPORT-APP')
             			}
             		}
             		stage('Tag PEN Demographics API In Git'){
