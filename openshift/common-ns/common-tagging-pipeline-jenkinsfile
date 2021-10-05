@@ -129,8 +129,8 @@
             			}
                         environment {
                          APP_NAME = "DOSA"
-                         REPO_NAME_FE = "educ-devops-support-app-backend"
-                         REPO_NAME_BE = "educ-devops-support-app-frontend"
+                         REPO_NAME_FE = "educ-devops-support-app-frontend-static"
+                         REPO_NAME_BE = "educ-devops-support-app-backend"
                          JOB_NAME = "master"
                         }
             			steps {
