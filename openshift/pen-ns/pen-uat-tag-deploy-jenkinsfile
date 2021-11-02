@@ -166,7 +166,7 @@
              APP_NAME = "pen-reg-batch-api"
              REPO_NAME = "educ-pen-reg-batch-api"
              DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-REG-BATCH-API/master/tools/openshift/api.dc.ocp4.yaml"
-             MIN_REPLICAS = "2"
+             MIN_REPLICAS = "3"
              MAX_REPLICAS = "3"
              MIN_CPU = "250m"
              MAX_CPU = "500m"
