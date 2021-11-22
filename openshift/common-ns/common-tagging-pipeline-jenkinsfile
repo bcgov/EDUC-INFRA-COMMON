@@ -12,6 +12,9 @@
             def SLD_API_VERSION = '<Not Required>'
             def PEN_TRAX_API_VERSION = '<Not Required>'
             def PEN_MACRO_API_VERSION = '<Not Required>'
+            def TRAX_NOTIFICATION_API_VERSION = '<Not Required>'
+            def SLD_NOTIFICATION_API_VERSION = '<Not Required>'
+
 
             def TOOLS = '75e61b-tools'
             def JOB_NAME = 'master'
@@ -87,7 +90,13 @@
                                                         name: 'PEN_TRAX_API_VERSION'),
                                                 string(defaultValue: "",
                                                         description: 'Enter PEN MACRO API Version, leave the tag blank if this service is not to be deployed',
-                                                        name: 'PEN_MACRO_API_VERSION')
+                                                        name: 'PEN_MACRO_API_VERSION'),
+                                                string(defaultValue: "",
+                                                        description: 'Enter TRAX Notification API Version, leave the tag blank if this service is not to be deployed',
+                                                        name: 'TRAX_NOTIFICATION_API_VERSION'),
+                                                string(defaultValue: "",
+                                                        description: 'Enter SLD Notification API Version, leave the tag blank if this service is not to be deployed',
+                                                        name: 'SLD_NOTIFICATION_API_VERSION')
                                         ])
             					// Save to variables. Default to empty string if not found.
                                 DIGITAL_ID_API_VERSION = tagInput.DIGITAL_ID_API_VERSION?:''
@@ -102,6 +111,8 @@
                                 SLD_API_VERSION = tagInput.SLD_API_VERSION?:''
                                 PEN_TRAX_API_VERSION = tagInput.PEN_TRAX_API_VERSION?:''
                                 PEN_MACRO_API_VERSION = tagInput.PEN_MACRO_API_VERSION?:''
+                                TRAX_NOTIFICATION_API_VERSION = tagInput.TRAX_NOTIFICATION_API_VERSION?:''
+                                SLD_NOTIFICATION_API_VERSION = tagInput.SLD_NOTIFICATION_API_VERSION?:''
             				}
                         }
                     }
@@ -297,6 +308,38 @@
             			steps {
                            tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${PEN_MACRO_API_VERSION}", "${TOOLS}");
             		       createGitTag("${PEN_MACRO_API_VERSION}", "${PEN_MACRO_API_VERSION}", 'EDUC-MACRO-API')
+            			}
+            		}
+            		stage('Tag TRAX Notification API In Git'){
+            		    when {
+            				expression {
+            					return "${TRAX_NOTIFICATION_API_VERSION}" != "<Not Required>" && "${TRAX_NOTIFICATION_API_VERSION}" != "";
+            				}
+            			}
+                        environment {
+                         APP_NAME = "TRAX-NOTIFICATION-API"
+                         REPO_NAME = "educ-trax-notification-api"
+                         JOB_NAME = "master"
+                        }
+            			steps {
+                           tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${TRAX_NOTIFICATION_API_VERSION}", "${TOOLS}");
+            		       createGitTag("${TRAX_NOTIFICATION_API_VERSION}", "${TRAX_NOTIFICATION_API_VERSION}", 'EDUC-TRAX-NOTIFICATION-API')
+            			}
+            		}
+            		stage('Tag SLD Notification API In Git'){
+            		    when {
+            				expression {
+            					return "${SLD_NOTIFICATION_API_VERSION}" != "<Not Required>" && "${SLD_NOTIFICATION_API_VERSION}" != "";
+            				}
+            			}
+                        environment {
+                         APP_NAME = "SLD-NOTIFICATION-API"
+                         REPO_NAME = "educ-sld-notification-api"
+                         JOB_NAME = "master"
+                        }
+            			steps {
+                           tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${SLD_NOTIFICATION_API_VERSION}", "${TOOLS}");
+            		       createGitTag("${SLD_NOTIFICATION_API_VERSION}", "${SLD_NOTIFICATION_API_VERSION}", 'EDUC-SLD-NOTIFICATION-API')
             			}
             		}
                 }
