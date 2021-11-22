@@ -372,7 +372,7 @@
             def tagRelease(String repoName, String appName, String jobName, String tag, String sourceEnv) {
                 openshift.withCluster() {
                     openshift.withProject("${sourceEnv}") {
-                        echo "Tagging ${appName} image with version ${tag}"
+                        echo "Tagging ${appName} image with version ${tag} - tag image ${sourceEnv}/${repoName}-${jobName}:latest"
                         openshift.tag("${sourceEnv}/${repoName}-${jobName}:latest", "${repoName}-${jobName}:${tag}")
                     }
                 }
