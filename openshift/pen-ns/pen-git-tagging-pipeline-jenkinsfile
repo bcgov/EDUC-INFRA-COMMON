@@ -1,0 +1,283 @@
+def GIT_USER = 'NONE'
+def GIT_TOKEN = 'NONE'
+def PEN_REQUEST_BATCH_API_VERSION = '<Not Required>'
+def STUDENT_PROFILE_EMAIL_API = '<Not Required>'
+def STUDENT_PROFILE_VERSION = '<Not Required>'
+def PEN_MATCH_VERSION = '<Not Required>'
+def STAFF_ADMIN_VERSION = '<Not Required>'
+def PEN_SERVICES_VERSION = '<Not Required>'
+def STUDENT_PROFILE_SAGA_API_VERSION = '<Not Required>'
+def REPORT_GENERATION_API_VERSION = '<Not Required>'
+def REPLICATION_API_VERSION = '<Not Required>'
+
+def TOOLS = '8878b4-tools'
+def JOB_NAME = 'master'
+def JOB_NAME_MAIN = 'main'
+
+pipeline {
+    environment {
+       APPROVERS = ''
+    }
+    agent any
+    stages {
+        stage('Deployment Credentials & Approval') {
+            steps {
+                script {
+                    // Get the input
+                    def userInput = input(
+                            id: 'userInput', message: 'Please enter your GitHub info:',
+                            parameters: [
+
+                                    string(defaultValue: '',
+                                            description: 'Your GitHub username',
+                                            name: 'GitHubUser'),
+                                    password(defaultValue: '',
+                                            description: 'Your GitHub token',
+                                            name: 'GitHubToken'),
+                            ])
+                    // Save to variables. Default to empty string if not found.
+                    GitHubUser = userInput.GitHubUser?:''
+                    GitHubToken = userInput.GitHubToken?:''
+                }
+            }
+        }
+        stage('Provide Release Versions for Tagging in Git') {
+            steps {
+                script {
+                    // Get the input
+                    def tagInput = input(
+                            id: 'tagInput', message: 'Please enter the release version number for each component to be tagged out of master in GIT.',
+                            parameters: [
+                                    string(defaultValue: "",
+                                            description: 'Enter PEN Request Batch API Version, leave the tag blank if this service is not to be tagged',
+                                            name: 'PEN_REQUEST_BATCH_API_VERSION'),
+                                    string(defaultValue: "",
+                                            description: 'Enter Student Profile Email API Version, leave the tag blank if this service is not to be tagged',
+                                            name: 'STUDENT_PROFILE_EMAIL_API'),
+                                    string(defaultValue: "",
+                                            description: 'Enter Student Profile Version, leave the tag blank if this service is not to be tagged',
+                                            name: 'STUDENT_PROFILE_VERSION'),
+                                    string(defaultValue: "",
+                                            description: 'Enter PEN Match Request Version, leave the tag blank if this service is not to be tagged',
+                                            name: 'PEN_MATCH_VERSION'),
+                                    string(defaultValue: "",
+                                            description: 'Enter Staff Admin Version, leave the tag blank if this service is not to be tagged',
+                                            name: 'STAFF_ADMIN_VERSION'),
+                                    string(defaultValue: "",
+                                            description: 'Enter PEN services Version, leave the tag blank if this service is not to be tagged',
+                                            name: 'PEN_SERVICES_VERSION'),
+                                    string(defaultValue: "",
+                                            description: 'Enter student profile saga Version, leave the tag blank if this service is not to be tagged',
+                                            name: 'STUDENT_PROFILE_SAGA_API_VERSION'),
+                                    string(defaultValue: "",
+                                            description: 'Enter Report Generation Version, leave the tag blank if this service is not to be tagged',
+                                            name: 'REPORT_GENERATION_API_VERSION'),
+                                    string(defaultValue: "",
+                                            description: 'Enter Replication API saga Version, leave the tag blank if this service is not to be tagged',
+                                            name: 'REPLICATION_API_VERSION'),
+                            ])
+                    // Save to variables. Default to empty string if not found.
+                    PEN_REQUEST_BATCH_API_VERSION = tagInput.PEN_REQUEST_BATCH_API_VERSION?:''
+                    STUDENT_PROFILE_EMAIL_API = tagInput.STUDENT_PROFILE_EMAIL_API?:''
+                    STUDENT_PROFILE_VERSION = tagInput.STUDENT_PROFILE_VERSION?:''
+                    PEN_MATCH_VERSION = tagInput.PEN_MATCH_VERSION?:''
+                    STAFF_ADMIN_VERSION = tagInput.STAFF_ADMIN_VERSION?:''
+                    PEN_SERVICES_VERSION = tagInput.PEN_SERVICES_VERSION?:''
+                    STUDENT_PROFILE_SAGA_API_VERSION = tagInput.STUDENT_PROFILE_SAGA_API_VERSION?:''
+                    REPORT_GENERATION_API_VERSION = tagInput.REPORT_GENERATION_API_VERSION?:''
+                    REPLICATION_API_VERSION = tagInput.REPLICATION_API_VERSION?:''
+                }
+            }
+        }
+        stage('Tag PEN Request Batch API In Git'){
+            when {
+                expression {
+                    return "${PEN_REQUEST_BATCH_API_VERSION}" != "<Not Required>" && "${PEN_REQUEST_BATCH_API_VERSION}" != "";
+                }
+            }
+            environment {
+             APP_NAME = "PEN-REG-BATCH-API"
+             REPO_NAME = "educ-pen-reg-batch-api"
+             JOB_NAME = "master"
+            }
+            steps {
+               tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${PEN_REQUEST_BATCH_API_VERSION}", "${TOOLS}");
+               createGitTag("${PEN_REQUEST_BATCH_API_VERSION}", "${PEN_REQUEST_BATCH_API_VERSION}", 'EDUC-PEN-REG-BATCH-API')
+            }
+        }
+        stage('Tag Student Profile Email API In Git'){
+            when {
+                expression {
+                    return "${STUDENT_PROFILE_EMAIL_API}" != "<Not Required>" && "${STUDENT_PROFILE_EMAIL_API}" != "";
+                }
+            }
+            environment {
+             APP_NAME = "STUDENT-PROFILE-EMAIL-API"
+             REPO_NAME = "educ-student-profile-email-api"
+             JOB_NAME = "master"
+            }
+            steps {
+               tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${STUDENT_PROFILE_EMAIL_API}", "${TOOLS}");
+               createGitTag("${STUDENT_PROFILE_EMAIL_API}", "${STUDENT_PROFILE_EMAIL_API}", 'EDUC-STUDENT-PROFILE-EMAIL-API')
+            }
+        }
+        stage('Tag Student Profile In Git'){
+            when {
+                expression {
+                    return "${STUDENT_PROFILE_VERSION}" != "<Not Required>" && "${STUDENT_PROFILE_VERSION}" != "";
+                }
+            }
+            environment {
+             APP_NAME = "STUDENT-ADMIN"
+             REPO_NAME_FE = "educ-student-profile-frontend-static"
+             REPO_NAME_BE = "educ-student-profile-backend"
+             JOB_NAME = "master"
+            }
+            steps {
+               tagUIRelease("${REPO_NAME_FE}", "${APP_NAME}", "${JOB_NAME}", "${STUDENT_PROFILE_VERSION}", "${TOOLS}");
+               tagUIRelease("${REPO_NAME_BE}", "${APP_NAME}", "${JOB_NAME}", "${STUDENT_PROFILE_VERSION}", "${TOOLS}");
+               createGitTag("${STUDENT_PROFILE_VERSION}", "${STUDENT_PROFILE_VERSION}", 'EDUC-STUDENT-PROFILE')
+            }
+        }
+        stage('Tag Student Admin Frontend and Backend In Git'){
+            when {
+                expression {
+                    return "${STAFF_ADMIN_VERSION}" != "<Not Required>" && "${STAFF_ADMIN_VERSION}" != "";
+                }
+            }
+            environment {
+             APP_NAME = "STUDENT-ADMIN"
+             REPO_NAME_FE = "educ-student-admin-frontend-static"
+             REPO_NAME_BE = "educ-student-admin-backend"
+             JOB_NAME = "master"
+            }
+            steps {
+               tagUIRelease("${REPO_NAME_FE}", "${APP_NAME}", "${JOB_NAME}", "${STAFF_ADMIN_VERSION}", "${TOOLS}");
+               tagUIRelease("${REPO_NAME_BE}", "${APP_NAME}", "${JOB_NAME}", "${STAFF_ADMIN_VERSION}", "${TOOLS}");
+               createGitTag("${STAFF_ADMIN_VERSION}", "${STAFF_ADMIN_VERSION}", 'EDUC-STUDENT-ADMIN')
+            }
+        }
+        stage('Tag PEN Match In Git'){
+            when {
+                expression {
+                    return "${PEN_MATCH_VERSION}" != "<Not Required>" && "${PEN_MATCH_VERSION}" != "";
+                }
+            }
+            environment {
+             APP_NAME = "PEN-MATCH-API"
+             REPO_NAME = "educ-pen-match-api"
+             JOB_NAME = "master"
+            }
+            steps {
+               tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${PEN_MATCH_VERSION}", "${TOOLS}");
+               createGitTag("${PEN_MATCH_VERSION}", "${PEN_MATCH_VERSION}", 'EDUC-PEN-MATCH-API')
+            }
+        }
+        stage('Tag PEN Services In Git'){
+            when {
+                expression {
+                    return "${PEN_SERVICES_VERSION}" != "<Not Required>" && "${PEN_SERVICES_VERSION}" != "";
+                }
+            }
+            environment {
+             APP_NAME = "PEN-SERVICES-API"
+             REPO_NAME = "educ-pen-services-api"
+             JOB_NAME = "master"
+            }
+            steps {
+               tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${PEN_SERVICES_VERSION}", "${TOOLS}");
+               createGitTag("${PEN_SERVICES_VERSION}", "${PEN_SERVICES_VERSION}", 'EDUC-PEN-SERVICES-API')
+            }
+        }
+        stage('Tag Student Profile SAGA In Git'){
+            when {
+                expression {
+                    return "${STUDENT_PROFILE_SAGA_API_VERSION}" != "<Not Required>" && "${STUDENT_PROFILE_SAGA_API_VERSION}" != "";
+                }
+            }
+            environment {
+             APP_NAME = "STUDENT-PROFILE-SAGA-API"
+             REPO_NAME = "educ-student-profile-saga-api"
+             JOB_NAME = "master"
+            }
+            steps {
+               tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${STUDENT_PROFILE_SAGA_API_VERSION}", "${TOOLS}");
+               createGitTag("${STUDENT_PROFILE_SAGA_API_VERSION}", "${STUDENT_PROFILE_SAGA_API_VERSION}", 'EDUC-STUDENT-PROFILE-SAGA-API')
+            }
+        }
+        stage('Tag Report Generation API In Git'){
+            when {
+                expression {
+                    return "${REPORT_GENERATION_API_VERSION}" != "<Not Required>" && "${REPORT_GENERATION_API_VERSION}" != "";
+                }
+            }
+            environment {
+             APP_NAME = "PEN-REPORT-GENERATION-API"
+             REPO_NAME = "educ-pen-report-generation-api"
+             JOB_NAME_MAIN = "main"
+            }
+            steps {
+               tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME_MAIN}", "${REPORT_GENERATION_API_VERSION}", "${TOOLS}");
+               createGitTag("${REPORT_GENERATION_API_VERSION}", "${REPORT_GENERATION_API_VERSION}", 'EDUC-PEN-REPORT-GENERATION-API')
+            }
+        }
+        stage('Tag Replication API In Git'){
+            when {
+                expression {
+                    return "${REPLICATION_API_VERSION}" != "<Not Required>" && "${REPLICATION_API_VERSION}" != "";
+                }
+            }
+            environment {
+             APP_NAME = "PEN-REPLICATION-API"
+             REPO_NAME = "educ-pen-replication-api"
+             JOB_NAME_MAIN = "main"
+            }
+            steps {
+               tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME_MAIN}", "${REPLICATION_API_VERSION}", "${TOOLS}");
+               createGitTag("${REPLICATION_API_VERSION}", "${REPLICATION_API_VERSION}", 'EDUC-PEN-REPLICATION-API')
+            }
+        }
+    }
+}
+
+def createGitTag(String tagName, String tagMessage, String repoName) {
+script{
+    def gitUrl="https://github.com/bcgov/${repoName}.git"
+    echo "gitUrl is: ${gitUrl}"
+    def path="/tmp/${repoName}"
+    echo "Path is: ${path}"
+    echo "Clearing out previous clone"
+    sh """
+       rm -rf ${path}
+    """
+
+    dir ("${path}"){
+        sh """
+          set +x
+          echo Running git commands...
+          git clone ${gitUrl} ${path} -c user.name=random -c user.email=random@someplace.com
+          git remote set-url origin ${gitUrl}
+          git tag -a ${tagName} -m ${tagMessage}
+          git push https://${GitHubUser}:${GitHubToken}@github.com/bcgov/${repoName}.git --tags --quiet
+        """
+    }
+  }
+}
+
+def tagRelease(String repoName, String appName, String jobName, String tag, String sourceEnv) {
+    openshift.withCluster() {
+        openshift.withProject("${sourceEnv}") {
+            echo "Tagging ${appName} image with version ${tag}"
+            openshift.tag("${sourceEnv}/${repoName}-${jobName}:latest", "${repoName}-${jobName}:${tag}")
+        }
+    }
+}
+
+def tagUIRelease(String repoName, String appName, String jobName, String tag, String sourceEnv) {
+    openshift.withCluster() {
+        openshift.withProject("${sourceEnv}") {
+            echo "Tagging ${appName} image with version ${tag}"
+            openshift.tag("${sourceEnv}/${repoName}:latest", "${repoName}:${tag}")
+        }
+    }
+}
