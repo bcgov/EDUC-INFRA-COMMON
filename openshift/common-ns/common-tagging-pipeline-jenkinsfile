@@ -319,7 +319,7 @@
                         environment {
                          APP_NAME = "TRAX-NOTIFICATION-API"
                          REPO_NAME = "educ-trax-notification-api"
-                         JOB_NAME = "master"
+                         JOB_NAME = "main"
                         }
             			steps {
                            tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${TRAX_NOTIFICATION_API_VERSION}", "${TOOLS}");
@@ -335,7 +335,7 @@
                         environment {
                          APP_NAME = "SLD-NOTIFICATION-API"
                          REPO_NAME = "educ-sld-notification-api"
-                         JOB_NAME = "master"
+                         JOB_NAME = "main"
                         }
             			steps {
                            tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${SLD_NOTIFICATION_API_VERSION}", "${TOOLS}");
