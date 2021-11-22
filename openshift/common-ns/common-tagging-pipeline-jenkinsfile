@@ -18,6 +18,7 @@
 
             def TOOLS = '75e61b-tools'
             def JOB_NAME = 'master'
+            def JOB_NAME_MAIN = 'main'
             def STAGING_ENV = 'Dev'
 
             pipeline {
@@ -271,10 +272,10 @@
                         environment {
                          APP_NAME = "SLD-API"
                          REPO_NAME = "educ-sld-api"
-                         JOB_NAME = "main"
+                         JOB_NAME_MAIN = "main"
                         }
             			steps {
-                           tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${SLD_API_VERSION}", "${TOOLS}");
+                           tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME_MAIN}", "${SLD_API_VERSION}", "${TOOLS}");
             		       createGitTag("${SLD_API_VERSION}", "${SLD_API_VERSION}", 'EDUC-SLD-API')
             			}
             		}
@@ -319,10 +320,10 @@
                         environment {
                          APP_NAME = "TRAX-NOTIFICATION-API"
                          REPO_NAME = "educ-trax-notification-api"
-                         JOB_NAME = "main"
+                         JOB_NAME_MAIN = "main"
                         }
             			steps {
-                           tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${TRAX_NOTIFICATION_API_VERSION}", "${TOOLS}");
+                           tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME_MAIN}", "${TRAX_NOTIFICATION_API_VERSION}", "${TOOLS}");
             		       createGitTag("${TRAX_NOTIFICATION_API_VERSION}", "${TRAX_NOTIFICATION_API_VERSION}", 'EDUC-TRAX-NOTIFICATION-API')
             			}
             		}
@@ -335,10 +336,10 @@
                         environment {
                          APP_NAME = "SLD-NOTIFICATION-API"
                          REPO_NAME = "educ-sld-notification-api"
-                         JOB_NAME = "main"
+                         JOB_NAME_MAIN = "main"
                         }
             			steps {
-                           tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${SLD_NOTIFICATION_API_VERSION}", "${TOOLS}");
+                           tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME_MAIN}", "${SLD_NOTIFICATION_API_VERSION}", "${TOOLS}");
             		       createGitTag("${SLD_NOTIFICATION_API_VERSION}", "${SLD_NOTIFICATION_API_VERSION}", 'EDUC-SLD-NOTIFICATION-API')
             			}
             		}
