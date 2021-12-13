@@ -244,7 +244,7 @@ pipeline {
             }
          steps {
              script{
-               extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${SLD_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
+               extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", "main", "${SLD_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
              }
             }
      }
