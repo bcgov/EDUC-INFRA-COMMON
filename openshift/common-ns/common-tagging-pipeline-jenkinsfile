@@ -276,6 +276,7 @@
                         }
             			steps {
                            tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME_MAIN}", "${SLD_API_VERSION}", "${TOOLS}");
+                           tagRelease("${REPO_NAME}", "${APP_NAME}", "master", "${SLD_API_VERSION}", "${TOOLS}");
             		       createGitTag("${SLD_API_VERSION}", "${SLD_API_VERSION}", 'EDUC-SLD-API')
             			}
             		}
