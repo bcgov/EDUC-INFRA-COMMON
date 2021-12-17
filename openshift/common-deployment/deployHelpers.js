@@ -55,7 +55,7 @@ def performSagaApiDeploy(String stageEnv, String projectEnv, String repoName, St
     performStandardRollout(appName, projectEnv, jobName)
 }
 
-def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String DEV_EXCHANGE_REALM){
+def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String DEV_EXCHANGE_REALM, String PEN_NAMESPACE){
     script {
         deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem, false);
     }
@@ -63,9 +63,9 @@ def performSoamApiDeploy(String stageEnv, String projectEnv, String repoName, St
     script{
       dir('tools/jenkins'){
           if(tag == "latest") {
-              sh "curl -s https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${DEV_EXCHANGE_REALM}\""
+              sh "curl -s https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${DEV_EXCHANGE_REALM}\" \"${PEN_NAMESPACE}\""
           } else {
-              sh "curl -s https://raw.githubusercontent.com/bcgov/${repoName}/${tag}/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${DEV_EXCHANGE_REALM}\""
+              sh "curl -s https://raw.githubusercontent.com/bcgov/${repoName}/${tag}/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${DEV_EXCHANGE_REALM}\" \"${PEN_NAMESPACE}\""
           }
       }
       script {
