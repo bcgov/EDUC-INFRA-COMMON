@@ -9,6 +9,7 @@
  def PEN_REG_BATCH_API_VERSION = '<Not Required>'
  def PEN_REPLICATION_API_VERSION = '<Not Required>'
  def PEN_MYED_API_VERSION = '<Not Required>'
+ def AVED_API_VERSION = '<Not Required>'
 
  def DEV = '8878b4-tools'
  def TARGET_ENVIRONMENT = '8878b4-dev'
@@ -64,6 +65,9 @@
                                    string(defaultValue: "",
                                                      description: 'Enter PEN Replication API version, leave the tag blank if this service is not to be deployed',
                                                      name: 'PEN_REPLICATION_API_VERSION'),
+                                   string(defaultValue: "",
+                                                     description: 'Enter AVED API version, leave the tag blank if this service is not to be deployed',
+                                                     name: 'AVED_API_VERSION'),
 
                           ])
                   // Save to variables. Default to empty string if not found.
@@ -77,6 +81,7 @@
                   PEN_REPORT_GENERATION_API_VERSION= tagInput.PEN_REPORT_GENERATION_API_VERSION?:''
                   PEN_MYED_API_VERSION= tagInput.PEN_MYED_API_VERSION?:''
                   PEN_REPLICATION_API_VERSION= tagInput.PEN_REPLICATION_API_VERSION?:''
+                  AVED_API_VERSION= tagInput.AVED_API_VERSION?:''
               }
           }
       }
@@ -108,6 +113,29 @@
              steps {
                  script{
                       extJSHelper.performStandardPenApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME_MAIN, "${PEN_MYED_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "${MIN_REPLICAS}", "${MAX_REPLICAS}", "${MIN_CPU}", "${MAX_CPU}", "${MIN_MEM}", "${MAX_MEM}", "${TARGET_ENV}", "${NAMESPACE}", "${COMMON_NAMESPACE}")
+                   }
+                }
+         }
+      stage('AVED API'){
+             when {
+                 expression {
+                     return "${AVED_API_VERSION}" != "<Not Required>" && "${AVED_API_VERSION}" != "";
+                 }
+             }
+             environment {
+                APP_NAME = "aved-api"
+                REPO_NAME = "educ-aved-api"
+                DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-AVED-API/main/tools/openshift/api.dc.yaml"
+                MIN_REPLICAS = "2"
+                MAX_REPLICAS = "3"
+                MIN_CPU = "75m"
+                MAX_CPU = "150m"
+                MIN_MEM = "350Mi"
+                MAX_MEM = "700Mi"
+               }
+             steps {
+                 script{
+                      extJSHelper.performStandardPenApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME_MAIN, "${AVED_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", "${MIN_REPLICAS}", "${MAX_REPLICAS}", "${MIN_CPU}", "${MAX_CPU}", "${MIN_MEM}", "${MAX_MEM}", "${TARGET_ENV}", "${NAMESPACE}", "${COMMON_NAMESPACE}")
                    }
                 }
          }
