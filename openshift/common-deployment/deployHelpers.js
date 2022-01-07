@@ -618,6 +618,18 @@ def performPenRegApiDeploy(String stageEnv, String projectEnv, String repoName, 
    performStandardRollout(appName, projectEnv, jobName)
  }
 
+ def performStandardAPIDeployWithDB(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String commonNamespace){
+   script{
+     deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem, false)
+   }
+   configMapSetup("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
+   performStandardUpdateConfigMapStep("${repoName}", "${tag}", "${targetEnv}", "${appName}", "${NAMESPACE}", "${commonNamespace}");
+   script{
+     deployStageNoEnv(stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, rawApiDcURL, minReplicas, maxReplicas, minCPU, maxCPU, minMem, maxMem, true)
+   }
+   performStandardRollout(appName, projectEnv, jobName)
+ }
+
  def configMapMyEdSetup(String appName,String appNameUpper, String namespace, String targetEnv, String sourceEnv){
    script {
      try{
