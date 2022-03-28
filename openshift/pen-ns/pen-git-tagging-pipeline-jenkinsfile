@@ -9,6 +9,7 @@ def PEN_SERVICES_VERSION = '<Not Required>'
 def STUDENT_PROFILE_SAGA_API_VERSION = '<Not Required>'
 def REPORT_GENERATION_API_VERSION = '<Not Required>'
 def REPLICATION_API_VERSION = '<Not Required>'
+def NOMINAL_ROLL_API_VERSION = '<Not Required>'
 
 def TOOLS = '8878b4-tools'
 def JOB_NAME = 'master'
@@ -75,6 +76,9 @@ pipeline {
                                     string(defaultValue: "",
                                             description: 'Enter Replication API saga Version, leave the tag blank if this service is not to be tagged',
                                             name: 'REPLICATION_API_VERSION'),
+                                    string(defaultValue: "",
+                                            description: 'Enter Nominal Roll API saga Version, leave the tag blank if this service is not to be tagged',
+                                            name: 'NOMINAL_ROLL_API_VERSION'),
                             ])
                     // Save to variables. Default to empty string if not found.
                     PEN_REQUEST_BATCH_API_VERSION = tagInput.PEN_REQUEST_BATCH_API_VERSION?:''
@@ -86,6 +90,7 @@ pipeline {
                     STUDENT_PROFILE_SAGA_API_VERSION = tagInput.STUDENT_PROFILE_SAGA_API_VERSION?:''
                     REPORT_GENERATION_API_VERSION = tagInput.REPORT_GENERATION_API_VERSION?:''
                     REPLICATION_API_VERSION = tagInput.REPLICATION_API_VERSION?:''
+                    NOMINAL_ROLL_API_VERSION = tagInput.NOMINAL_ROLL_API_VERSION?:''
                 }
             }
         }
@@ -187,6 +192,22 @@ pipeline {
             steps {
                tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${PEN_SERVICES_VERSION}", "${TOOLS}");
                createGitTag("${PEN_SERVICES_VERSION}", "${PEN_SERVICES_VERSION}", 'EDUC-PEN-SERVICES-API')
+            }
+        }
+        stage('Tag Nominal Roll In Git'){
+            when {
+                expression {
+                    return "${NOMINAL_ROLL_API_VERSION}" != "<Not Required>" && "${NOMINAL_ROLL_API_VERSION}" != "";
+                }
+            }
+            environment {
+             APP_NAME = "PEN-NOMINAL-ROLL-API"
+             REPO_NAME = "educ-pen-nominal-roll-api"
+             JOB_NAME = "main"
+            }
+            steps {
+               tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${NOMINAL_ROLL_API_VERSION}", "${TOOLS}");
+               createGitTag("${NOMINAL_ROLL_API_VERSION}", "${NOMINAL_ROLL_API_VERSION}", 'EDUC-PEN-NOMINAL-ROLL-API')
             }
         }
         stage('Tag Student Profile SAGA In Git'){
