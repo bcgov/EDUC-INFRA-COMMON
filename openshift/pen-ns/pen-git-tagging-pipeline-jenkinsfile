@@ -206,7 +206,7 @@ pipeline {
              JOB_NAME = "main"
             }
             steps {
-               tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${NOMINAL_ROLL_API_VERSION}", "${TOOLS}");
+               tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME_MAIN}", "${NOMINAL_ROLL_API_VERSION}", "${TOOLS}");
                createGitTag("${NOMINAL_ROLL_API_VERSION}", "${NOMINAL_ROLL_API_VERSION}", 'EDUC-PEN-NOMINAL-ROLL-API')
             }
         }
