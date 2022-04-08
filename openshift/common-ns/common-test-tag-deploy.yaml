@@ -13,11 +13,11 @@ def SLD_API_VERSION = '<Not Required>'
 def PEN_TRAX_API_VERSION = '<Not Required>'
 def MACRO_API_VERSION = '<Not Required>'
 
-def DEV = '75e61b-tools'
-def TARGET_ENVIRONMENT = '75e61b-dev'
-def TARGET_ENV = 'dev'
+def TOOLS = '75e61b-tools'
+def TARGET_ENVIRONMENT = '75e61b-test'
+def TARGET_ENV = 'test'
 def JOB_NAME = 'master'
-def STAGING_ENV = 'Dev'
+def STAGING_ENV = 'Test'
 def APP_DOMAIN = 'apps.silver.devops.gov.bc.ca'
 
 pipeline {
@@ -125,7 +125,7 @@ pipeline {
             }
          steps {
              script{
-               extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${DIGITAL_ID_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
+               extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${DIGITAL_ID_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
              }
             }
      }
@@ -142,7 +142,7 @@ pipeline {
             }
          steps {
              script{
-               extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${PEN_DEMOG_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
+               extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${PEN_DEMOG_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
              }
             }
      }
@@ -159,7 +159,7 @@ pipeline {
             }
          steps {
              script{
-               extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${PEN_REQUEST_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
+               extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${PEN_REQUEST_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
              }
             }
      }
@@ -176,7 +176,7 @@ pipeline {
             }
          steps {
              script{
-               extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${SERVICES_CARD_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
+               extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${SERVICES_CARD_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
              }
             }
      }
@@ -193,7 +193,7 @@ pipeline {
             }
          steps {
              script{
-               extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${STUDENT_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
+               extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${STUDENT_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
              }
             }
      }
@@ -210,7 +210,7 @@ pipeline {
             }
          steps {
              script{
-               extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${STUDENT_PROFILE_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
+               extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${STUDENT_PROFILE_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
              }
             }
      }
@@ -227,7 +227,7 @@ pipeline {
               }
            steps {
                script{
-                 extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${SCHOOL_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
+                 extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${SCHOOL_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
                }
               }
        }
@@ -244,7 +244,7 @@ pipeline {
               }
            steps {
                script{
-                 extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${SLD_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
+                 extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${SLD_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
                }
               }
        }
@@ -261,7 +261,7 @@ pipeline {
               }
            steps {
                script{
-                 extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${PEN_TRAX_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
+                 extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${PEN_TRAX_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
                }
               }
      }
@@ -278,7 +278,7 @@ pipeline {
           }
           steps {
             script{
-              extJSHelper.performTraxNotificationApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, REPO_NAME, "${APP_NAME}", "main", "${TRAX_NOTIFICATION_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, DC_URL, MIN_REPLICAS, MAX_REPLICAS, "75m", "150m", "375Mi", "750Mi", TARGET_ENV, NAMESPACE)
+              extJSHelper.performTraxNotificationApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, REPO_NAME, "${APP_NAME}", "main", "${TRAX_NOTIFICATION_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, DC_URL, MIN_REPLICAS, MAX_REPLICAS, "75m", "150m", "375Mi", "750Mi", TARGET_ENV, NAMESPACE)
             }
           }
      }
@@ -295,7 +295,7 @@ pipeline {
            }
            steps {
              script{
-               extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, REPO_NAME, "${APP_NAME}", "main", "${SLD_NOTIFICATION_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, DC_URL, MIN_REPLICAS, MAX_REPLICAS, "75m", "150m", "375Mi", "750Mi", TARGET_ENV, NAMESPACE)
+               extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, REPO_NAME, "${APP_NAME}", "main", "${SLD_NOTIFICATION_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, DC_URL, MIN_REPLICAS, MAX_REPLICAS, "75m", "150m", "375Mi", "750Mi", TARGET_ENV, NAMESPACE)
              }
            }
      }
@@ -312,7 +312,7 @@ pipeline {
          }
          steps {
             script{
-                extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, REPO_NAME, "${APP_NAME}", "master", "${MACRO_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, DC_URL, MIN_REPLICAS, MAX_REPLICAS, "75m", "150m", "375Mi", "750Mi", TARGET_ENV, NAMESPACE)
+                extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, REPO_NAME, "${APP_NAME}", "master", "${MACRO_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, DC_URL, MIN_REPLICAS, MAX_REPLICAS, "75m", "150m", "375Mi", "750Mi", TARGET_ENV, NAMESPACE)
             }
          }
      }
@@ -348,7 +348,7 @@ pipeline {
              dosaExtJSHelper = evaluate readFile('deployHelpers.js')
            }
            script{
-             dosaExtJSHelper.performUIDeploy(TEST_HOST_ROUTE, STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", "main", "${DOSA_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}", "${MIN_REPLICAS_FE}", "${MAX_REPLICAS_FE}", "${MIN_CPU_FE}", "${MAX_CPU_FE}", "${MIN_MEM_FE}", "${MAX_MEM_FE}", "${MIN_REPLICAS_BE}", "${MAX_REPLICAS_BE}", "${MIN_CPU_BE}", "${MAX_CPU_BE}", "${MIN_MEM_BE}", "${MAX_MEM_BE}", TARGET_ENV, NAMESPACE, NAMESPACE, PEN_NAMESPACE)
+             dosaExtJSHelper.performUIDeploy(TEST_HOST_ROUTE, STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", "main", "${DOSA_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}", "${MIN_REPLICAS_FE}", "${MAX_REPLICAS_FE}", "${MIN_CPU_FE}", "${MAX_CPU_FE}", "${MIN_MEM_FE}", "${MAX_MEM_FE}", "${MIN_REPLICAS_BE}", "${MAX_REPLICAS_BE}", "${MIN_CPU_BE}", "${MAX_CPU_BE}", "${MIN_MEM_BE}", "${MAX_MEM_BE}", TARGET_ENV, NAMESPACE, NAMESPACE, PEN_NAMESPACE)
            }
          }
      }
@@ -365,7 +365,7 @@ pipeline {
             }
          steps {
              script{
-               extJSHelper.performSoamApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, REPO_NAME, "${APP_NAME}", JOB_NAME, "${SOAM_API_VERSION}", DEV, TARGET_ENVIRONMENT, APP_DOMAIN, DC_URL, MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE, DEV_EXCHANGE_REALM, PEN_NAMESPACE)
+               extJSHelper.performSoamApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, REPO_NAME, "${APP_NAME}", JOB_NAME, "${SOAM_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, DC_URL, MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE, DEV_EXCHANGE_REALM, PEN_NAMESPACE)
              }
          }
      }
