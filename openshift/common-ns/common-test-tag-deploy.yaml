@@ -2,7 +2,6 @@ def IDIR = 'NONE'
 def IDIR_PW = 'NONE'
 def DIGITAL_ID_API_VERSION = '<Not Required>'
 def DOSA_VERSION = '<Not Required>'
-def PEN_DEMOG_API_VERSION = '<Not Required>'
 def PEN_REQUEST_API_VERSION = '<Not Required>'
 def SERVICES_CARD_API_VERSION = '<Not Required>'
 def SOAM_API_VERSION = '<Not Required>'
@@ -50,9 +49,6 @@ pipeline {
                                          description: 'Enter Devops Support App Version, leave the tag blank if this service is not to be deployed',
                                          name: 'DOSA_VERSION'),
                                  string(defaultValue: "",
-                                         description: 'Enter PEN Demog API Version, leave the tag blank if this service is not to be deployed',
-                                         name: 'PEN_DEMOG_API_VERSION'),
-                                 string(defaultValue: "",
                                          description: 'Enter PEN Request API Version, leave the tag blank if this service is not to be deployed',
                                          name: 'PEN_REQUEST_API_VERSION'),
                                  string(defaultValue: "",
@@ -89,7 +85,6 @@ pipeline {
                  // Save to variables. Default to empty string if not found.
                  DIGITAL_ID_API_VERSION = tagInput.DIGITAL_ID_API_VERSION?:''
                  DOSA_VERSION = tagInput.DOSA_VERSION?:''
-                 PEN_DEMOG_API_VERSION = tagInput.PEN_DEMOG_API_VERSION?:''
                  PEN_REQUEST_API_VERSION = tagInput.PEN_REQUEST_API_VERSION?:''
                  SERVICES_CARD_API_VERSION = tagInput.SERVICES_CARD_API_VERSION?:''
                  SOAM_API_VERSION = tagInput.SOAM_API_VERSION?:''
@@ -126,23 +121,6 @@ pipeline {
          steps {
              script{
                extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${DIGITAL_ID_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
-             }
-            }
-     }
-     stage('PEN Demographics API'){
-         when {
-             expression {
-                 return "${PEN_DEMOG_API_VERSION}" != "<Not Required>" && "${PEN_DEMOG_API_VERSION}" != "";
-             }
-         }
-         environment {
-            APP_NAME = "pen-demographics-api"
-              REPO_NAME = "educ-pen-demog-api"
-            DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-PEN-DEMOG-API/master/tools/openshift/api.dc.ocp4.yaml"
-            }
-         steps {
-             script{
-               extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${PEN_DEMOG_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
              }
             }
      }
