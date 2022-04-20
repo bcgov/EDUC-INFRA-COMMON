@@ -127,6 +127,45 @@ def performUIDeploy(String hostRoute, String stageEnv, String projectEnv, String
     }
 }
 
+def performUIDeployWithEDX(String hostRoute, String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String frontendDCRaw, String backendDCRaw, String minReplicasFE, String maxReplicasFE, String minCPUFE, String maxCPUFE, String minMemFE, String maxMemFE, String minReplicasBE, String maxReplicasBE, String minCPUBE, String maxCPUBE, String minMemBE, String maxMemBE, String targetEnv, String NAMESPACE, String commonNamespace, String edxNamespace, String caCert, String cert, String privateKey){
+  script {
+      if(caCert == ""){
+          deployUIStage(hostRoute, stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, frontendDCRaw, backendDCRaw, minReplicasFE, maxReplicasFE, minCPUFE, maxCPUFE, minMemFE, maxMemFE, minReplicasBE, maxReplicasBE, minCPUBE, maxCPUBE, minMemBE, maxMemBE)
+      }else{
+          deployUIStageWithCerts(hostRoute, stageEnv, projectEnv, repoName, appName, jobName,  tag, sourceEnv, targetEnvironment, appDomain, frontendDCRaw, backendDCRaw, minReplicasFE, maxReplicasFE, minCPUFE, maxCPUFE, minMemFE, maxMemFE, minReplicasBE, maxReplicasBE, minCPUBE, maxCPUBE, minMemBE, maxMemBE, caCert, cert, privateKey)
+      }
+  }
+  configMapSetupSplunkOnly("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
+  performStandardUpdateConfigMapStep("${repoName}", "${tag}", "${targetEnv}", "${appName}", "${NAMESPACE}", "${commonNamespace}", "${edxNamespace}");
+  script{
+    openshift.withCluster() {
+      openshift.withProject("${projectEnv}") {
+        def dcAppBE = openshift.selector('dc', "${appName}-backend-${jobName}")
+        dcAppBE.rollout().cancel()
+        timeout(10) {
+          try{
+            dcAppBE.rollout().status('--watch=true')
+          }catch(Exception e){
+            //Do nothing
+          }
+        }
+        dcAppBE.rollout().latest()
+
+        def dcAppFE = openshift.selector('dc', "${appName}-frontend-${jobName}")
+        dcAppFE.rollout().cancel()
+        timeout(10) {
+          try{
+            dcAppFE.rollout().status('--watch=true')
+          }catch(Exception e){
+            //Do nothing
+          }
+        }
+        dcAppFE.rollout().latest()
+      }
+    }
+  }
+}
+
 def performStandardRollout(String appName, String projectEnv, String jobName){
   script{
      echo "Rolling out ${appName}-${jobName}"
