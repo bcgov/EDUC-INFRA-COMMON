@@ -136,7 +136,7 @@ def performUIDeployWithEDX(String hostRoute, String stageEnv, String projectEnv,
       }
   }
   configMapSetupSplunkOnly("${appName}","${appName}".toUpperCase(), NAMESPACE, "${targetEnv}", "${sourceEnv}");
-  performStandardUpdateConfigMapStep("${repoName}", "${tag}", "${targetEnv}", "${appName}", "${NAMESPACE}", "${commonNamespace}", "${edxNamespace}");
+  performStandardUpdateConfigMapStepWithEDX("${repoName}", "${tag}", "${targetEnv}", "${appName}", "${NAMESPACE}", "${commonNamespace}", "${edxNamespace}");
   script{
     openshift.withCluster() {
       openshift.withProject("${projectEnv}") {
@@ -591,6 +591,18 @@ def performPenRegApiDeploy(String stageEnv, String projectEnv, String repoName, 
          }
      }
  }
+
+ def performStandardUpdateConfigMapStepWithEDX(String repoName,String tag, String targetEnv, String appName, String NAMESPACE, String commonNamespace, String edxNamespace){
+  script{
+      dir('tools/jenkins'){
+          if(tag == "latest") {
+              sh "curl -s https://raw.githubusercontent.com/bcgov/${repoName}/master/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${commonNamespace}\" \"${edxNamespace}\""
+          } else {
+              sh "curl -s https://raw.githubusercontent.com/bcgov/${repoName}/${tag}/tools/jenkins/update-configmap.sh | bash /dev/stdin \"${targetEnv}\" \"${appName}\" \"${NAMESPACE}\" \"${commonNamespace}\" \"${edxNamespace}\""
+          }
+      }
+  }
+}
 
  def performStandardAPIDeployWithDB(String stageEnv, String projectEnv, String repoName, String appName, String jobName, String tag, String sourceEnv, String targetEnvironment, String appDomain, String rawApiDcURL, String minReplicas, String maxReplicas, String minCPU, String maxCPU, String minMem, String maxMem, String targetEnv, String NAMESPACE, String commonNamespace){
    script{
