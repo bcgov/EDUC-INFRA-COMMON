@@ -29,15 +29,10 @@ oc apply -f https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/ope
 ```
 oc exec -it redis-0 -- redis-cli --cluster create --cluster-replicas 1 $(oc get pods -l app=redis -o jsonpath='{range.items[*]}{.status.podIP}:6379 ')
 ```
-* Run the following command to initialize the exporter:
 
-```
-oc new-app -f https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/redis/redis-exporter.yaml -p NAMESPACE=<provide the namespace> -p ENVIRONMENT=<provide your environment here>
-```
 #Delete Scripts
 ##Redis
 `oc -n <namespace-env> delete secret,service,dc redis`
 ##Redis HA
 `oc delete -n <namespace-env> all,rc,svc,dc,route,pvc,secret,configmap,sa,RoleBinding -l app=redis`
-##Redis Exporter
-`oc delete -n <namespace-env> route,svc,dc redis-exporter`
+
