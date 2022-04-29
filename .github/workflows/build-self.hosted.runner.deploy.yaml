@@ -8,8 +8,8 @@ on:
 env:
   APP_NAME: gh-runner 
   DOCKER_ARTIFACTORY_REPO: docker-remote.artifacts.developer.gov.bc.ca
-  DOCKER_ARTIFACTORY_USERNAME: ${{ secrets.DOCKER_ARTIFACTORY_USERNAME }}
-  DOCKER_ARTIFACTORY_ACCESS_TOKEN: ${{ secrets.DOCKER_ARTIFACTORY_ACCESS_TOKEN }}
+  DOCKER_ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+  DOCKER_ARTIFACTORY_ACCESS_TOKEN: ${{ secrets.ARTIFACTORY_ACCESS_TOKEN }}
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
   IMAGE_REGISTRY_USER: ${{ github.actor }}
   IMAGE_REGISTRY_PASSWORD: ${{ github.token }}
