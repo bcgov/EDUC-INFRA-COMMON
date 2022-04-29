@@ -1,20 +1,20 @@
 ﻿apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gh-runner-${RUNNER_ID}
+  name: ${RUNNER_ID}
   namespace: ${OPENSHIFT_NAMESPACE}
 spec:
   selector:
     matchLabels:
-      app: gh-runner-${RUNNER_ID}
+      app: ${RUNNER_ID}
   replicas: 1
   template:
     metadata:
       labels:
-        app: gh-runner-${RUNNER_ID}
+        app: ${RUNNER_ID}
     spec:
       containers:
-        - name: gh-runner-${RUNNER_ID}
+        - name: ${RUNNER_ID}
           image: >-
             image-registry.apps.silver.devops.gov.bc.ca/${OPENSHIFT_NAMESPACE}/gh-runner-ubuntu-18:latest
           env:
