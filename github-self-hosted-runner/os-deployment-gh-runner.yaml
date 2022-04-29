@@ -23,4 +23,4 @@ spec:
             - name: ORGANIZATION
               value: bcgov
             - name: ACCESS_TOKEN
-              value: ${GH_ACCESS_TOKEN}
+              value: ${GITHUB_ACCESS_TOKEN}
