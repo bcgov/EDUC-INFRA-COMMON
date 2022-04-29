@@ -1,0 +1,52 @@
+# Builds a base image for the self-hosted runner
+
+name: Build self hosted runner base
+
+on:
+  workflow_dispatch:
+
+env:
+  APP_NAME: gh-runner-base
+  DOCKER_ARTIFACTORY_REPO: docker-remote.artifacts.developer.gov.bc.ca
+  DOCKER_ARTIFACTORY_USERNAME: ${{ secrets.DOCKER_ARTIFACTORY_USERNAME }}
+  DOCKER_ARTIFACTORY_ACCESS_TOKEN: ${{ secrets.DOCKER_ARTIFACTORY_ACCESS_TOKEN }}
+  IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+  IMAGE_REGISTRY_USER: ${{ github.actor }}
+  IMAGE_REGISTRY_PASSWORD: ${{ github.token }}
+  IMAGE_TAGS: latest
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v2
+      
+    - name: Login to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        registry: ${{ env.DOCKER_ARTIFACTORY_REPO }}
+        username: ${{ env.DOCKER_ARTIFACTORY_USERNAME }}
+        password: ${{ env.DOCKER_ARTIFACTORY_ACCESS_TOKEN }}
+
+    # https://github.com/redhat-actions/buildah-build#readme
+    - name: Build runner base from Dockerfile
+      id: build-image
+      uses: redhat-actions/buildah-build@v2
+      with:
+        image: ${{ env.APP_NAME }}
+        tags: ${{ env.IMAGE_TAGS }}
+        dockerfiles: |
+          ./github-self-hosted-runner/self_hosted_gh_runner_base/Dockerfile
+        context: ./github-self-hosted-runner/self_hosted_gh_runner_base
+
+      # https://github.com/redhat-actions/push-to-registry#readme
+    - name: Push image to registry
+      id: push-image
+      uses: redhat-actions/push-to-registry@v2
+      with:
+        image: ${{ steps.build-image.outputs.image }}
+        tags: ${{ steps.build-image.outputs.tags }}
+        registry: ${{ env.IMAGE_REGISTRY }}
+        username: ${{ env.IMAGE_REGISTRY_USER }}
+        password: ${{ env.IMAGE_REGISTRY_PASSWORD }}

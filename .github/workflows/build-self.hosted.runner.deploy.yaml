@@ -1,0 +1,73 @@
+# Builds a self-hosted runner from the base image
+
+name: Build and push self-hosted runner from base
+
+on:
+  workflow_dispatch:
+
+env:
+  APP_NAME: gh-runner 
+  DOCKER_ARTIFACTORY_REPO: docker-remote.artifacts.developer.gov.bc.ca
+  DOCKER_ARTIFACTORY_USERNAME: ${{ secrets.DOCKER_ARTIFACTORY_USERNAME }}
+  DOCKER_ARTIFACTORY_ACCESS_TOKEN: ${{ secrets.DOCKER_ARTIFACTORY_ACCESS_TOKEN }}
+  IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
+  IMAGE_REGISTRY_USER: ${{ github.actor }}
+  IMAGE_REGISTRY_PASSWORD: ${{ github.token }}
+  OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
+  OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
+  OPENSHIFT_NAMESPACE: ${{ secrets.EDX_TOOLS_NAMESPACE }}
+  IMAGE_TAGS: latest
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v2
+      
+    - name: Login to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        registry: ${{ env.DOCKER_ARTIFACTORY_REPO }}
+        username: ${{ env.DOCKER_ARTIFACTORY_USERNAME }}
+        password: ${{ env.DOCKER_ARTIFACTORY_ACCESS_TOKEN }}
+
+    # https://github.com/redhat-actions/buildah-build#readme
+    - name: Build runner from Dockerfile
+      id: build-image
+      uses: redhat-actions/buildah-build@v2
+      with:
+        image: ${{ env.APP_NAME }}
+        tags: ${{ env.IMAGE_TAGS }}
+        dockerfiles: |
+          ./github-self-hosted-runner/self_hosted_gh_runner/Dockerfile
+        context: ./github-self-hosted-runner/self_hosted_gh_runner
+
+      # https://github.com/redhat-actions/push-to-registry#readme
+    - name: Push image to registry
+      id: push-image
+      uses: redhat-actions/push-to-registry@v2
+      with:
+        image: ${{ steps.build-image.outputs.image }}
+        tags: ${{ steps.build-image.outputs.tags }}
+        registry: ${{ env.IMAGE_REGISTRY }}
+        username: ${{ env.IMAGE_REGISTRY_USER }}
+        password: ${{ env.IMAGE_REGISTRY_PASSWORD }}
+
+    - name: Install oc
+      uses: redhat-actions/openshift-tools-installer@v1
+      with:
+        oc: 4
+
+    - name: Deploy image to OS
+      run: |
+        set -eux
+        # Login to OpenShift and select project
+        oc login --token=${{ env.OPENSHIFT_TOKEN }} --server=${{ env.OPENSHIFT_SERVER }}
+        oc project ${{ env.OPENSHIFT_NAMESPACE }}
+        
+        # Create the image stream if it doesn't exist
+        oc create imagestream ${{ env.APP_NAME }}-ubuntu-18 2> /dev/null || true && echo "Runner image stream in place"
+        
+        # Tag it
+        oc tag ${{ steps.push-image.outputs.registry-path }} ${{ env.APP_NAME }}-ubuntu-18:${{ env.IMAGE_TAGS }}
