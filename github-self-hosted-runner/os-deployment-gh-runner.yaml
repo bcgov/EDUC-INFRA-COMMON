@@ -24,3 +24,5 @@ spec:
               value: bcgov
             - name: ACCESS_TOKEN
               value: ${GITHUB_ACCESS_TOKEN}
+            - name: LABELS
+              value: ${LABELS}
