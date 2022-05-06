@@ -1,6 +1,6 @@
 # Builds a self-hosted runner from the base image
 
-name: Build and push self-hosted runner from base
+name: Build self-hosted runner
 
 on:
   workflow_dispatch:
