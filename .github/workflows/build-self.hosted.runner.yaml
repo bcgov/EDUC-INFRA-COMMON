@@ -13,9 +13,6 @@ env:
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
   IMAGE_REGISTRY_USER: ${{ github.actor }}
   IMAGE_REGISTRY_PASSWORD: ${{ github.token }}
-  OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
-  OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
-  OPENSHIFT_NAMESPACE: ${{ secrets.EDX_TOOLS_NAMESPACE }}
   IMAGE_TAGS: latest
 
 jobs:
@@ -53,21 +50,3 @@ jobs:
         registry: ${{ env.IMAGE_REGISTRY }}
         username: ${{ env.IMAGE_REGISTRY_USER }}
         password: ${{ env.IMAGE_REGISTRY_PASSWORD }}
-
-    - name: Install oc
-      uses: redhat-actions/openshift-tools-installer@v1
-      with:
-        oc: 4
-
-    - name: Deploy image to OS
-      run: |
-        set -eux
-        # Login to OpenShift and select project
-        oc login --token=${{ env.OPENSHIFT_TOKEN }} --server=${{ env.OPENSHIFT_SERVER }}
-        oc project ${{ env.OPENSHIFT_NAMESPACE }}
-        
-        # Create the image stream if it doesn't exist
-        oc create imagestream ${{ env.APP_NAME }}-ubuntu-18 2> /dev/null || true && echo "Runner image stream in place"
-        
-        # Tag it
-        oc tag ${{ steps.push-image.outputs.registry-path }} ${{ env.APP_NAME }}-ubuntu-18:${{ env.IMAGE_TAGS }}
