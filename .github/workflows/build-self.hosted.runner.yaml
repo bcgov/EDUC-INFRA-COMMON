@@ -50,3 +50,8 @@ jobs:
         registry: ${{ env.IMAGE_REGISTRY }}
         username: ${{ env.IMAGE_REGISTRY_USER }}
         password: ${{ env.IMAGE_REGISTRY_PASSWORD }}
+
+    - name: Echo output
+      id: echo-output
+      run: |
+        ehco ${{ steps.push-image.outputs.registry-path }}
