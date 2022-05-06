@@ -54,4 +54,4 @@ jobs:
     - name: Echo output
       id: echo-output
       run: |
-        ehco ${{ steps.push-image.outputs.registry-path }}
+        echo ${{ steps.push-image.outputs.registry-path }}
