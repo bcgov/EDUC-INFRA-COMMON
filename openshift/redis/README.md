@@ -1,20 +1,5 @@
 # Redis 
 
-## Redis Deployment
-Redis can be deployed by cloning this repository locally from Git
-* Switch to the correct project/namespace you're targetting
-* Navigate to the `./openshift/redis` folder
-* Run the following command:
-
-```
-oc process -f https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/redis/redis.dc.yaml | oc create -f-
-```
-
-
-```
-oc new-app -f https://raw.githubusercontent.com/bcgov/EDUC-INFRA-COMMON/master/openshift/redis/redis-exporter.yaml -p NAMESPACE=<provide the namespace> -p ENVIRONMENT=<provide your environment here>
-```
-
 ## Redis HA Deployment
 Redis HA can be deployed by cloning this repository locally from Git
 * Switch to the correct project/namespace you're targetting
