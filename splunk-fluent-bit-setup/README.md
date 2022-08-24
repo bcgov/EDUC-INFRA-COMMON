@@ -7,7 +7,7 @@
 ### Setup fluent bit as sidecar to application container for log aggregation and forwarding
 1. The application container and fluent bit share logs through volume mounts. To achieve this, the deployment-config yaml of the application needs to have below sections added.
     ```
-            - image: docker-remote.artifacts.developer.gov.bc.ca/fluent/fluent-bit:1.5.7
+            - image: artifacts.developer.gov.bc.ca/docker-remote/fluent/fluent-bit:1.5.7
               name: "${APP_NAME}-${JOB_NAME}-fluent-bit-sidecar"
               imagePullPolicy: Always
               imagePullSecrets:

@@ -1,4 +1,4 @@
-FROM docker-remote.artifacts.developer.gov.bc.ca/alpine:3.13
+FROM artifacts.developer.gov.bc.ca/docker-remote/alpine:3.13
 
 RUN apk add --no-cache ca-certificates mailcap
 

@@ -1,6 +1,6 @@
 ---
 kind: Template
-apiVersion: v1
+apiVersion: template.openshift.io/v1
 metadata:
   name: educ-redis-exporter-dc
   annotations:
@@ -45,7 +45,7 @@ objects:
             - name: artifactory-creds
           containers:
             - name: redis-exporter
-              image: docker-remote.artifacts.developer.gov.bc.ca/oliver006/redis_exporter:v1.13.1-alpine
+              image: artifacts.developer.gov.bc.ca/docker-remote/oliver006/redis_exporter:v1.13.1-alpine
               resources:
                 requests:
                   cpu: "${CPU_REQUEST}"
