@@ -338,8 +338,8 @@
           environment {
              APP_NAME = "student-admin"
                REPO_NAME = "educ-student-admin"
-             DC_URL_FRONTEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/openshift/frontend-static.dc.ocp4.yaml"
-             DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/openshift/backend.dc.ocp4.yaml"
+             DC_URL_FRONTEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/openshift/frontend-static.dc.yaml"
+             DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-ADMIN/master/tools/openshift/backend.dc.yaml"
                MIN_REPLICAS_FE = "3"
                MAX_REPLICAS_FE = "5"
                MIN_CPU_FE = "300m"
