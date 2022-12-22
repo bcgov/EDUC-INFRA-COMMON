@@ -4,10 +4,10 @@
 ########
 
 # base
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 # set the github runner version
-ARG RUNNER_VERSION="2.298.2"
+ARG RUNNER_VERSION="2.300.2"
 
 # update the base packages
 RUN apt-get update -y && apt-get upgrade -y
