@@ -66,7 +66,7 @@ spec:
         - name: artifactory-creds
       containers:
         - name: redis
-          image: artifacts.developer.gov.bc.ca/docker-remote/redis:6.0.9-alpine
+          image: artifacts.developer.gov.bc.ca/docker-remote/redis:7.0.8
           ports:
             - containerPort: 6379
               name: client
