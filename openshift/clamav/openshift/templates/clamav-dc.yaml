@@ -1,0 +1,111 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: clamav-deploy
+parameters:
+  - name: NAME_SPACE
+    value: 75e61b-tools
+    required: true
+  - name: CPU_REQUEST
+    value: "100m"
+  - name: CPU_LIMIT
+    value: "1100m"
+  - name: MEMORY_REQUEST
+    value: "500M"
+  - name: MEMORY_LIMIT
+    value: "2G"
+  - name: REPLICAS
+    value: "1"
+objects:
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      name: clamav
+      labels:
+        app: clamav
+    spec:
+      ports:
+        - name: 3310-tcp
+          protocol: TCP
+          port: 3310
+          targetPort: 3310
+      selector:
+        deploymentconfig: clamav
+      type: ClusterIP
+      sessionAffinity: None
+    status:
+      loadBalancer: {}
+
+  - kind: DeploymentConfig
+    apiVersion: apps.openshift.io/v1
+    metadata:
+      name: clamav
+      generation: 1
+      creationTimestamp: null
+      labels:
+        app: clamav
+    spec:
+      strategy:
+        type: Rolling
+        activeDeadlineSeconds: 21600
+      triggers:
+        - type: ImageChange
+          imageChangeParams:
+            automatic: true
+            containerNames:
+              - clamav
+            from:
+              kind: ImageStreamTag
+              namespace: "${NAME_SPACE}"
+              name: "clamav:latest"
+        - type: ConfigChange
+      replicas: ${{REPLICAS}}
+      test: false
+      selector:
+        app: clamav
+        deploymentconfig: clamav
+      template:
+        metadata:
+          creationTimestamp: null
+          labels:
+            app: clamav
+            deploymentconfig: clamav
+          annotations:
+            openshift.io/generated-by: OpenShiftWebConsole
+        spec:
+          containers:
+            - resources:
+                requests:
+                  cpu: ${CPU_REQUEST}
+                  memory: ${MEMORY_REQUEST}
+                limits:
+                  cpu: ${CPU_LIMIT}
+                  memory: ${MEMORY_LIMIT}
+              readinessProbe:
+                tcpSocket:
+                  port: 3310
+                initialDelaySeconds: 240
+                timeoutSeconds: 3
+                periodSeconds: 10
+                successThreshold: 1
+                failureThreshold: 3
+              terminationMessagePath: /dev/termination-log
+              name: clamav
+              livenessProbe:
+                tcpSocket:
+                  port: 3310
+                initialDelaySeconds: 240
+                timeoutSeconds: 3
+                periodSeconds: 10
+                successThreshold: 1
+                failureThreshold: 3
+              ports:
+                - containerPort: 3310
+                  protocol: TCP
+              imagePullPolicy: Always
+              terminationMessagePolicy: File
+          restartPolicy: Always
+          terminationGracePeriodSeconds: 30
+          dnsPolicy: ClusterFirst
+          securityContext: {}
+          schedulerName: default-scheduler
