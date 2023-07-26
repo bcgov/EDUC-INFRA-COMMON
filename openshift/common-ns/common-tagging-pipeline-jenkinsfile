@@ -1,17 +1,12 @@
             def GIT_USER = 'NONE'
             def GIT_TOKEN = 'NONE'
-            def DIGITAL_ID_API_VERSION = '<Not Required>'
-            def DOSA_VERSION = '<Not Required>'
             def PEN_DEMOG_API_VERSION = '<Not Required>'
             def PEN_REQUEST_API_VERSION = '<Not Required>'
             def SERVICES_CARD_API_VERSION = '<Not Required>'
             def SOAM_API_VERSION = '<Not Required>'
-            def STUDENT_API_VERSION = '<Not Required>'
             def STUDENT_PROFILE_API_VERSION = '<Not Required>'
-            def SCHOOL_API_VERSION = '<Not Required>'
             def SLD_API_VERSION = '<Not Required>'
             def PEN_TRAX_API_VERSION = '<Not Required>'
-            def PEN_MACRO_API_VERSION = '<Not Required>'
             def TRAX_NOTIFICATION_API_VERSION = '<Not Required>'
             def SLD_NOTIFICATION_API_VERSION = '<Not Required>'
 
@@ -55,13 +50,6 @@
                                 def tagInput = input(
                                         id: 'tagInput', message: 'Please enter the release version number for each component to be tagged out of master in GIT.',
                                         parameters: [
-
-                                                string(defaultValue: "",
-                                                        description: 'Enter Digital Identity API Version, leave the tag blank if this service is not to be tagged.',
-                                                        name: 'DIGITAL_ID_API_VERSION'),
-                                                string(defaultValue: "",
-                                                        description: 'Enter DOSA API Version, leave the tag blank if this service is not to be tagged.',
-                                                        name: 'DOSA_VERSION'),
                                                 string(defaultValue: "",
                                                         description: 'Enter PEN Demog API Version, leave the tag blank if this service is not to be tagged',
                                                         name: 'PEN_DEMOG_API_VERSION'),
@@ -75,23 +63,14 @@
                                                         description: 'Enter SOAM API Version, leave the tag blank if this service is not to be tagged',
                                                         name: 'SOAM_API_VERSION'),
                                                 string(defaultValue: "",
-                                                        description: 'Enter Student API Version, leave the tag blank if this service is not to be tagged',
-                                                        name: 'STUDENT_API_VERSION'),
-                                                string(defaultValue: "",
                                                         description: 'Enter Student Profile API Version, leave the tag blank if this service is not to be tagged',
                                                         name: 'STUDENT_PROFILE_API_VERSION'),
-                                                string(defaultValue: "",
-                                                        description: 'Enter School API Version, leave the tag blank if this service is not to be deployed',
-                                                        name: 'SCHOOL_API_VERSION'),
                                                 string(defaultValue: "",
                                                         description: 'Enter SLD API Version, leave the tag blank if this service is not to be deployed',
                                                         name: 'SLD_API_VERSION'),
                                                 string(defaultValue: "",
                                                         description: 'Enter PEN TRAX API Version, leave the tag blank if this service is not to be deployed',
                                                         name: 'PEN_TRAX_API_VERSION'),
-                                                string(defaultValue: "",
-                                                        description: 'Enter PEN MACRO API Version, leave the tag blank if this service is not to be deployed',
-                                                        name: 'PEN_MACRO_API_VERSION'),
                                                 string(defaultValue: "",
                                                         description: 'Enter TRAX Notification API Version, leave the tag blank if this service is not to be deployed',
                                                         name: 'TRAX_NOTIFICATION_API_VERSION'),
@@ -100,57 +79,18 @@
                                                         name: 'SLD_NOTIFICATION_API_VERSION')
                                         ])
             					// Save to variables. Default to empty string if not found.
-                                DIGITAL_ID_API_VERSION = tagInput.DIGITAL_ID_API_VERSION?:''
-                                DOSA_VERSION = tagInput.DOSA_VERSION?:''
                                 PEN_DEMOG_API_VERSION = tagInput.PEN_DEMOG_API_VERSION?:''
             					PEN_REQUEST_API_VERSION = tagInput.PEN_REQUEST_API_VERSION?:''
             					SERVICES_CARD_API_VERSION = tagInput.SERVICES_CARD_API_VERSION?:''
             					SOAM_API_VERSION = tagInput.SOAM_API_VERSION?:''
-            					STUDENT_API_VERSION = tagInput.STUDENT_API_VERSION?:''
             					STUDENT_PROFILE_API_VERSION = tagInput.STUDENT_PROFILE_API_VERSION?:''
-                                SCHOOL_API_VERSION = tagInput.SCHOOL_API_VERSION?:''
                                 SLD_API_VERSION = tagInput.SLD_API_VERSION?:''
                                 PEN_TRAX_API_VERSION = tagInput.PEN_TRAX_API_VERSION?:''
-                                PEN_MACRO_API_VERSION = tagInput.PEN_MACRO_API_VERSION?:''
                                 TRAX_NOTIFICATION_API_VERSION = tagInput.TRAX_NOTIFICATION_API_VERSION?:''
                                 SLD_NOTIFICATION_API_VERSION = tagInput.SLD_NOTIFICATION_API_VERSION?:''
             				}
                         }
                     }
-            		stage('Tag Digital ID In Git'){
-            		    when {
-            				expression {
-            					return "${DIGITAL_ID_API_VERSION}" != "<Not Required>" && "${DIGITAL_ID_API_VERSION}" != "";
-            				}
-            			}
-                        environment {
-                         APP_NAME = "DIGITALID-API"
-                         REPO_NAME = "educ-digitalid-api"
-                         JOB_NAME = "master"
-                        }
-            			steps {
-                           tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${DIGITAL_ID_API_VERSION}", "${TOOLS}");
-            				createGitTag("${DIGITAL_ID_API_VERSION}", "${DIGITAL_ID_API_VERSION}", 'EDUC-DIGITALID-API')
-            			}
-            		}
-            		stage('Tag DOSA In Git'){
-            		    when {
-            				expression {
-            					return "${DOSA_VERSION}" != "<Not Required>" && "${DOSA_VERSION}" != "";
-            				}
-            			}
-                        environment {
-                         APP_NAME = "DOSA"
-                         REPO_NAME_FE = "educ-devops-support-app-frontend-static"
-                         REPO_NAME_BE = "educ-devops-support-app-backend"
-                         JOB_NAME = "master"
-                        }
-            			steps {
-                           tagUIRelease("${REPO_NAME_FE}", "${APP_NAME}", "${JOB_NAME}", "${DOSA_VERSION}", "${TOOLS}");
-                           tagUIRelease("${REPO_NAME_BE}", "${APP_NAME}", "${JOB_NAME}", "${DOSA_VERSION}", "${TOOLS}");
-            		       createGitTag("${DOSA_VERSION}", "${DOSA_VERSION}", 'EDUC-DEVOPS-SUPPORT-APP')
-            			}
-            		}
             		stage('Tag PEN Demographics API In Git'){
             		    when {
             				expression {
@@ -215,22 +155,6 @@
             		       createGitTag("${SOAM_API_VERSION}", "${SOAM_API_VERSION}", 'EDUC-SOAM-API')
             			}
             		}
-            		stage('Tag Student API In Git'){
-            		    when {
-            				expression {
-            					return "${STUDENT_API_VERSION}" != "<Not Required>" && "${STUDENT_API_VERSION}" != "";
-            				}
-            			}
-                        environment {
-                         APP_NAME = "STUDENT-API"
-                         REPO_NAME = "educ-student-api"
-                         JOB_NAME = "master"
-                        }
-            			steps {
-                           tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${STUDENT_API_VERSION}", "${TOOLS}");
-            		       createGitTag("${STUDENT_API_VERSION}", "${STUDENT_API_VERSION}", 'EDUC-STUDENT-API')
-            			}
-            		}
             		stage('Tag Student Profile API In Git'){
             		    when {
             				expression {
@@ -245,22 +169,6 @@
             			steps {
                            tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${STUDENT_PROFILE_API_VERSION}", "${TOOLS}");
             		       createGitTag("${STUDENT_PROFILE_API_VERSION}", "${STUDENT_PROFILE_API_VERSION}", 'EDUC-STUDENT-PROFILE-API')
-            			}
-            		}
-            		stage('Tag School API In Git'){
-            		    when {
-            				expression {
-            					return "${SCHOOL_API_VERSION}" != "<Not Required>" && "${SCHOOL_API_VERSION}" != "";
-            				}
-            			}
-                        environment {
-                         APP_NAME = "SCHOOL-API"
-                         REPO_NAME = "educ-school-api"
-                         JOB_NAME = "master"
-                        }
-            			steps {
-                           tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${SCHOOL_API_VERSION}", "${TOOLS}");
-            		       createGitTag("${SCHOOL_API_VERSION}", "${SCHOOL_API_VERSION}", 'EDUC-SCHOOL-API')
             			}
             		}
             		stage('Tag SLD API In Git'){
@@ -293,22 +201,6 @@
             			steps {
                            tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${PEN_TRAX_API_VERSION}", "${TOOLS}");
             		       createGitTag("${PEN_TRAX_API_VERSION}", "${PEN_TRAX_API_VERSION}", 'EDUC-PEN-TRAX-API')
-            			}
-            		}
-            		stage('Tag PEN Macro API In Git'){
-            		    when {
-            				expression {
-            					return "${PEN_MACRO_API_VERSION}" != "<Not Required>" && "${PEN_MACRO_API_VERSION}" != "";
-            				}
-            			}
-                        environment {
-                         APP_NAME = "MACRO-API"
-                         REPO_NAME = "educ-macro-api"
-                         JOB_NAME = "master"
-                        }
-            			steps {
-                           tagRelease("${REPO_NAME}", "${APP_NAME}", "${JOB_NAME}", "${PEN_MACRO_API_VERSION}", "${TOOLS}");
-            		       createGitTag("${PEN_MACRO_API_VERSION}", "${PEN_MACRO_API_VERSION}", 'EDUC-MACRO-API')
             			}
             		}
             		stage('Tag TRAX Notification API In Git'){

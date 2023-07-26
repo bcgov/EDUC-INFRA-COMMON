@@ -1,16 +1,11 @@
 def IDIR = 'NONE'
 def IDIR_PW = 'NONE'
-def DIGITAL_ID_API_VERSION = '<Not Required>'
-def DOSA_VERSION = '<Not Required>'
 def PEN_REQUEST_API_VERSION = '<Not Required>'
 def SERVICES_CARD_API_VERSION = '<Not Required>'
 def SOAM_API_VERSION = '<Not Required>'
-def STUDENT_API_VERSION = '<Not Required>'
 def STUDENT_PROFILE_API_VERSION = '<Not Required>'
-def SCHOOL_API_VERSION = '<Not Required>'
 def SLD_API_VERSION = '<Not Required>'
 def PEN_TRAX_API_VERSION = '<Not Required>'
-def MACRO_API_VERSION = '<Not Required>'
 
 def TOOLS = '75e61b-tools'
 def TARGET_ENVIRONMENT = '75e61b-prod'
@@ -41,13 +36,6 @@ pipeline {
                  def tagInput = input(
                          id: 'tagInput', message: 'Please enter the version number for each component to be tagged/deployed:',
                          parameters: [
-
-                                 string(defaultValue: "",
-                                         description: 'Enter Digital Identity API Version, leave the tag blank if this service is not to be deployed',
-                                         name: 'DIGITAL_ID_API_VERSION'),
-                                 string(defaultValue: "",
-                                         description: 'Enter Devops Support App Version, leave the tag blank if this service is not to be deployed',
-                                         name: 'DOSA_VERSION'),
                                  string(defaultValue: "",
                                          description: 'Enter PEN Request API Version, leave the tag blank if this service is not to be deployed',
                                          name: 'PEN_REQUEST_API_VERSION'),
@@ -58,14 +46,8 @@ pipeline {
                                          description: 'Enter SOAM API Version, leave the tag blank if this service is not to be deployed',
                                          name: 'SOAM_API_VERSION'),
                                  string(defaultValue: "",
-                                         description: 'Enter Student API Version, leave the tag blank if this service is not to be deployed',
-                                         name: 'STUDENT_API_VERSION'),
-                                 string(defaultValue: "",
                                          description: 'Enter Staff Admin Version, leave the tag blank if this service is not to be deployed',
                                          name: 'STUDENT_PROFILE_API_VERSION'),
-                                 string(defaultValue: "",
-                                         description: 'Enter School API Version, leave the tag blank if this service is not to be deployed',
-                                         name: 'SCHOOL_API_VERSION'),
                                  string(defaultValue: "",
                                          description: 'Enter SLD API Version, leave the tag blank if this service is not to be deployed',
                                          name: 'SLD_API_VERSION'),
@@ -78,24 +60,16 @@ pipeline {
                                  string(defaultValue: "",
                                          description: 'Enter SLD NOTIFICATION API Version, leave the tag blank if this service is not to be deployed',
                                          name: 'SLD_NOTIFICATION_API_VERSION'),
-                                 string(defaultValue: "",
-                                         description: 'Enter MACRO API Version, leave the tag blank if this service is not to be deployed',
-                                         name: 'MACRO_API_VERSION'),
                          ])
                  // Save to variables. Default to empty string if not found.
-                 DIGITAL_ID_API_VERSION = tagInput.DIGITAL_ID_API_VERSION?:''
-                 DOSA_VERSION = tagInput.DOSA_VERSION?:''
                  PEN_REQUEST_API_VERSION = tagInput.PEN_REQUEST_API_VERSION?:''
                  SERVICES_CARD_API_VERSION = tagInput.SERVICES_CARD_API_VERSION?:''
                  SOAM_API_VERSION = tagInput.SOAM_API_VERSION?:''
-                 STUDENT_API_VERSION = tagInput.STUDENT_API_VERSION?:''
                  STUDENT_PROFILE_API_VERSION = tagInput.STUDENT_PROFILE_API_VERSION?:''
-                 SCHOOL_API_VERSION = tagInput.SCHOOL_API_VERSION?:''
                  SLD_API_VERSION = tagInput.SLD_API_VERSION?:''
                  PEN_TRAX_API_VERSION = tagInput.PEN_TRAX_API_VERSION?:''
                  TRAX_NOTIFICATION_API_VERSION = tagInput.TRAX_NOTIFICATION_API_VERSION?:''
                  SLD_NOTIFICATION_API_VERSION = tagInput.SLD_NOTIFICATION_API_VERSION?:''
-                 MACRO_API_VERSION = tagInput.MACRO_API_VERSION?:''
              }
          }
      }
@@ -106,23 +80,6 @@ pipeline {
                 extJSHelper = evaluate readFile('deployHelpers.js')
            }
        }
-     }
-     stage('Digital ID API'){
-         when {
-             expression {
-                 return "${DIGITAL_ID_API_VERSION}" != "<Not Required>" && "${DIGITAL_ID_API_VERSION}" != "";
-             }
-         }
-         environment {
-            APP_NAME = "digitalid-api"
-              REPO_NAME = "educ-digitalid-api"
-            DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-DIGITALID-API/master/tools/openshift/api.dc.ocp4.yaml"
-            }
-         steps {
-             script{
-               extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${DIGITAL_ID_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, "25m", MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
-             }
-            }
      }
      stage('PEN Request API'){
          when {
@@ -158,23 +115,6 @@ pipeline {
              }
             }
      }
-     stage('Student API'){
-         when {
-             expression {
-                 return "${STUDENT_API_VERSION}" != "<Not Required>" && "${STUDENT_API_VERSION}" != "";
-             }
-         }
-         environment {
-            APP_NAME = "student-api"
-              REPO_NAME = "educ-student-api"
-            DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-STUDENT-API/master/tools/openshift/api.dc.ocp4.yaml"
-            }
-         steps {
-             script{
-               extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${STUDENT_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
-             }
-            }
-     }
      stage('Student Profile API'){
          when {
              expression {
@@ -192,23 +132,6 @@ pipeline {
              }
             }
      }
-     stage('School API'){
-           when {
-               expression {
-                   return "${SCHOOL_API_VERSION}" != "<Not Required>" && "${SCHOOL_API_VERSION}" != "";
-               }
-           }
-           environment {
-              APP_NAME = "school-api"
-                REPO_NAME = "educ-school-api"
-              DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-SCHOOL-API/master/tools/openshift/api.dc.ocp4.yaml"
-              }
-           steps {
-               script{
-                 extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", JOB_NAME, "${SCHOOL_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL}", MIN_REPLICAS, MAX_REPLICAS, MIN_CPU, MAX_CPU, MIN_MEM, MAX_MEM, TARGET_ENV, NAMESPACE)
-               }
-              }
-       }
      stage('SLD API'){
            when {
                expression {
@@ -277,59 +200,6 @@ pipeline {
              }
            }
      }
-     stage('MACRO API'){
-         when {
-             expression {
-                  return "${MACRO_API_VERSION}" != "<Not Required>" && "${MACRO_API_VERSION}" != "";
-             }
-         }
-         environment {
-            APP_NAME = "macro-api"
-            REPO_NAME = "educ-macro-api"
-            DC_URL = "https://raw.githubusercontent.com/bcgov/EDUC-MACRO-API/master/tools/openshift/api.dc.ocp4.yaml"
-         }
-         steps {
-            script{
-                extJSHelper.performApiDeploy(STAGING_ENV, TARGET_ENVIRONMENT, REPO_NAME, "${APP_NAME}", "master", "${MACRO_API_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, DC_URL, MIN_REPLICAS, MAX_REPLICAS, "75m", "150m", "375Mi", "750Mi", TARGET_ENV, NAMESPACE)
-            }
-         }
-     }
-     stage('DOSA Frontend and Backend'){
-         when {
-           expression {
-             return "${DOSA_VERSION}" != "<Not Required>" && "${DOSA_VERSION}" != "";
-           }
-         }
-         environment {
-           APP_NAME = "dosa"
-           REPO_NAME = "educ-devops-support-app"
-           DC_URL_FRONTEND = "https://raw.githubusercontent.com/bcgov/EDUC-DEVOPS-SUPPORT-APP/main/tools/openshift/frontend-static.dc.ocp4.yaml"
-           DC_URL_BACKEND = "https://raw.githubusercontent.com/bcgov/EDUC-DEVOPS-SUPPORT-APP/main/tools/openshift/backend.dc.ocp4.yaml"
-           dosaExtJSHelper = '';
-           MIN_REPLICAS_FE = "1"
-           MAX_REPLICAS_FE = "1"
-           MIN_CPU_FE = "25m"
-           MAX_CPU_FE = "50m"
-           MIN_MEM_FE = "50Mi"
-           MAX_MEM_FE = "100Mi"
-           MIN_REPLICAS_BE = "1"
-           MAX_REPLICAS_BE = "1"
-           MIN_CPU_BE = "50m"
-           MAX_CPU_BE = "100m"
-           MIN_MEM_BE = "125Mi"
-           MAX_MEM_BE = "250Mi"
-           TEST_HOST_ROUTE = "dosa-75e61b-prod.apps.silver.devops.gov.bc.ca"
-         }
-         steps {
-           script{
-             sh "wget -O - https://raw.githubusercontent.com/bcgov/EDUC-DEVOPS-SUPPORT-APP/main/tools/jenkins/deployHelpers.js > deployHelpers.js"
-             dosaExtJSHelper = evaluate readFile('deployHelpers.js')
-           }
-           script{
-             dosaExtJSHelper.performUIDeploy(TEST_HOST_ROUTE, STAGING_ENV, TARGET_ENVIRONMENT, "${REPO_NAME}", "${APP_NAME}", "main", "${DOSA_VERSION}", TOOLS, TARGET_ENVIRONMENT, APP_DOMAIN, "${DC_URL_FRONTEND}", "${DC_URL_BACKEND}", "${MIN_REPLICAS_FE}", "${MAX_REPLICAS_FE}", "${MIN_CPU_FE}", "${MAX_CPU_FE}", "${MIN_MEM_FE}", "${MAX_MEM_FE}", "${MIN_REPLICAS_BE}", "${MAX_REPLICAS_BE}", "${MIN_CPU_BE}", "${MAX_CPU_BE}", "${MIN_MEM_BE}", "${MAX_MEM_BE}", TARGET_ENV, NAMESPACE, NAMESPACE, PEN_NAMESPACE)
-           }
-         }
-     }   
      stage('SOAM API'){
          when {
              expression {
