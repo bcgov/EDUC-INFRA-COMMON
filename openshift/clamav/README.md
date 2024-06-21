@@ -53,9 +53,10 @@ oc -n <namespace> start-build bc/clamav-build
 ## Deployment
 
 Navigate to clamav-dc.yaml in your local machine and run the following command to deploy the pod to your namespace <<TAG>> is for the image ex. latest, 1.0.1
+<<namespace>> could be 75e61b-dev
 
 ```
-oc process -f clamav-dc.yaml -p TAG=<<TAG>> | oc apply -n 75e61b-dev -f -
+oc process -f clamav-dc.yaml -p TAG=<<TAG>> | oc apply -n <<namespace>> -f -
 ```
 
 ## Versioning Deployments
@@ -67,8 +68,8 @@ oc tag -n <<namespace>> clamav:latest clamav:<<TAG>>
 ```
 
 Method 1: apply a patch to the deployment config to point to the new image in DEV, TEST or PROD. Make sure to adjust the namespace appropriately. Ex.
-<<namespace>> would be 75e61b-dev,
-<<tools namespace>> would be 75e61b-tools.
+<<namespace>> could be 75e61b-dev,
+<<tools namespace>> could be 75e61b-tools.
 
 ```
 oc patch dc clamav -n <<namespace>> --type=json -p '[{"op": "replace", "path": "/spec/template/spec/containers/0/image", "value": "image-registry.openshift-image-registry.svc:5000/<<tools namespace>>/clamav:<tag>" }]'
