@@ -16,6 +16,12 @@ parameters:
     value: "2G"
   - name: REPLICAS
     value: "1"
+  - name: TAG
+    description: tag identifier for the image
+    required: true
+  - name: IMAGE_NAME
+    description: name for the clamav image
+    value: "clamav"
 objects:
   - kind: Service
     apiVersion: v1
@@ -49,15 +55,6 @@ objects:
         type: Rolling
         activeDeadlineSeconds: 21600
       triggers:
-        - type: ImageChange
-          imageChangeParams:
-            automatic: true
-            containerNames:
-              - clamav
-            from:
-              kind: ImageStreamTag
-              namespace: "${NAME_SPACE}"
-              name: "clamav:latest"
         - type: ConfigChange
       replicas: ${{REPLICAS}}
       test: false
@@ -102,8 +99,10 @@ objects:
               ports:
                 - containerPort: 3310
                   protocol: TCP
-              imagePullPolicy: Always
               terminationMessagePolicy: File
+            - image: image-registry.openshift-image-registry.svc:5000/${NAME_SPACE}/${IMAGE_NAME}:${TAG}
+              name: clamav
+              imagePullPolicy: Always
           restartPolicy: Always
           terminationGracePeriodSeconds: 30
           dnsPolicy: ClusterFirst
