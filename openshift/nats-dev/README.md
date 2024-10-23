@@ -1,10 +1,10 @@
-#Personal Cloud Nats for development
+# Personal Cloud Nats for development
 
 The intention of this DC is to deploy a personal nats server with jetstream enabled to an openshift tools environment. You can then port-forward to this 'personal' instance for local development work.
 
-##Usage:
+## Usage:
 
-###Setup:
+### Setup:
 Replace ${your-name} with your first name and ${your-tools-namespace} with the openshift tools namespace (including the -tools part)
 
 `oc login`
