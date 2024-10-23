@@ -7,8 +7,8 @@ The intention of this DC is to deploy a personal nats server with jetstream enab
 ### Setup:
 Replace ${your-name} with your first name and ${your-tools-namespace} with the openshift tools namespace (including the -tools part)
 
-`oc login`
-`oc process -f nats-sa-dc.yaml -p YOUR_NAME=${your-name} -p TOOLS_NAMESPACE=${your-tools-namespace} | oc apply -f -`
+* `oc login`
+* `oc process -f nats-sa-dc.yaml -p YOUR_NAME=${your-name} -p TOOLS_NAMESPACE=${your-tools-namespace} | oc apply -f -`
 
 You should now be able to port-forward to your nats server:
 
