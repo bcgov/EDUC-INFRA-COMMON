@@ -1,0 +1,86 @@
+---
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  template: "nats-sa-${YOUR_NAME}-deploy-template"
+metadata:
+  name: "nats-sa-${YOUR_NAME}-deploy-template"
+objects:
+  - kind: DeploymentConfig
+    apiVersion: apps.openshift.io/v1
+    metadata:
+      name: nats-sa-${YOUR_NAME}
+      namespace: ${TOOLS_NAMESPACE}
+      labels:
+        app: nats-sa-${YOUR_NAME}
+    spec:
+      strategy:
+        type: Rolling
+        rollingParams:
+          updatePeriodSeconds: 1
+          intervalSeconds: 1
+          timeoutSeconds: 600
+          maxUnavailable: 25%
+          maxSurge: 25%
+        resources: {}
+        activeDeadlineSeconds: 21600
+      triggers:
+        - type: ConfigChange
+      replicas: 1
+      revisionHistoryLimit: 10
+      test: false
+      selector:
+        app: nats-sa-${YOUR_NAME}
+      template:
+        metadata:
+          name: nats-sa-${YOUR_NAME}
+          creationTimestamp: null
+          labels:
+            app: nats-sa-${YOUR_NAME}
+        spec:
+          containers:
+            - name: nats
+              image: 'artifacts.developer.gov.bc.ca/docker-remote/nats:2.3.3-alpine'
+              command:
+                - nats-server
+                - '-js'
+              ports:
+                - name: client
+                  containerPort: 4222
+                  protocol: TCP
+              resources:
+                limits:
+                  cpu: 250m
+                  memory: 1Gi
+                requests:
+                  cpu: 100m
+                  memory: 256Mi
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+              imagePullPolicy: IfNotPresent
+          restartPolicy: Always
+          terminationGracePeriodSeconds: 30
+          dnsPolicy: ClusterFirst
+          securityContext: {}
+          schedulerName: default-scheduler
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      name: nats-sa-${YOUR_NAME}
+      namespace: ${TOOLS_NAMESPACE}
+    spec:
+      ports:
+        - protocol: TCP
+          port: 4222
+          targetPort: 4222
+      selector:
+        app: nats-sa-${YOUR_NAME}
+    status:
+      loadBalancer: {}
+parameters:
+  - name: YOUR_NAME
+    description: Example Dave
+    required: true
+  - name: TOOLS_NAMESPACE
+    description: The tools namespace you are deploying this to
+    required: true
