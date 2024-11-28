@@ -1,0 +1,25 @@
+image:
+  repository: bcgovimages/backup-container
+  pullPolicy: IfNotPresent
+  tag: 2.9.0
+
+backupConfig: |
+  postgres=sso-patroni/ssokeycloak
+
+  0 1 * * * default ./backup.sh -s
+  0 4 * * * default ./backup.sh -s -v all
+
+db:
+  secretName: "sso-patroni"
+  usernameKey: "username-superuser"
+  passwordKey: "password-superuser"
+
+env:
+  DATABASE_SERVICE_NAME:
+    value: "postgres"
+  ENVIRONMENT_FRIENDLY_NAME:
+    value: "SSO DB Backups"
+
+persistence:
+  backup:
+    claimName: "backup-sso-patroni"
