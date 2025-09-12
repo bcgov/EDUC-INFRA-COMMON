@@ -19,7 +19,7 @@ Navigate to the config.yaml configuration folder these commands were run in WSL.
 helm upgrade --install backup-sso-keycloak bcgov/backup-storage -n <<NAMESPACE>> -f <<VALUES LOCATION>>
 
 example run in the folder with the values.yaml:
-helm upgrade --install backup-sso-keycloak bcgov/backup-storage -n 75e61b-dev -f values.yaml
+helm upgrade --install backup-sso-keycloak bcgov/backup-storage -n 75e61b-dev -f ./sso-keycloak/values.yaml
 ```
 
 Notes:

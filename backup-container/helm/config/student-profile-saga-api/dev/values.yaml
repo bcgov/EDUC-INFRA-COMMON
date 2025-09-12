@@ -1,0 +1,46 @@
+image:
+  repository: ghcr.io/bcgov/backup-container
+  pullPolicy: IfNotPresent
+  tag: 2.10.3
+
+backupConfig: |
+  postgres=student-profile-saga-api-pgsql:5432/student_profile_saga
+
+  0 1 * * * default ./backup.sh -s
+  0 4 * * * default ./backup.sh -I -v all
+
+db:
+  secretName: "student-profile-saga-api-pgsql-dev"
+  usernameKey: "superuser-username"
+  passwordKey: "superuser-password"
+
+env:
+  DATABASE_SERVICE_NAME:
+    value: "postgres"
+  ENVIRONMENT_FRIENDLY_NAME:
+    value: "SSO DB Backups"
+  STUDENT_PROFILE_SAGA_API_PGSQL_PASSWORD:
+    existingSecret:
+      name: "student-profile-saga-api-pgsql-dev"
+      key: "app-db-password"
+  STUDENT_PROFILE_SAGA_API_PGSQL_USER:
+    existingSecret:
+      name: "student-profile-saga-api-pgsql-dev"
+      key: "app-db-username"
+# use the following syntax to wire-up an existing secret
+# EXISTING_DEPLOYMENT_PASSWORD:
+#   existingSecret:
+#     name: "existing-secret-name"
+#     key: "existing-secret-key"
+
+persistence:
+  backup:
+    size: 5Gi
+    mountPath: /backups/
+    storageClassName: netapp-file-backup
+    storageAccessMode: ReadWriteOnce
+  verification:
+    size: 2Gi
+    mountPath: /var/lib/pgsql/data
+    storageClassName: netapp-block-standard
+    storageAccessMode: ReadWriteOnce
