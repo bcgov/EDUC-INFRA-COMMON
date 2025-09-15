@@ -7,7 +7,7 @@ backupConfig: |
   postgres=student-profile-saga-api-pgsql:5432/student_profile_saga
 
   0 1 * * * default ./backup.sh -s
-  0 4 * * * default ./backup.sh -v all
+  0 4 * * * default ./backup.sh -I -v all
 
 db:
   secretName: "student-profile-saga-api-pgsql-prod"
