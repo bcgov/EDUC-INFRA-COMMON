@@ -64,7 +64,7 @@ spec:
     spec:
       containers:
         - name: redis
-          image: artifacts.developer.gov.bc.ca/docker-remote/redis:7.0.8
+          image: artifacts.developer.gov.bc.ca/docker-remote/redis:7.4.6
           ports:
             - containerPort: 6379
               name: client
