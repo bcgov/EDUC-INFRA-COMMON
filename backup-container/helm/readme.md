@@ -16,10 +16,14 @@ helm repo add bcgov http://bcgov.github.io/helm-charts //install the charts
 Navigate to the config.yaml configuration folder these commands were run in WSL. Powershell will require a different order to the inputs.
 
 ```
-helm upgrade --install backup-sso-keycloak bcgov/backup-storage -n <<NAMESPACE>> -f <<VALUES LOCATION>>
+helm upgrade --install <<HELM NAME>> bcgov/backup-storage -n <<NAMESPACE>> -f <<VALUES LOCATION>>
 
 example run in the folder with the values.yaml:
+sso-keycloak (dev)
 helm upgrade --install backup-sso-keycloak bcgov/backup-storage -n 75e61b-dev -f ./sso-keycloak/values.yaml
+
+student-profile-saga-api (dev)
+helm upgrade --install backup-student-profile-saga-api bcgov/backup-storage -n 8878b4-dev -f ./student-profile-saga-api/dev/values.yaml
 ```
 
 Notes:
@@ -29,10 +33,9 @@ Notes:
 > pg_dump: error: server version: 15.6 (Ubuntu 15.6-1.pgdg22.04+1); pg_dump version: 14.7
 > pg_dump: error: aborting because of server version mismatch
 
-- to fix, I updated the tag on the config.yaml to be the latest offered by bcDevops/backup-container 2.10.3 at the time of writing this readme.
+- to fix, I updated the tag on the values.yaml to be the latest offered by bcDevops/backup-container 2.10.3 at the time of writing this readme.
 
 - how do I verify that the backups work?
-
   - I rsynced into the pods and downloaded the .gz backups and opened them in dbeaver.
   - run ./backup.sh -I -v all in the pod
 
